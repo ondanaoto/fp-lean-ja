@@ -1,18 +1,22 @@
-# Ordering Monad Transformers
+# モナドトランスフォーマの順序付け
 
-When composing a monad from a stack of monad transformers, it's important to be aware that the order in which the monad transformers are layered matters.
-Different orderings of the same set of transformers result in different monads.
+モナドトランスフォーマのスタックからモナドを構成する際、そのレイヤーの順序が重要であることに気をつける必要があります。
+同じ集合のトランスフォーマを異なる順序で重ねると、異なるモナドが生まれます。
 
-This version of `countLetters` is just like the previous version, except it uses type classes to describe the set of available effects instead of providing a concrete monad:
+このバージョンの `countLetters` は、具体的なモナドを提供する代わりに型クラスを使用して利用可能なエフェクトの集合を記述する点で、前のバージョンとは異なります:
+
 ```lean
 {{#example_decl Examples/MonadTransformers/Defs.lean countLettersClassy}}
 ```
-The state and exception monad transformers can be combined in two different orders, each resulting in a monad that has instances of both type classes:
+
+ステートと例外のモナドトランスフォーマは、以下の二つの異なる順序で組み合わせることができ、どちらの順序でも両方の型クラスのインスタンスがあるモナドになります:
+
 ```lean
 {{#example_decl Examples/MonadTransformers/Defs.lean SomeMonads}}
 ```
 
-When run on input for which the program does not throw an exception, both monads yield similar results:
+プログラムが例外を投げない入力に対して実行される場合、両方のモナドは似たような結果をもたらします:
+
 ```lean
 {{#example_in Examples/MonadTransformers/Defs.lean countLettersM1Ok}}
 ```
@@ -25,21 +29,23 @@ When run on input for which the program does not throw an exception, both monads
 ```output info
 {{#example_out Examples/MonadTransformers/Defs.lean countLettersM2Ok}}
 ```
-However, there is a subtle difference between these return values.
-In the case of `M1`, the outermost constructor is `Except.ok`, and it contains a pair of the unit constructor with the final state.
-In the case of `M2`, the outermost constructor is the pair, which contains `Except.ok` applied only to the unit constructor.
-The final state is outside of `Except.ok`.
-In both cases, the program returns the counts of vowels and consonants.
+しかし、これらの戻り値の間には微妙な違いが存在します。
+`M1`の場合、最も外側のコンストラクタは `Except.ok` で、最終状態とユニットコンストラクタの組み合わせを含みます。
+`M2`の場合、最も外側のコンストラクタは組み合わせであり、ユニットコンストラクタへの `Except.ok` の適用が含まれます。
+最終状態は `Except.ok` の外側にあります。
+どちらの場合も、プログラムは母音と子音の数を返します。
 
-On the other hand, only one monad yields a count of vowels and consonants when the string causes an exception to be thrown.
-Using `M1`, only an exception value is returned:
+一方、文字列が例外を投げる原因となった場合、母音と子音のカウントを返すモナドは一つだけです。
+`M1`を使用すると、例外値のみが返されます:
+
 ```lean
 {{#example_in Examples/MonadTransformers/Defs.lean countLettersM1Error}}
 ```
 ```output info
 {{#example_out Examples/MonadTransformers/Defs.lean countLettersM1Error}}
 ```
-Using `M2`, the exception value is paired with the state as it was at the time that the exception was thrown:
+`M2`を使用すると、例外値がその時点での状態とペアになります:
+
 ```lean
 {{#example_in Examples/MonadTransformers/Defs.lean countLettersM2Error}}
 ```
@@ -47,14 +53,16 @@ Using `M2`, the exception value is paired with the state as it was at the time t
 {{#example_out Examples/MonadTransformers/Defs.lean countLettersM2Error}}
 ```
 
-It might be tempting to think that `M2` is superior to `M1` because it provides more information that might be useful when debugging.
-The same program might compute _different_ answers in `M1` than it does in `M2`, and there's no principled reason to say that one of these answers is necessarily better than the other.
-This can be seen by adding a step to the program that handles exceptions:
+`M2`はデバッグ時に役立つかもしれない情報をより提供しているため、`M1`より優れていると考えがちです。
+しかし、同じプログラムが `M1` と `M2` で_異なる_結果を計算する可能性があり、いずれの答えが必ずしも他方より良いと言える根拠はありません。
+例外を扱うプログラムのステップを追加すると、これが明らかになります:
+
 ```lean
 {{#example_decl Examples/MonadTransformers/Defs.lean countWithFallback}}
 ```
-This program always succeeds, but it might succeed with different results.
-If no exception is thrown, then the results are the same as `countLetters`:
+このプログラムは常に成功しますが、異なる結果で成功することがあります。
+例外が投げられない場合、結果は `countLetters` と同じです:
+
 ```lean
 {{#example_in Examples/MonadTransformers/Defs.lean countWithFallbackM1Ok}}
 ```
@@ -67,15 +75,17 @@ If no exception is thrown, then the results are the same as `countLetters`:
 ```output info
 {{#example_out Examples/MonadTransformers/Defs.lean countWithFallbackM2Ok}}
 ```
-However, if the exception is thrown and caught, then the final states are very different.
-With `M1`, the final state contains only the letter counts from `"Fallback"`:
+しかし、例外が投げられて捕まえられた場合、最終状態は非常に異なります。
+`M1`の場合、最終状態は`"Fallback"`からの文字数だけを含みます:
+
 ```lean
 {{#example_in Examples/MonadTransformers/Defs.lean countWithFallbackM1Error}}
 ```
 ```output info
 {{#example_out Examples/MonadTransformers/Defs.lean countWithFallbackM1Error}}
 ```
-With `M2`, the final state contains letter counts from both `"hello"` and from `"Fallback"`, as one would expect in an imperative language:
+`M2`では、最終状態は`"hello"`と`"Fallback"`の両方からの文字数を含むものであり、命令型言語で想定されるような結果になります:
+
 ```lean
 {{#example_in Examples/MonadTransformers/Defs.lean countWithFallbackM2Error}}
 ```
@@ -83,37 +93,36 @@ With `M2`, the final state contains letter counts from both `"hello"` and from `
 {{#example_out Examples/MonadTransformers/Defs.lean countWithFallbackM2Error}}
 ```
 
-In `M1`, throwing an exception "rolls back" the state to where the exception was caught.
-In `M2`, modifications to the state persist across the throwing and catching of exceptions.
-This difference can be seen by unfolding the definitions of `M1` and `M2`.
-`{{#example_in Examples/MonadTransformers/Defs.lean M1eval}}` unfolds to `{{#example_out Examples/MonadTransformers/Defs.lean M1eval}}`, and `{{#example_in Examples/MonadTransformers/Defs.lean M2eval}}` unfolds to `{{#example_out Examples/MonadTransformers/Defs.lean M2eval}}`.
-That is to say, `M1 α` describes functions that take an initial letter count, returning either an error or an `α` paired with updated counts.
-When an exception is thrown in `M1`, there is no final state.
-`M2 α` describes functions that take an initial letter count and return a new letter count paired with either an error or an `α`.
-When an exception is thrown in `M2`, it is accompanied by a state.
+`M1`では、例外を投げると状態が例外が捕まえられたところまで「ロールバック」されます。
+`M2`では、例外を投げて捕まえることを通じても状態の変更は永続します。
+この違いは `M1` と `M2` の定義を展開することで見ることができます。
+`{{#example_in Examples/MonadTransformers/Defs.lean M1eval}}` を展開すると `{{#example_out Examples/MonadTransformers/Defs.lean M1eval}}` になり、`{{#example_in Examples/MonadTransformers/Defs.lean M2eval}}` を展開すると `{{#example_out Examples/MonadTransformers/Defs.lean M2eval}}` になります。
+つまり、`M1 α` は初期の文字数を取り、エラーか更新された数に対応する `α` を返す関数を記述します。
+`M1`で例外が投げられた場合、最終状態はありません。
+`M2 α` は初期の文字数を取り、新しい文字数とエラーか `α` をペアにしたものを返す関数を記述します。
+`M2`で例外が投げられると、それが状態に伴います。
 
-## Commuting Monads
+## 交換可能なモナド
 
-In the jargon of functional programming, two monad transformers are said to _commute_ if they can be re-ordered without the meaning of the program changing.
-The fact that the result of the program can differ when `StateT` and `ExceptT` are reordered means that state and exceptions do not commute.
-In general, monad transformers should not be expected to commute.
+関数型プログラミングの専門用語で、二つのモナドトランスフォーマが_交換可能である_とは、それらが順番を変えてもプログラムの意味が変わらない場合を指します。
+`StateT`と`ExceptT`を並び替えるとプログラムの結果が変わることから、ステートと例外は交換可能ではないということです。
+一般的には、モナドトランスフォーマは交換可能とは限りません。
 
-Even though not all monad transformers commute, some do.
-For example, two uses of `StateT` can be re-ordered.
-Expanding the definitions in `{{#example_in Examples/MonadTransformers/Defs.lean StateTDoubleA}}` yields the type `{{#example_out Examples/MonadTransformers/Defs.lean StateTDoubleA}}`, and `{{#example_in Examples/MonadTransformers/Defs.lean StateTDoubleB}}` yields `{{#example_out Examples/MonadTransformers/Defs.lean StateTDoubleB}}`.
-In other words, the differences between them are that they nest the `σ` and `σ'` types in different places in the return type, and they accept their arguments in a different order.
-Any client code will still need to provide the same inputs, and it will still receive the same outputs.
+すべてのモナドトランスフォーマが交換可能でなくても、いくつかは交換可能です。
+たとえば、二つの`StateT`の使用は並び替えることができます。
+`{{#example_in Examples/MonadTransformers/Defs.lean StateTDoubleA}}` の定義を展開すると、型 `{{#example_out Examples/MonadTransformers/Defs.lean StateTDoubleA}}` が得られ、`{{#example_in Examples/MonadTransformers/Defs.lean StateTDoubleB}}` を展開すると `{{#example_out Examples/MonadTransformers/Defs.lean StateTDoubleB}}` が得られます。
+言い換えると、それらの違いは `σ` 型と `σ'` 型がリターンタイプの異なる場所に入れ子になっていることと、引数を異なる順序で受け取っていることです。
+クライアントコードは依然として同じ入力を提供する必要があり、また同じ出力を受け取ります。
 
-Most programming languages that have both mutable state and exceptions work like `M2`.
-In those languages, state that _should_ be rolled back when an exception is thrown is difficult to express, and it usually needs to be simulated in a manner that looks much like the passing of explicit state values in `M1`.
-Monad transformers grant the freedom to choose an interpretation of effect ordering that works for the problem at hand, with both choices being equally easy to program with.
-However, they also require care to be taken in the choice of ordering of transformers.
-With great expressive power comes the responsibility to check that what's being expressed is what is intended, and the type signature of `countWithFallback` is probably more polymorphic than it should be.
+ほとんどのプログラム言語では、変更可能なステートと例外の両方を持っており、それは `M2` のように動作します。
+これらの言語では、例外が投げられたときにロールバックされるべきステートを表現することが難しく、通常は `M1` の明示的なステート値の受け渡しと非常に似た方法で模倣する必要があります。
+モナドトランスフォーマは、問題に応じてエフェクトの順序の解釈を選択する自由を与えますが、どちらの選択もプログラムしやすいです。
+しかし、トランスフォーマを順序付けするときは注意を払う必要があります。
+大きな表現力には、意図したものが表現されているか確認する責任が伴います。`countWithFallback` の型シグネチャは、おそらくそれがあるべきよりも多様性を持ちすぎているでしょう。
 
+## 練習問題
 
-## Exercises
-
- * Check that `ReaderT` and `StateT` commute by expanding their definitions and reasoning about the resulting types.
- * Do `ReaderT` and `ExceptT` commute? Check your answer by expanding their definitions and reasoning about the resulting types.
- * Construct a monad transformer `ManyT` based on the definition of `Many`, with a suitable `Alternative` instance. Check that it satisfies the `Monad` contract.
- * Does `ManyT` commute with `StateT`? If so, check your answer by expanding definitions and reasoning about the resulting types. If not, write a program in `ManyT (StateT σ Id)` and a program in `StateT σ (ManyT Id)`. Each program should be one that makes more sense for the given ordering of monad transformers.
+ * `ReaderT` と `StateT` が交換可能であることを、その定義を展開して結果となる型についての推論によって確認してください。
+ * `ReaderT` と `ExceptT` は交換可能ですか？その定義を展開して結果となる型についての推論によって回答を確認してください。
+ * `Many` の定義に基づいてモナドトランスフォーマ `ManyT` を構築し、適切な `Alternative` インスタンスを備えていることを確認してください。それが `Monad` 契約を満たしていることを確認してください。
+ * `ManyT` は `StateT` と交換可能ですか？もしそうなら、定義を展開して結果となる型についての推論によって回答を確認してください。そうでない場合は、`ManyT (StateT σ Id)` のプログラムと `StateT σ (ManyT Id)` のプログラムを書いてください。それぞれのプログラムは、与えられたモナドトランスフォーマの順序付けに対してより意味をなすものです。

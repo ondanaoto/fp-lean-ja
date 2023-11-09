@@ -1,74 +1,66 @@
-# Functional Programming in Lean
+# Leanにおける関数型プログラミング
 
-*by David Thrane Christiansen*
+*デイビッド・スレーン・クリスチャンセン著*
 
-*Copyright Microsoft Corporation 2023*
+*マイクロソフト コーポレーション著作権 2023年*
 
 
 
-This is a free book on using Lean 4 as a programming language. All code samples are tested with Lean 4 release `{{#lean_version}}`.
+これはプログラミング言語としてLean 4を使用するための無料の書籍です。すべてのコードサンプルはLean 4リリース `{{#lean_version}}` でテストされています。
 
-## Release history
+## リリース履歴
 
-### October, 2023
+### 2023年10月
 
-In this first maintenance release, a number of smaller issues were fixed and the text was brought up to date with the latest release of Lean.
+この初のメンテナンスリリースでは、いくつかの小さな問題が修正され、テキストがLeanの最新リリースに合わせて更新されました。
 
-### May, 2023
+### 2023年5月
 
-The book is now complete! Compared to the April pre-release, many small details have been improved and minor mistakes have been fixed.
+この本は現在完成しています！4月のプレリリースに比べ、多くの細部が改善され、小さな間違いが修正されました。
 
-### April, 2023
+### 2023年4月
 
-This release adds an interlude on writing proofs with tactics as well as a final chapter that combines discussion of performance and cost models with proofs of termination and program equivalence.
-This is the last release prior to the final release.
+このリリースは、戦術を使った証明の中間章と、終了とプログラム同等性の証明との組み合わせに関するパフォーマンスとコストモデルの議論を含む最終章を追加します。これは最終リリース前の最後のリリースです。
 
-### March, 2023
+### 2023年3月
 
-This release adds a chapter on programming with dependent types and indexed families.
+このリリースは、依存型とインデックス付きファミリーを使用したプログラミングに関する章を追加します。
 
-### January, 2023
+### 2023年1月
 
-This release adds a chapter on monad transformers that includes a description of the imperative features that are available in `do`-notation.
+このリリースは、`do`-記法で利用可能な命令型機能の説明を含むモナドトランスフォーマーに関する章を追加します。
 
-### December, 2022
+### 2022年12月
 
-This release adds a chapter on applicative functors that additionally describes structures and type classes in more detail.
-This is accompanied with improvements to the description of monads.
-The December 2022 release was delayed until January 2023 due to winter holidays.
+このリリースは、構造と型クラスに関する詳細な説明を加えたアプリカティブ関手に関する章を追加します。これにはモナドの説明の改善も含まれます。2022年12月のリリースは冬休みのため2023年1月まで遅れました。
 
-### November, 2022
-This release adds a chapter on programming with monads. Additionally, the example of using JSON in the coercions section has been updated to include the complete code.
+### 2022年11月
+このリリースは、モナドを使用したプログラミングに関する章を追加します。さらに、強制セクションでのJSONの使用例が完全なコードを含むように更新されました。
 
-### October, 2022
+### 2022年10月
 
-This release completes the chapter on type classes. In addition, a short interlude introducing propositions, proofs, and tactics has been added just before the chapter on type classes, because a small amount of familiarity with the concepts helps to understand some of the standard library type classes.
+このリリースは、型クラスに関する章を完成させます。さらに、型クラスの章の直前に命題、証明、戦術を紹介する短い中間章が追加されました。なぜなら、これらの概念に対する少しだけの習熟はスタンダードライブラリーの型クラスを理解するのに役立つからです。
 
-### September, 2022
+### 2022年9月
 
-This release adds the first half of a chapter on type classes, which are Lean's mechanism for overloading operators and an important means of organizing code and structuring libraries. Additionally, the second chapter has been updated to account for changes in Lean's stream API.
+このリリースは、演算子のオーバーロードとコードおよびライブラリー構造を整理する上での重要な手段であるLeanの型クラスについての章の前半を追加します。さらに、LeanのストリームAPIの変更に対応して第二章が更新されました。
 
-### August, 2022
+### 2022年8月
 
-This third public release adds a second chapter, which describes compiling and running programs along with Lean's model for side effects.
+この3番目の公開リリースは、コンパイルとプログラムの実行およびLeanの副作用モデルを説明する第二章を追加します。
 
-### July, 2022
+### 2022年7月
 
-The second public release completes the first chapter.
+第二の公開リリースは第一章を完成させます。
 
-### June, 2022
+### 2022年6月
 
-This was the first public release, consisting of an introduction and part of the first chapter.
+これは第一章の序論と一部を含む最初の公開リリースでした。
 
-## About the Author
+## 著者について
 
-David Thrane Christiansen has been using functional languages for twenty years, and dependent types for ten.
-Together with Daniel P. Friedman, he wrote [_The Little Typer_](https://thelittletyper.com/), an introduction to the key ideas of dependent type theory.
-He has a Ph.D. from the IT University of Copenhagen.
-During his studies, he was a major contributor to the first version of the Idris language.
-Since leaving academia, he has worked as a software developer at Galois in Portland, Oregon and Deon Digital in Copenhagen, Denmark, and he was the Executive Director of the Haskell Foundation.
-At the time of writing, he is employed at the [Lean Focused Research Organization](https://lean-fro.org) working full-time on Lean.
+デイビッド・スレーン・クリスチャンセンは、20年以上にわたり関数型言語を使用しており、10年以上の依存型を使用しています。彼はダニエル・P・フリードマンと共に、依存型理論の重要なアイデアを紹介する[_The Little Typer_](https://thelittletyper.com/)を執筆しました。彼はコペンハーゲンIT大学から博士号を取得しています。彼の学習中には、Idris言語の最初のバージョンへの主要な貢献者でした。アカデミアを離れてからは、オレゴン州ポートランドのGaloisやコペンハーゲンのDenmark、Deon Digitalでソフトウェア開発者として働き、Haskell Foundationの執行役員でした。執筆時点で、彼は[Lean Focused Research Organization](https://lean-fro.org)でフルタイムにLeanに携わっています。
 
-## License
+## ライセンス
 
-<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />この作品は<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">クリエイティブ・コモンズ 表示 4.0 国際 ライセンス</a>で提供されています。

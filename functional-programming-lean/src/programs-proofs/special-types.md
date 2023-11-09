@@ -1,59 +1,58 @@
-# Special Types
+# 特別な型
 
-Understanding the representation of data in memory is very important.
-Usually, the representation can be understood from the definition of a datatype.
-Each constructor corresponds to an object in memory that has a header that includes a tag and a reference count.
-The constructor's arguments are each represented by a pointer to some other object.
-In other words, `List` really is a linked list and extracting a field from a `structure` really does just chase a pointer.
+データのメモリ内の表現を理解することは非常に重要です。
+通常、データ型の定義からその表現を理解することができます。
+各コンストラクタは、タグと参照カウントを含むヘッダーを持つメモリ内のオブジェクトに対応します。
+コンストラクタの引数はそれぞれ、他のオブジェクトへのポインタによって表現されます。
+言い換えると、`List`は本当にリンクリストであり、`structure`からフィールドを抽出することは実際にはポインタを追跡することに過ぎません。
 
-There are, however, some important exceptions to this rule.
-A number of types are treated specially by the compiler.
-For example, the type `UInt32` is defined as `Fin (2 ^ 32)`, but it is replaced at run-time with an actual native implementation based on machine words.
-Similarly, even though the definition of `Nat` suggests an implementation similar to `List Unit`, the actual run-time representation uses immediate machine words for sufficiently-small numbers and an efficient arbitrary-precision arithmetic library for larger numbers.
-The Lean compiler translates from definitions that use pattern matching into the appropriate operations for this representation, and calls to operations like addition and subtraction are mapped to fast operations from the underlying arithmetic library.
-After all, addition should not take time linear in the size of the addends.
+しかし、このルールにはいくつかの重要な例外があります。
+コンパイラによって特別に扱われる型がいくつかあります。
+例えば、型`UInt32`は`Fin (2 ^ 32)`として定義されていますが、実行時には機械語に基づいた実際のネイティブ実装に置き換えられます。
+同様に、`Nat`の定義は`List Unit`に似た実装を示唆していますが、実際の実行時表現では、十分に小さい数の場合は直接の機械語を使用し、大きい数の場合は効率的な任意精度算術ライブラリを使用します。
+Leanコンパイラは、パターンマッチングを使用する定義からこの表現に適切な操作に変換し、足し算や引き算のような操作への呼び出しは、基盤となる算術ライブラリからの高速な操作にマップされます。
+結局のところ、加算が加数のサイズに比例して時間がかかるべきではありません。
 
-The fact that some types have special representations also means that care is needed when working with them.
-Most of these types consist of a `structure` that is treated specially by the compiler.
-With these structures, using the constructor or the field accessors directly can trigger an expensive conversion from an efficient representation to a slow one that is convenient for proofs.
-For example, `String` is defined as a structure that contains a list of characters, but the run-time representation of strings uses UTF-8, not linked lists of pointers to characters.
-Applying the constructor to a list of characters creates a byte array that encodes them in UTF-8, and accessing the field of the structure takes time linear in the length of the string to decode the UTF-8 representation and allocate a linked list.
-Arrays are represented similarly.
-From the logical perspective, arrays are structures that contain a list of array elements, but the run-time representation is a dynamically-sized array.
-At run time, the constructor translates the list into an array, and the field accessor allocates a linked list from the array.
-The various array operations are replaced with efficient versions by the compiler that mutate the array when possible instead of allocating a new one.
+いくつかの型が特別な表現を持っているという事実は、それらを扱う際に注意が必要であることも意味しています。
+これらの型のほとんどは、コンパイラによって特別に扱われる`structure`で構成されています。
+これらの構造体では、コンストラクタやフィールドアクセサを直接使用することで、効率的な表現から証明に適した遅いものへの高価な変換を引き起こすことがあります。
+例えば、`String`は文字のリストを含む構造体として定義されていますが、実行時の文字列表現はUTF-8を使用し、ポインタのリンクリストは使用しません。
+文字のリストにコンストラクタを適用すると、UTF-8でそれらをエンコードしたバイト配列が作成され、構造体のフィールドにアクセスする際には、UTF-8表現をデコードしリンクリストを割り当てるために文字列の長さに比例する時間がかかります。
+配列も同様に表現されます。
+論理的な観点からは、配列は配列要素のリストを含む構造体ですが、実行時の表現は動的にサイズ変更可能な配列です。
+実行時には、コンストラクタはリストを配列に変換し、フィールドアクセサは配列からリンクリストを割り当てます。
+コンパイラによって、可能な場合は配列を変更しつつ新たに割り当てるのではなく、配列操作は効率の良いバージョンに置き換えられます。
 
-Both types themselves and proofs of propositions are completely erased from compiled code.
-In other words, they take up no space, and any computations that might have been performed as part of a proof are similarly erased.
-This means that proofs can take advantage of the convenient interface to strings and arrays as inductively-defined lists, including using induction to prove things about them, without imposing slow conversion steps while the program is running.
-For these built-in types, a convenient logical representation of the data does not imply that the program must be slow.
+コンパイルされたコードからは、型自体および命題の証明が完全に削除されます。
+つまり、彼らは空間を取らず、証明の一部として実行された可能性がある計算も同様に削除されます。
+これは、証明が証明に便利なインターフェイスを文字列や配列として帰納的に定義されたリストを利用し、プログラムが実行されている間に遅い変換ステップを課すことなく、それらについてのことを証明するために帰納法を使用することができることを意味します。
+これらの組み込み型の場合、データの便利な論理的表現がプログラムが遅くなければならないということを意味しません。
 
-If a structure type has only a single non-type non-proof field, then the constructor itself disappears at run time, being replaced with its single argument.
-In other words, a subtype is represented identically to its underlying type, rather than with an extra layer of indirection.
-Similarly, `Fin` is just `Nat` in memory, and single-field structures can be created to keep track of different uses of `Nat`s or `String`s without paying a performance penalty.
-If a constructor has no non-type non-proof arguments, then the constructor also disappears and is replaced with a constant value where the pointer would otherwise be used.
-This means that `true`, `false`, and `none` are constant values, rather than pointers to heap-allocated objects.
+構造型が単一の非型非証明フィールドのみを持っている場合、コンストラクタ自体が実行時に消え、その単一の引数に置き換えられます。
+つまり、サブタイプは追加の間接層ではなく、その基礎となる型と同一に表現されます。
+同様に、`Fin`はメモリ内で`Nat`であり、`Nat`や`String`の異なる使用を追跡するために単一フィールド構造を作成することができますが、パフォーマンスペナルティを支払うことはありません。
+コンストラクタが非型非証明の引数を持たない場合、コンストラクタも消えてしまい、通常はポインタが使用される場所に定数値に置き換えられます。
+これは、`true`、`false`、`none`がヒープ割り当てオブジェクトへのポインタではなく、定数値であることを意味します。
 
+以下の型には特別な表現があります：
 
-The following types have special representations:
+| 型                                     | 論理的表現                                                               | 実行時表現                               |
+|----------------------------------------|----------------------------------------------------------------------|------------------------------------------|
+| `Nat`                                  | 各`Nat.succ`から一つのポインタ                                        | 効率的な任意精度整数                      |
+| `Int`                                  | 正か負かの値のコンストラクタを持つ和型、それぞれに`Nat`を含む           | 効率的な任意精度整数                      |
+| `UInt8`, `UInt16`, `UInt32`, `UInt64`  | 適切な上限を持つ`Fin`                                                | 固定精度の機械整数                         |
+| `Char`                                 | それが有効なコードポイントであるという証明とペアになった`UInt32`        | 通常の文字                               |
+| `String`                               | `data`というフィールドで`List Char`を含む構造体                      | UTF-8エンコードされた文字列               |
+| `Array α`                              | `data`というフィールドで`List α`を含む構造体                         | `α`の値へのポインターの圧縮配列           |
+| `Sort u`                               | 型                                                                       | 完全に消去                                |
+| 命題の証明                                 | 証拠の型として考慮される場合に提案されるデータ                           | 完全に消去                                |
 
-| Type                                  | Logical representation                                                                | Run-time Representation                 |
-|---------------------------------------|---------------------------------------------------------------------------------------|-----------------------------------------|
-| `Nat`                                 | Unary, with one pointer from each `Nat.succ`                                          | Efficient arbitrary-precision integers  |
-| `Int`                                 | A sum type with constructors for positive or negative values, each containing a `Nat` | Efficient arbitrary-precision integers  |
-| `UInt8`, `UInt16`, `UInt32`, `UInt64` | A `Fin` with an appropriate bound                                                     | Fixed-precision machine integers        |
-| `Char`                                | A `UInt32` paired with a proof that it's a valid code point                           | Ordinary characters                     |
-| `String`                              | A structure that contains a `List Char` in a field called `data`                      | UTF-8-encoded string                    |
-| `Array α`                             | A structure that contains a `List α` in a field called `data`                         | Packed arrays of pointers to `α` values |
-| `Sort u`                              | A type                                                                                | Erased completely                       |
-| Proofs of propositions                | Whatever data is suggested by the proposition when considered as a type of evidence   | Erased completely                       |
+## 演習
 
-## Exercise
+[`Pos`の定義](../type-classes/pos.html)は、Leanが`Nat`を効率的な型にコンパイルするという点を利用していません。
+実行時には、基本的にリンクリストです。
+代わりに、最初のセクションで説明されている[サブタイプに関する項](../functor-applicative-monad/applicative.md#subtypes)で説明されているように、Leanの高速な`Nat`型を内部的に使用できるサブタイプを定義することができます。
+実行時には、その証明は消去されます。
+その結果、この新たな`Pos`の表現は`Nat`と同一です。
 
-The [definition of `Pos`](../type-classes/pos.html) does not take advantage of Lean's compilation of `Nat` to an efficient type.
-At run time, it is essentially a linked list.
-Alternatively, a subtype can be defined that allows Lean's fast `Nat` type to be used internally, as described [in the initial section on subtypes](../functor-applicative-monad/applicative.md#subtypes).
-At run time, the proof will be erased.
-Because the resulting structure has only a single data field, it is represented as that field, which means that this new representation of `Pos` is identical to that of `Nat`.
-
-After proving the theorem `∀ {n k : Nat}, n ≠ 0 → k ≠ 0 → n + k ≠ 0`, define instances of `ToString`, and `Add` for this new representation of `Pos`. Then, define an instance of `Mul`, proving any necessary theorems along the way.
+命題`∀ {n k : Nat}, n ≠ 0 → k ≠ 0 → n + k ≠ 0`を証明した後で、この新しい`Pos`の表現の`ToString`および`Add`のインスタンスを定義します。次に、必要な定理を途中で証明しながら、`Mul`のインスタンスを定義してください。

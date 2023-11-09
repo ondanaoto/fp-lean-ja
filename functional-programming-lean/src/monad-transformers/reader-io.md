@@ -1,10 +1,10 @@
-# Combining IO and Reader
+# IOとReaderの組み合わせ
 
-One case where a reader monad can be useful is when there is some notion of the "current configuration" of the application that is passed through many recursive calls.
-An example of such a program is `tree`, which recursively prints the files in the current directory and its subdirectories, indicating their tree structure using characters.
-The version of `tree` in this chapter, called `doug` after the mighty Douglas Fir tree that adorns the west coast of North America, provides the option of Unicode box-drawing characters or their ASCII equivalents when indicating directory structure.
+あるケースでリーダーモナドが便利とされるのは、アプリケーションの「現在の設定」の概念が多くの再帰呼び出しに渡される場合です。
+このようなプログラムの例は、現在のディレクトリとそのサブディレクトリのファイルを再帰的に出力し、そのツリー構造を文字で示す`tree`です。
+この章の`tree`バージョンは、北米西海岸を飾る偉大なダグラスファーの木にちなんで`doug`と呼ばれ、ディレクトリ構造を示すときにユニコードの枠線文字またはそのASCII同等物の選択肢を提供します。
 
-For example, the following commands create a directory structure and some empty files in a directory called `doug-demo`:
+たとえば、以下のコマンドは`doug-demo`というディレクトリにディレクトリ構造といくつかの空ファイルを作成します：
 ```
 $ cd doug-demo
 $ {{#command {doug-demo} {doug} {mkdir -p a/b/c} }}
@@ -14,257 +14,154 @@ $ {{#command {doug-demo} {doug} {touch a/b/hello} }}
 $ {{#command {doug-demo} {doug} {touch a/d/another-file} }}
 $ {{#command {doug-demo} {doug} {touch a/e/still-another-file-again} }}
 ```
-Running `doug` results in the following:
+`doug`を実行すると、以下のようになります：
 ```
 $ {{#command {doug-demo} {doug} {doug} }}
 {{#command_out {doug} {doug} }}
 ```
 
-## Implementation
+## 実装
 
-Internally, `doug` passes a configuration value downwards as it recursively traverses the directory structure.
-This configuration contains two fields: `useASCII` determines whether to use Unicode box-drawing characters or ASCII vertical line and dash characters to indicate structure, and `currentPrefix` contains a string to prepend to each line of output.
-As the current directory deepens, the prefix string accumulates indicators of being in a directory.
-The configuration is a structure:
+内部的に、`doug`は設定値をディレクトリ構造を再帰的にトラバースする際に下方向へ渡します。
+この設定には二つのフィールドが含まれます：`useASCII`はユニコードの枠線文字を使うかASCII縦線やダッシュ文字を使うかを決定し、`currentPrefix`は出力の各行に前置する文字列を含みます。
+現在のディレクトリが深くなるにつれて、プレフィックス文字列はディレクトリ内にあることを示すマーカーが蓄積されます。
+設定は以下の構造です：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean Config}}
 ```
-This structure has default definitions for both fields.
-The default `Config` uses Unicode display with no prefix.
+この構造は両方のフィールドにデフォルト定義を持っています。
+デフォルトの`Config`はプレフィックスなしでユニコード表示を使用します。
 
-Users who invoke `doug` will need to be able to provide command-line arguments.
-The usage information is as follows:
+`doug`を呼び出すユーザーはコマンドライン引数を提供する必要があります。
+使用情報は以下の通りです：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean usage}}
 ```
-Accordingly, a configuration can be constructed by examining a list of command-line arguments:
+それに応じて、コマンドライン引数のリストを検査して設定を構築することができます：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean configFromArgs}}
 ```
 
-The `main` function is a wrapper around an inner worker, called `dirTree`, that shows the contents of a directory using a configuration.
-Before calling `dirTree`, `main` is responsible for processing command-line arguments.
-It must also return the appropriate exit code to the operating system:
+`main`関数は内部ワーカーである`dirTree`をラップするもので、設定を使用してディレクトリの内容を表示します。
+`dirTree`を呼び出す前に、`main`はコマンドライン引数を処理する責任を持ちます。
+また、適切な終了コードをオペレーティングシステムに返す必要があります：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean OldMain}}
 ```
 
-Not all paths should be shown in the directory tree.
-In particular, files named `.` or `..` should be skipped, as they are actually features used for navigation rather than files _per se_.
-Of those files that should be shown, there are two kinds: ordinary files and directories:
+ディレクトリツリーにすべてのパスを表示すべきではありません。
+特に、`.`または`..`という名前のファイルはスキップされるべきです。それらは実際にはナビゲーションに使用される機能であり、それ自体がファイルではありません。
+表示すべきファイルには二つのタイプがあります：通常のファイルとディレクトリです：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean Entry}}
 ```
-To determine whether a file should be shown, along with which kind of entry it is, `doug` uses `toEntry`:
+ファイルを表示すべきかどうかを決定し、どの種類のエントリであるか、`doug`は`toEntry`を使用します：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean toEntry}}
 ```
-`System.FilePath.components` converts a path into a list of path components, splitting the name at directory separators.
-If there is no last component, then the path is the root directory.
-If the last component is a special navigation file (`.` or `..`), then the file should be excluded.
-Otherwise, directories and files are wrapped in the corresponding constructors.
+`System.FilePath.components`はパスをコンポーネントのリストに変換し、ディレクトリセパレータで名前を分割します。
+最後のコンポーネントがない場合、パスはルートディレクトリです。
+最後のコンポーネントが特別なナビゲーションファイル(`.`または`..`)である場合、そのファイルは除外されるべきです。
+それ以外の場合、ディレクトリとファイルはそれぞれのコンストラクタでラップされます。
 
-Lean's logic has no way to know that directory trees are finite.
-Indeed, some systems allow the construction of circular directory structures.
-Thus, `dirTree` is declared `partial`:
+Leanの論理は、ディレクトリツリーが有限であると知る方法がありません。
+実際、いくつかのシステムは循環的なディレクトリ構造の構築を許可しています。
+したがって、`dirTree`は`partial`と宣言されます：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean OldDirTree}}
 ```
-The call to `toEntry` is a [nested action](../hello-world/conveniences.md#nested-actions)—the parentheses are optional in positions where the arrow couldn't have any other meaning, such as `match`.
-When the filename doesn't correspond to an entry in the tree (e.g. because it is `..`), `dirTree` does nothing.
-When the filename points to an ordinary file, `dirTree` calls a helper to show it with the current configuration.
-When the filename points to a directory, it is shown with a helper, and then its contents are recursively shown in a new configuration in which the prefix has been extended to account for being in a new directory.
+`toEntry`への呼び出しは[ネストされたアクション](../hello-world/conveniences.md#nested-actions)です—カッコは矢印に他の意味を持たせることができない位置で省略可能です、例えば`match`。
+ファイル名がツリー内のエントリに該当しない場合（例えば、`..`のため）、`dirTree`は何もしません。
+ファイル名が通常のファイルを指している場合、`dirTree`は現在の設定とともに表示するヘルパーを呼び出します。
+ディレクトリを指している場合、ヘルパーで表示され、その後その内容は新しいディレクトリ内にいることを考慮した拡張されたプレフィックスで新しい設定で再帰的に表示されます。
 
-Showing the names of files and directories is achieved with `showFileName` and `showDirName`:
+ファイルとディレクトリの名前を表示することは、`showFileName`と`showDirName`とともに達成されます：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean OldShowFile}}
 ```
-Both of these helpers delegate to functions on `Config` that take the ASCII vs Unicode setting into account:
+これら両方のヘルパーはASCII対ユニコードの設定を考慮に入れる`Config`上の関数に委任しています：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean filenames}}
 ```
-Similarly, `Config.inDirectory` extends the prefix with a directory marker:
+同様に、`Config.inDirectory`はディレクトリマーカーでプレフィックスを拡張します：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean inDirectory}}
 ```
 
-Iterating an IO action over a list of directory contents is achieved using `doList`.
-Because `doList` carries out all the actions in a list and does not base control-flow decisions on the values returned by any of the actions, the full power of `Monad` is not necessary, and it will work for any `Applicative`:
+ディレクトリ内容のリストに対しIOアクションを繰り返すことは`doList`を使用して達成されます。
+`doList`はリスト内の全アクションを実行し、いかなるアクションから返された値に基づいて制御フローの決定をしませんので、`Monad`の全能力は必要なく、任意の`Applicative`に対して動作します：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean doList}}
 ```
 
+## カスタムモナドの使用
 
-## Using a Custom Monad
+この`doug`の実装は機能しますが、設定を手動で渡すことは冗長でエラーが発生しやすいものです。
+タイプシステムでは、誤った設定が下方向に渡されても捉えられません。
+リーダー効果は同じ設定をすべての再帰呼び出しに渡すことを保証し、コードを簡潔にするのに役立ちます。
 
-While this implementation of `doug` works, manually passing the configuration around is verbose and error-prone.
-The type system will not catch it if the wrong configuration is passed downwards, for instance.
-A reader effect ensures that the same configuration is passed to all recursive calls, unless it is manually overridden, and it helps make the code less verbose.
-
-To create a version of `IO` that is also a reader of `Config`, first define the type and its `Monad` instance, following the recipe from [the evaluator example](../monads/arithmetic.md#custom-environments):
+`IO`のバージョンを作成することも`Config`のリーダーですが、最初にタイプとその`Monad`インスタンスを定義します。[評価者の例](../monads/arithmetic.md#custom-environments)からのレシピに従ってください：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean ConfigIO}}
 ```
-The difference between this `Monad` instance and the one for `Reader` is that this one uses `do`-notation in the `IO` monad as the body of the function that `bind` returns, rather than applying `next` directly to the value returned from `result`.
-Any `IO` effects performed by `result` must occur before `next` is invoked, which is ensured by the `IO` monad's `bind` operator.
-`ConfigIO` is not universe polymorphic because the underlying `IO` type is also not universe polymorphic.
+この`Monad`インスタンスと`Reader`のためのものの違いは、`bind`が返す関数の本体として`IO`モナドの`do`記法を使うことです、`next`を直接`result`から返された値に適用する代わりに。
+`result`によって実行される任意の`IO`効果は`next`が呼び出される前に発生しなくてはなりません。これは`IO`モナドの`bind`オペレータによって保証されます。
+`ConfigIO`は基盤となる`IO`タイプもユニバース多型ではないため、ユニバース多型ではありません。
 
-Running a `ConfigIO` action involves transforming it into an `IO` action by providing it with a configuration:
+`ConfigIO`アクションを実行することは、それに設定を提供することによって`IO`アクションに変換することを含みます：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean ConfigIORun}}
 ```
-This function is not really necessary, as a caller could simply provide the configuration directly.
-However, naming the operation can make it easier to see which parts of the code are intended to run in which monad.
+この関数は本当に必要ありません。なぜなら呼び出し側は単純に設定を直接提供することもできるからです。
+しかし、操作に名前を付けることで、コードのどの部分がどのモナドで実行されることを意図しているかを理解しやすくすることができます。
 
-The next step is to define a means of accessing the current configuration as part of `ConfigIO`:
+次のステップは、現在の設定へのアクセス手段を`ConfigIO`の一部として定義することです：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean currentConfig}}
 ```
-This is just like `read` from [the evaluator example](../monads/arithmetic.md#custom-environments), except it uses `IO`'s `pure` to return its value rather than doing so directly.
-Because entering a directory modifies the current configuration for the scope of a recursive call, it will be necessary to have a way to override a configuration:
+これは[評価者の例](../monads/arithmetic.md#custom-environments)の`read`と同じですが、それの値を直接返すのではなく、`IO`の`pure`を使用して返します。
+ディレクトリに入ることは、再帰呼び出しのスコープのために現在の設定を変更するので、設定を上書きする方法が必要となります：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean locally}}
 ```
 
-Much of the code used in `doug` has no need for configurations, and `doug` calls ordinary Lean `IO` actions from the standard library that certainly don't need a `Config`.
-Ordinary `IO` actions can be run using `runIO`, which ignores the configuration argument:
+`doug`で使用されるコードの多くは設定を必要としません。`doug`は標準ライブラリから通常のLean `IO`アクションを呼び出しますが、それらは確かに`Config`を必要としません。
+通常の`IO`アクションは`runIO`を使用して実行できます。これは設定引数を無視します：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean runIO}}
 ```
 
-With these components, `showFileName` and `showDirName` can be updated to take their configuration arguments implicitly through the `ConfigIO` monad.
-They use [nested actions](../hello-world/conveniences.md#nested-actions) to retrieve the configuration, and `runIO` to actually execute the call to `IO.println`:
+これらのコンポーネントを持っていれば、`showFileName`と`showDirName`は`ConfigIO`モナドを通じて暗黙的に設定引数を取ります。
+それらは設定を取得するために[ネストされたアクション](../hello-world/conveniences.md#nested-actions)を使用し、`runIO`を使用して`IO.println`への呼び出しを実行します：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean MedShowFileDir}}
 ```
 
-In the new version of `dirTree`, the calls to `toEntry` and `System.FilePath.readDir` are wrapped in `runIO`.
-Additionally, instead of building a new configuration and then requiring the programmer to keep track of which one to pass to recursive calls, it uses `locally` to naturally delimit the modified configuration to only a small region of the program, in which it is the _only_ valid configuration:
+新バージョンの`dirTree`では、`toEntry`と`System.FilePath.readDir`への呼び出しは`runIO`でラップされます。
+また、新しい設定を作成して再帰呼び出しにプログラマがどれを渡すかを追跡する代わりに、それは`locally`を使用して変更された設定をプログラムの小さな領域に自然に限定し、それが唯一有効な設定となります：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean MedDirTree}}
 ```
 
-The new version of `main` uses `ConfigIO.run` to invoke `dirTree` with the initial configuration:
+新バージョンの`main`は`ConfigIO.run`を使用して初期設定とともに`dirTree`を呼び出します：
 ```lean
 {{#example_decl Examples/MonadTransformers.lean MedMain}}
 ```
 
-This custom monad has a number of advantages over passing configurations manually:
+このカスタムモナドは設定を手動で渡すことに対して多くの利点があります：
 
- 1. It is easier to ensure that configurations are passed down unchanged, except when changes are desired
- 2. The concern of passing the configuration onwards is more clearly separated from the concern of printing directory contents
- 3. As the program grows, there will be more and more intermediate layers that do nothing with configurations except propagate them, and these layers don't need to be rewritten as the configuration logic changes
+ 1. 変更を望む場合を除いて、設定が変更されずに渡されることを保証する方が簡単です
+ 2. 設定を次に渡すという懸念が、ディレクトリ内容を印刷する懸念からより明確に分離されます
+ 3. プログラムが拡大するにつれて、設定の論理を変更してもこれらの中間層を書き換える必要はなくなります
 
-However, there are also some clear downsides:
+ただし、明らかなデメリットもあります：
 
- 1. As the program evolves and the monad requires more features, each of the basic operators such as `locally` and `currentConfig` will need to be updated
- 2. Wrapping ordinary `IO` actions in `runIO` is noisy and distracts from the flow of the program
- 3. Writing monads instances by hand is repetitive, and the technique for adding a reader effect to another monad is a design pattern that requires documentation and communication overhead
+ 1. プログラムが進化しモナドがより多くの機能を必要とするにつれて、`locally`や`currentConfig`などの基本オペレーターを更新する必要があります
+ 2. 通常の`IO`アクションを`runIO`にラップすることは騒々しく、プログラムの流れから気を散らせます
+ 3. 手作業によるモナドインスタンスの作成は繰り返しであり、リーダー効果を別のモナドに追加するためのテクニックは、文書化とコミュニケーションのオーバーヘッドを必要とするデザインパターンです
 
-Using a technique called _monad transformers_, all of these downsides can be addressed.
-A monad transformer takes a monad as an argument and returns a new monad.
-Monad transformers consist of:
- 1. A definition of the transformer itself, which is typically a function from types to types
- 2. A `Monad` instance that assumes the inner type is already a monad
- 3. An operator to "lift" an action from the inner monad to the transformed monad, akin to `runIO`
-
-## Adding a Reader to Any Monad
-
-Adding a reader effect to `IO` was accomplished in `ConfigIO` by wrapping `IO α` in a function type.
-The Lean standard library contains a function that can do this to _any_ polymorphic type, called `ReaderT`:
-```lean
-{{#example_decl Examples/MonadTransformers.lean MyReaderT}}
-```
-Its arguments are as follows:
- * `ρ` is the environment that is accessible to the reader
- * `m` is the monad that is being transformed, such as `IO`
- * `α` is the type of values being returned by the monadic computation
-Both `α` and `ρ` are in the same universe because the operator that retrieves the environment in the monad will have type `m ρ`.
-
-With `ReaderT`, `ConfigIO` becomes:
-```lean
-{{#example_decl Examples/MonadTransformers.lean ReaderTConfigIO}}
-```
-It is an `abbrev` because `ReaderT` has many useful features defined in the standard library that a non-reducible definition would hide.
-Rather than taking responsibility for making these work directly for `ConfigIO`, it's easier to simply have `ConfigIO` behave identically to `ReaderT Config IO`.
-
-The manually-written `currentConfig` obtained the environment out of the reader.
-This effect can be defined in a generic form for all uses of `ReaderT`, under the name `read`:
-```lean
-{{#example_decl Examples/MonadTransformers.lean MyReaderTread}}
-```
-However, not every monad that provides a reader effect is built with `ReaderT`.
-The type class `MonadReader` allows any monad to provide a `read` operator:
-```lean
-{{#example_decl Examples/MonadTransformers.lean MonadReader}}
-```
-The type `ρ` is an output parameter because any given monad typically only provides a single type of environment through a reader, so automatically selecting it when the monad is known makes programs more convenient to write.
-
-The `Monad` instance for `ReaderT` is essentially the same as the `Monad` instance for `ConfigIO`, except `IO` has been replaced by some arbitrary monad argument `m`:
-```lean
-{{#example_decl Examples/MonadTransformers.lean MonadMyReaderT}}
-```
-
-
-The next step is to eliminate uses of `runIO`.
-When Lean encounters a mismatch in monad types, it automatically attempts to use a type class called `MonadLift` to transform the actual monad into the expected monad.
-This process is similar to the use of coercions.
-`MonadLift` is defined as follows:
-```lean
-{{#example_decl Examples/MonadTransformers.lean MyMonadLift}}
-```
-The method `monadLift` translates from the monad `m` to the monad `n`.
-The process is called "lifting" because it takes an action in the embedded monad and makes it into an action in the surrounding monad.
-In this case, it will be used to "lift" from `IO` to `ReaderT Config IO`, though the instance works for _any_ inner monad `m`:
-```lean
-{{#example_decl Examples/MonadTransformers.lean MonadLiftReaderT}}
-```
-The implementation of `monadLift` is very similar to that of `runIO`.
-Indeed, it is enough to define `showFileName` and `showDirName` without using `runIO`:
-```lean
-{{#example_decl Examples/MonadTransformers.lean showFileAndDir}}
-```
-
-One final operation from the original `ConfigIO` remains to be translated to a use of `ReaderT`: `locally`.
-The definition can be translated directly to `ReaderT`, but the Lean standard library provides a more general version.
-The standard version is called `withReader`, and it is part of a type class called `MonadWithReader`:
-```lean
-{{#example_decl Examples/MonadTransformers.lean MyMonadWithReader}}
-```
-Just as in `MonadReader`, the environment `ρ` is an `outParam`.
-The `withReader` operation is exported, so that it doesn't need to be written with the type class name before it:
-```lean
-{{#example_decl Examples/MonadTransformers.lean exportWithReader}}
-```
-The instance for `ReaderT` is essentially the same as the definition of `locally`:
-```lean
-{{#example_decl Examples/MonadTransformers.lean ReaderTWithReader}}
-```
-
-With these definitions in place, the new version of `dirTree` can be written:
-```lean
-{{#example_decl Examples/MonadTransformers.lean readerTDirTree}}
-```
-Aside from replacing `locally` with `withReader`, it is the same as before.
-
-
-Replacing the custom `ConfigIO` type with `ReaderT` did not save a large number of lines of code in this section.
-However, rewriting the code using components from the standard library does have long-term benefits.
-First, readers who know about `ReaderT` don't need to take time to understand the `Monad` instance for `ConfigIO`, working backwards to the meaning of monad itself.
-Instead, they can be confident in their initial understanding.
-Next, adding further effects to the monad (such as a state effect to count the files in each directory and display a count at the end) requires far fewer changes to the code, because the monad transformers and `MonadLift` instances provided in the library work well together.
-Finally, using a set of type classes included in the standard library, polymorphic code can be written in such a way that it can work with a variety of monads without having to care about details like the order in which the monad transformers were applied.
-Just as some functions work in any monad, others can work in any monad that provides a certain type of state, or a certain type of exceptions, without having to specifically describe the _way_ in which a particular concrete monad provides the state or exceptions.
-
-## Exercises
-
-### Controlling the Display of Dotfiles
-
-Files whose names begin with a dot character (`'.'`) typically represent files that should usually be hidden, such as source-control metadata and configuration files.
-Modify `doug` with an option to show or hide filenames that begin with a dot.
-This option should be controlled with a `-a` command-line option.
-
-### Starting Directory as Argument
-
-Modify `doug` so that it takes a starting directory as an additional command-line argument.
-
+_モナド変換器_と呼ばれるテクニックを使用することで、これらのデメリットに対処できます。
+モナド変換器はモナドを引数として取り、新しいモナドを返します。
+モナド変換器は以下を含みます：
+ 1. 変換器自体の定義であり、通常はタイプからタイプへの関数です
+ 2. 内部タイプが既にモナドであると仮定する`Monad`インスタンス

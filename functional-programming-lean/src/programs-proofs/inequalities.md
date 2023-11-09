@@ -1,85 +1,85 @@
-# More Inequalities
+# 不等式についてさらに
 
-Lean's built-in proof automation is sufficient to check that `arrayMapHelper` and `findHelper` terminate.
-All that was needed was to provide an expression whose value decreases with each recursive call.
-However, Lean's built-in automation is not magic, and it often needs some help.
+Leanの組み込みの証明自動化は、`arrayMapHelper`と`findHelper`が終了することをチェックするのに十分です。
+必要だったのは、再帰呼び出しによってその値が減少する式を提供することでした。
+それでも、Leanの組み込みの自動化は魔法ではなく、しばしばいくらかの助けが必要です。
 
-## Merge Sort
+## マージソート
 
-One example of a function whose termination proof is non-trivial is merge sort on `List`.
-Merge sort consists of two phases: first, a list is split in half.
-Each half is sorted using merge sort, and then the results are merged using a function that combines two sorted lists into a larger sorted list.
-The base cases are the empty list and the singleton list, both of which are already considered to be sorted.
+終了証明が非自明な関数の一例は、`List`上のマージソートです。
+マージソートは2つの段階で構成されています：最初に、リストは半分に分割されます。
+各半分はマージソートを使用してソートされ、次に2つのソートされたリストを1つのより大きなソートされたリストに結合する関数を使用して結果がマージされます。
+基本ケースは空のリストと単一のリストで、どちらもすでにソートされていると見なされています。
 
-To merge two sorted lists, there are two basic cases to consider:
- 1. If one of the input lists is empty, then the result is the other list.
- 2. If both lists are non-empty, then their heads should be compared. The result of the function is the smaller of the two heads, followed by the result of merging the remaining entries of both lists.
+2つのソートされたリストをマージするには、2つの基本ケースを考慮する必要があります：
+ 1. 入力リストの1つが空の場合、結果はもう1つのリストです。
+ 2. 両方のリストが空でない場合は、それらのヘッドを比較すべきです。関数の結果は、2つのヘッドのうち小さい方に続いて、両方のリストの残りのエントリをマージした結果です。
 
-This is not structurally recursive on either list.
-The recursion terminates because an entry is removed from one of the two lists in each recursive call, but it could be either list.
-The `termination_by` clause uses the sum of the length of both lists as a decreasing value:
+これはどちらのリストに対しても構造的に再帰的ではありません。
+再帰が終了するのは、各再帰呼び出しで1つの2つのリストからエントリが削除されるためですが、どちらのリストにもなり得ます。
+`termination_by`節は、両方のリストの長さの合計を減少する値として使用しています：
 ```lean
 {{#example_decl Examples/ProgramsProofs/Inequalities.lean merge}}
 ```
 
-In addition to using the lengths of the lists, a pair that contains both lists can also be provided:
+リストの長さを使用することに加えて、両方のリストを含むペアも提供することができます：
 ```lean
 {{#example_decl Examples/ProgramsProofs/Inequalities.lean mergePairTerm}}
 ```
-This works because Lean has a built-in notion of sizes of data, expressed through a type class called `WellFoundedRelation`.
-The instance for pairs automatically considers them to be smaller if either the first or the second item in the pair shrinks.
+これは、Leanには、`WellFoundedRelation`と呼ばれる型クラスを通じて表現されるデータのサイズに関する組み込みの概念があるためです。
+ペアのインスタンスは、ペアのいずれかの最初のアイテムまたは2番目のアイテムが縮小される場合、それらを自動的に小さくすると見なされます。
 
-A simple way to split a list is to add each entry in the input list to two alternating output lists:
+リストを分割する簡単な方法は、入力リストの各エントリを2つの交互の出力リストに追加することです：
 ```lean
 {{#example_decl Examples/ProgramsProofs/Inequalities.lean splitList}}
 ```
 
-Merge sort checks whether a base case has been reached.
-If so, it returns the input list.
-If not, it splits the input, and merges the result of sorting each half:
+マージソートは基本ケースに達したかどうかをチェックします。
+そうであれば、入力リストを返します。
+そうでなければ、入力を分割し、ソートされた各半分の結果をマージします：
 ```lean
 {{#example_in Examples/ProgramsProofs/Inequalities.lean mergeSortNoTerm}}
 ```
-Lean's pattern match compiler is able to tell that the assumption `h` introduced by the `if` that tests whether `xs.length < 2` rules out lists longer than one entry, so there is no "missing cases" error.
-However, even though this program always terminates, it is not structurally recursive:
+Leanのパターンマッチコンパイラは、`if`によって導入された仮定`h`が、`xs.length < 2`をテストするリストが1エントリより長いものを排除していることを認識するため、「ケース不足」エラーはありません。
+しかし、このプログラムは常に終了しますが、構造的に再帰的ではありません：
 ```output error
 {{#example_out Examples/ProgramsProofs/Inequalities.lean mergeSortNoTerm}}
 ```
-The reason it terminates is that `splitList` always returns lists that are shorter than its input.
-Thus, the length of `halves.fst` and `halves.snd` are less than the length of `xs`.
-This can be expressed using a `termination_by` clause:
+それが終了する理由は、`splitList`が常にその入力よりも短いリストを返すためです。
+したがって、`halves.fst`と`halves.snd`の長さは`xs`の長さよりも小さいです。
+これは`termination_by`節を使用して表現できます：
 ```lean
 {{#example_in Examples/ProgramsProofs/Inequalities.lean mergeSortGottaProveIt}}
 ```
-With this clause, the error message changes.
-Instead of complaining that the function isn't structurally recursive, Lean instead points out that it was unable to automatically prove that `(splitList xs).fst.length < xs.length`:
+この節を使用すると、エラーメッセージが変わります。
+関数が構造的に再帰的ではないと不平を言う代わりに、Leanはそれが自動的に`(splitList xs).fst.length < xs.length`を証明できなかったことを指摘します：
 ```output error
 {{#example_out Examples/ProgramsProofs/Inequalities.lean mergeSortGottaProveIt}}
 ```
 
-## Splitting a List Makes it Shorter
+## リストを分割すると短くなる
 
-It will also be necessary to prove that `(splitList xs).snd.length < xs.length`.
-Because `splitList` alternates between adding entries to the two lists, it is easiest to prove both statements at once, so the structure of the proof can follow the algorithm used to implement `splitList`.
-In other words, it is easiest to prove that `∀(lst : List), (splitList lst).fst.length < lst.length ∧ (splitList lst).snd.length < lst.length`.
+`(splitList xs).snd.length < xs.length`も証明する必要があります。
+`splitList`は2つのリストにエントリを交互に追加するため、最も証明しやすいのは両方のステートメントを同時に証明することです。つまり、証明の構造が`splitList`を実装するために使用したアルゴリズムに従うことができます。
+言い換えると、`∀(lst : List), (splitList lst).fst.length < lst.length ∧ (splitList lst).snd.length < lst.length`を証明するのが最も簡単です。
 
-Unfortunately, the statement is false.
-In particular, `{{#example_in Examples/ProgramsProofs/Inequalities.lean splitListEmpty}}` is `{{#example_out Examples/ProgramsProofs/Inequalities.lean splitListEmpty}}`. Both output lists have length `0`, which is not less than `0`, the length of the input list.
-Similarly, `{{#example_in Examples/ProgramsProofs/Inequalities.lean splitListOne}}` evaluates to `{{#example_out Examples/ProgramsProofs/Inequalities.lean splitListOne}}`, and `["basalt"]` is not shorter than `["basalt"]`.
-However, `{{#example_in Examples/ProgramsProofs/Inequalities.lean splitListTwo}}` evaluates to `{{#example_out Examples/ProgramsProofs/Inequalities.lean splitListTwo}}`, and both of these output lists are shorter than the input list.
+残念ながら、このステートメントは偽です。
+特に、`{{#example_in Examples/ProgramsProofs/Inequalities.lean splitListEmpty}}`は`{{#example_out Examples/ProgramsProofs/Inequalities.lean splitListEmpty}}`です。どちらの出力リストも長さ`0`であり、入力リストの長さ`0`よりは短くありません。
+同様に、`{{#example_in Examples/ProgramsProofs/Inequalities.lean splitListOne}}`は`{{#example_out Examples/ProgramsProofs/Inequalities.lean splitListOne}}`となり、`["basalt"]`は`["basalt"]`より短くありません。
+しかし、`{{#example_in Examples/ProgramsProofs/Inequalities.lean splitListTwo}}`は`{{#example_out Examples/ProgramsProofs/Inequalities.lean splitListTwo}}`と評価され、これらの出力リストは入力リストよりも短いです。
 
-It turns out that the lengths of the output lists are always less than or equal to the length of the input list, but they are only strictly shorter when the input list contains at least two entries.
-It turns out to be easiest to prove the former statement, then extend it to the latter statement.
-Begin with a theorem statement:
+出力リストの長さは常に入力リストの長さ以下ですが、入力リストに少なくとも2つのエントリがある場合にのみ、厳密に短くなります。
+最初のステートメントを証明し、それを後者のステートメントに拡張するのが最も簡単です。
+定理のステートメントとして始めます：
 ```leantac
 {{#example_in Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le0}}
 ```
 ```output error
 {{#example_out Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le0}}
 ```
-Because `splitList` is structurally recursive on the list, the proof should use induction.
-The structural recursion in `splitList` fits a proof by induction perfectly: the base case of the induction matches the base case of the recursion, and the inductive step matches the recursive call.
-The `induction` tactic gives two goals:
+`splitList`はリストに構造的に再帰的なので、証明は帰納法を使用する必要があります。
+`splitList`の構造的再帰は、帰納法による証明に完全に適合します：帰納法の基本ケースは再帰の基本ケースと一致し、帰納法のステップは再帰的な呼び出しと一致します。
+`induction`戦術により2つのゴールが与えられます：
 ```leantac
 {{#example_in Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le1a}}
 ```
@@ -90,29 +90,29 @@ The `induction` tactic gives two goals:
 {{#example_out Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le1b}}
 ```
 
-The goal for the `nil` case can be proved by invoking the simplifier and instructing it to unfold the definition of `splitList`, because the length of the empty list is less than or equal to the length of the empty list.
-Similarly, simplifying with `splitList` in the `cons` case places `Nat.succ` around the lengths in the goal:
+`nil`ケースのゴールは、単純化器を呼び出して`splitList`の定義を展開させることで証明されます。なぜなら空リストの長さは空リストの長さ以下だからです。
+同様に、`cons`ケースで`splitList`を単純化すると、ゴール内の長さに`Nat.succ`が周囲に付けられます：
 ```leantac
 {{#example_in Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le2}}
 ```
 ```output error
 {{#example_out Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le2}}
 ```
-This is because the call to `List.length` consumes the head of the list `x :: xs`, converting it to a `Nat.succ`, in both the length of the input list and the length of the first output list.
+これは、`List.length`の呼び出しがリスト`x :: xs`の頭を消費し、入力リストの長さと最初の出力リストの長さの両方に`Nat.succ`を変換するためです。
 
-Writing `A ∧ B` in Lean is short for `And A B`.
-`And` is a structure type in the `Prop` universe:
+Leanでの`A ∧ B`の書き方は`And A B`の略です。
+`And`は`Prop`宇宙の構造タイプです：
 ```lean
 {{#example_decl Examples/ProgramsProofs/Inequalities.lean And}}
 ```
-In other words, a proof of `A ∧ B` consists of the `And.intro` constructor applied to a proof of `A` in the `left` field and a proof of `B` in the `right` field.
+言い換えると、`A ∧ B`の証明は、`left`フィールドに`A`の証明を、`right`フィールドに`B`の証明を適用した`And.intro`コンストラクタで構成されています。
 
-The `cases` tactic allows a proof to consider each constructor of a datatype or each potential proof of a proposition in turn.
-It corresponds to a `match` expression without recursion.
-Using `cases` on a structure results in the structure being broken apart, with an assumption added for each field of the structure, just as a pattern match expression extracts the field of a structure for use in a program.
-Because structures have only one constructor, using `cases` on a structure does not result in additional goals.
+`cases`戦術によって、データタイプの各コンストラクタまたは命題の各潜在的証明を順番に検討することができます。
+これは、再帰のない`match`式に対応します。
+`cases`を構造体に使用すると、構造体が分解され、構造の各フィールドに対する仮定が追加されます。これは、パターンマッチ式がプログラムの使用のために構造体のフィールドを抽出するのと同じようにです。
+構造が1つのコンストラクタしか持たないため、構造に`cases`を使用すると追加のゴールは発生しません。
 
-Because `ih` is a proof of `List.length (splitList xs).fst ≤ List.length xs ∧ List.length (splitList xs).snd ≤ List.length xs`, using `cases ih` results in an assumption that `List.length (splitList xs).fst ≤ List.length xs` and an assumption that `List.length (splitList xs).snd ≤ List.length xs`:
+`ih`が`List.length (splitList xs).fst ≤ List.length xs ∧ List.length (splitList xs).snd ≤ List.length xs`の証明であるので、`cases ih`を使用すると、`List.length (splitList xs).fst ≤ List.length xs`と、`List.length (splitList xs).snd ≤ List.length xs`の仮定があることを意味します：
 ```leantac
 {{#example_in Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le3}}
 ```
@@ -120,7 +120,7 @@ Because `ih` is a proof of `List.length (splitList xs).fst ≤ List.length xs �
 {{#example_out Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le3}}
 ```
 
-Because the goal of the proof is also an `And`, the `constructor` tactic can be used to apply `And.intro`, resulting in a goal for each argument:
+証明のゴールも`And`なので、`constructor`戦術を使用して`And.intro`を適用できます。この結果、各引数についてのゴールが得られます：
 ```leantac
 {{#example_in Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le4}}
 ```
@@ -128,33 +128,33 @@ Because the goal of the proof is also an `And`, the `constructor` tactic can be 
 {{#example_out Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le4}}
 ```
 
-The `left` goal is very similar to the `left✝` assumption, except the goal wraps both sides of the inequality in `Nat.succ`.
-Likewise, the `right` goal resembles the `right✝` assumption, except the goal adds a `Nat.succ` only to the length of the input list.
-It's time to prove that these wrappings of `Nat.succ` preserve the truth of the statement.
+`left`ゴールは`left✝`の仮定に非常に似ていますが、ゴールは不等式の両側を`Nat.succ`で包むだけです。
+同様に、`right`ゴールは`right✝`仮定と似ていますが、ゴールは入力リストの長さにのみ`Nat.succ`を追加します。
+これらの`Nat.succ`の包みが声明の真実を保持することを証明する時が来ました。
 
-### Adding One to Both Sides
+### 両側に一つを追加する
 
-For the `left` goal, the statement to prove is `Nat.succ_le_succ : n ≤ m → Nat.succ n ≤ Nat.succ m`.
-In other words, if `n ≤ m`, then adding one to both sides doesn't change this fact.
-Why is this true?
-The proof that `n ≤ m` is a `Nat.le.refl` constructor with `m - n` instances of the `Nat.le.step` constructor wrapped around it.
-Adding one to both sides simply means that the `refl` applies to a number that's one larger than before, with the same number of `step` constructors.
+`left`ゴールの場合、証明するステートメントは`Nat.succ_le_succ : n ≤ m → Nat.succ n ≤ Nat.succ m`です。
+言い換えると、`n ≤ m`であれば、両側に1を加えてもこの事実は変わりません。
+なぜこれが真実なのでしょうか？
+`n ≤ m`の証明は、`m - n`インスタンスの`Nat.le.step`コンストラクタで包まれた`Nat.le.refl`コンストラクタです。
+両側に1を加えることは単に、以前より一つ大きい数字に`refl`を適用し、同じ数の`step`コンストラクタがあることを意味します。
 
-More formally, the proof is by induction on the evidence that `n ≤ m`.
-If the evidence is `refl`, then `n = m`, so `Nat.succ n = Nat.succ m` and `refl` can be used again.
-If the evidence is `step`, then the induction hypothesis provides evidence that `Nat.succ n ≤ Nat.succ m`, and the goal is to show that `Nat.succ n ≤ Nat.succ (Nat.succ m)`.
-This can be done by using `step` together with the induction hypothesis.
+より公式には、証明は`n ≤ m`に関する証拠に基づいて帰納法で行われます。
+証拠が`refl`であれば、`n = m`なので、`Nat.succ n = Nat.succ m`であり、`refl`を再び使用できます。
+証拠が`step`であれば、帰納法の仮定は`Nat.succ n ≤ Nat.succ m`に関する証拠を提供し、ゴールは`Nat.succ n ≤ Nat.succ (Nat.succ m)`を示すことです。
+これは、帰納法の仮定を使用して`step`と一緒に行うことができます。
 
-In Lean, the theorem statement is:
+Leanでの定理のステートメントは：
 ```leantac
 {{#example_in Examples/ProgramsProofs/Inequalities.lean succ_le_succ0}}
 ```
-and the error message recapitulates it:
+エラーメッセージはそれを再度表明しています：
 ```output error
 {{#example_out Examples/ProgramsProofs/Inequalities.lean succ_le_succ0}}
 ```
 
-The first step is to use the `intro` tactic, bringing the hypothesis that `n ≤ m` into scope and giving it a name:
+最初のステップは`intro`戦術を使用し、仮説`n ≤ m`をスコープに導入し、それに名前を付けることです：
 ```leantac
 {{#example_in Examples/ProgramsProofs/Inequalities.lean succ_le_succ1}}
 ```
@@ -162,246 +162,15 @@ The first step is to use the `intro` tactic, bringing the hypothesis that `n ≤
 {{#example_out Examples/ProgramsProofs/Inequalities.lean succ_le_succ1}}
 ```
 
-Because the proof is by induction on the evidence that `n ≤ m`, the next tactic is `induction h`:
+証明は`n ≤ m`の証拠に関する帰納法なので、次の戦術は`induction h`です：
 ```leantac
 {{#example_in Examples/ProgramsProofs/Inequalities.lean succ_le_succ3}}
 ```
-This results in two goals, once for each constructor of `Nat.le`:
+これにより、`Nat.le`の各コンストラクタに対して2つのゴールが得られます：
 ```output error
 {{#example_out Examples/ProgramsProofs/Inequalities.lean succ_le_succ3}}
 ```
-The goal for `refl` can itself be solved using `refl`, which the `constructor` tactic selects.
-The goal for `step` will also require a use of the `step` constructor:
+`refl`のゴールは`refl`を使用して自体解決できるので、`constructor`戦術が選択されます。
+`step`のゴールも`step`コンストラクタの使用を必要とします：
 ```leantac
-{{#example_in Examples/ProgramsProofs/Inequalities.lean succ_le_succ4}}
-```
-```output error
-{{#example_out Examples/ProgramsProofs/Inequalities.lean succ_le_succ4}}
-```
-The goal is no longer shown using the `≤` operator, but it is equivalent to the induction hypothesis `ih`.
-The `assumption` tactic automatically selects an assumption that fulfills the goal, and the proof is complete:
-```leantac
-{{#example_decl Examples/ProgramsProofs/Inequalities.lean succ_le_succ5}}
-```
-
-Written as a recursive function, the proof is:
-```lean
-{{#example_decl Examples/ProgramsProofs/Inequalities.lean succ_le_succ_recursive}}
-```
-It can be instructional to compare the tactic-based proof by induction with this recursive function.
-Which proof steps correspond to which parts of the definition?
-
-### Adding One to the Greater Side
-
-The second inequality needed to prove `splitList_shorter_le` is `∀(n m : Nat), n ≤ m → n ≤ Nat.succ m`.
-This proof is almost identical to `Nat.succ_le_succ`.
-Once again, the incoming assumption that `n ≤ m` essentially tracks the difference between `n` and `m` in the number of `Nat.le.step` constructors.
-Thus, the proof should add an extra `Nat.le.step` in the base case.
-The proof can be written:
-```leantac
-{{#example_decl Examples/ProgramsProofs/Inequalities.lean le_succ_of_le}}
-```
-
-To reveal what's going on behind the scenes, the `apply` and `exact` tactics can be used to indicate exactly which constructor is being applied.
-The `apply` tactic solves the current goal by applying a function or constructor whose return type matches, creating new goals for each argument that was not provided, while `exact` fails if any new goals would be needed:
-```leantac
-{{#example_decl Examples/ProgramsProofs/Inequalities.lean le_succ_of_le_apply}}
-```
-
-The proof can be golfed:
-```leantac
-{{#example_decl Examples/ProgramsProofs/Inequalities.lean le_succ_of_le_golf}}
-```
-In this short tactic script, both goals introduced by `induction` are addressed using `repeat (first | constructor | assumption)`.
-The tactic `first | T1 | T2 | ... | Tn` means to use try `T1` through `Tn` in order, using the first tactic that succeeds.
-In other words, `repeat (first | constructor | assumption)` applies constructors as long as it can, and then attempts to solve the goal using an assumption.
-
-Finally, the proof can be written as a recursive function:
-```lean
-{{#example_decl Examples/ProgramsProofs/Inequalities.lean le_succ_of_le_recursive}}
-```
-
-Each style of proof can be appropriate to different circumstances.
-The detailed proof script is useful in cases where beginners may be reading the code, or where the steps of the proof provide some kind of insight.
-The short, highly-automated proof script is typically easier to maintain, because automation is frequently both flexible and robust in the face of small changes to definitions and datatypes.
-The recursive function is typically both harder to understand from the perspective of mathematical proofs and harder to maintain, but it can be a useful bridge for programmers who are beginning to work with interactive theorem proving.
-
-### Finishing the Proof
-
-Now that both helper theorems have been proved, the rest of `splitList_shorter_le` will be completed quickly.
-The current proof state has two goals, for the left and right sides of the `And`:
-```output error
-{{#example_out Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le4}}
-```
-
-The goals are named for the fields of the `And` structure. This means that the `case` tactic (not to be confused with `cases`) can be used to focus on each of them in turn:
-```leantac
-{{#example_in Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le5a}}
-```
-Instead of a single error that lists both unsolved goals, there are now two messages, one on each `skip`.
-For the `left` goal, `Nat.succ_le_succ` can be used:
-```output error
-{{#example_out Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le5a}}
-```
-In the right goal, `Nat.le_suc_of_le` fits:
-```output error
-{{#example_out Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le5b}}
-```
-Both theorems include the precondition that `n ≤ m`.
-These can be found as the `left✝` and `right✝` assumptions, which means that the `assumption` tactic takes care of the final goals:
-```leantac
-{{#example_decl Examples/ProgramsProofs/Inequalities.lean splitList_shorter_le}}
-```
-
-The next step is to return to the actual theorem that is needed to prove that merge sort terminates: that so long as a list has at least two entries, both results of splitting it are strictly shorter.
-```leantac
-{{#example_in Examples/ProgramsProofs/Inequalities.lean splitList_shorter_start}}
-```
-```output error
-{{#example_out Examples/ProgramsProofs/Inequalities.lean splitList_shorter_start}}
-```
-Pattern matching works just as well in tactic scripts as it does in programs.
-Because `lst` has at least two entries, they can be exposed with `match`, which also refines the type through dependent pattern matching:
-```leantac
-{{#example_in Examples/ProgramsProofs/Inequalities.lean splitList_shorter_1}}
-```
-```output error
-{{#example_out Examples/ProgramsProofs/Inequalities.lean splitList_shorter_1}}
-```
-Simplifying using `splitList` removes `x` and `y`, resulting in the computed lengths of lists each gaining a `Nat.succ`:
-```leantac
-{{#example_in Examples/ProgramsProofs/Inequalities.lean splitList_shorter_2}}
-```
-```output error
-{{#example_out Examples/ProgramsProofs/Inequalities.lean splitList_shorter_2}}
-```
-Replacing `simp` with `simp_arith` removes these `Nat.succ` constructors, because `simp_arith` makes use of the fact that `n + 1 < m + 1` implies `n < m`:
-```leantac
-{{#example_in Examples/ProgramsProofs/Inequalities.lean splitList_shorter_2b}}
-```
-```output error
-{{#example_out Examples/ProgramsProofs/Inequalities.lean splitList_shorter_2b}}
-```
-This goal now matches `splitList_shorter_le`, which can be used to conclude the proof:
-```leantac
-{{#example_decl Examples/ProgramsProofs/Inequalities.lean splitList_shorter}}
-```
-
-The facts needed to prove that `mergeSort` terminates can be pulled out of the resulting `And`:
-```leantac
-{{#example_decl Examples/ProgramsProofs/Inequalities.lean splitList_shorter_sides}}
-```
-
-## Merge Sort Terminates
-
-Merge sort has two recursive calls, one for each sub-list returned by `splitList`.
-Each recursive call will require a proof that the length of the list being passed to it is shorter than the length of the input list.
-It's usually convenient to write a termination proof in two steps: first, write down the propositions that will allow Lean to verify termination, and then prove them.
-Otherwise, it's possible to put a lot of effort into proving the propositions, only to find out that they aren't quite what's needed to establish that the recursive calls are on smaller inputs.
-
-The `sorry` tactic can prove any goal, even false ones.
-It isn't intended for use in production code or final proofs, but it is a convenient way to "sketch out" a proof or program ahead of time.
-Any definitions or theorems that use `sorry` are annotated with a warning.
-
-The initial sketch of `mergeSort`'s termination argument that uses `sorry` can be written by copying the goals that Lean couldn't prove into `have`-expressions.
-In Lean, `have` is similar to `let`.
-When using `have`, the name is optional.
-Typically, `let` is used to define names that refer to interesting values, while `have` is used to locally prove propositions that can be found when Lean is searching for evidence that an array lookup is in-bounds or that a function terminates.
-```leantac
-{{#example_in Examples/ProgramsProofs/Inequalities.lean mergeSortSorry}}
-```
-The warning is located on the name `mergeSort`:
-```output warning
-{{#example_out Examples/ProgramsProofs/Inequalities.lean mergeSortSorry}}
-```
-Because there are no errors, the proposed propositions are enough to establish termination.
-
-The proofs begin by applying the helper theorems:
-```leantac
-{{#example_in Examples/ProgramsProofs/Inequalities.lean mergeSortNeedsGte}}
-```
-Both proofs fail, because `splitList_shorter_fst` and `splitList_shorter_snd` both require a proof that `xs.length ≥ 2`:
-```output error
-{{#example_out Examples/ProgramsProofs/Inequalities.lean mergeSortNeedsGte}}
-```
-To check that this will be enough to complete the proof, add it using `sorry` and check for errors:
-```leantac
-{{#example_in Examples/ProgramsProofs/Inequalities.lean mergeSortGteStarted}}
-```
-Once again, there is only a warning.
-```output warning
-{{#example_out Examples/ProgramsProofs/Inequalities.lean mergeSortGteStarted}}
-```
-
-There is one promising assumption available: `h : ¬List.length xs < 2`, which comes from the `if`.
-Clearly, if it is not the case that `xs.length < 2`, then `xs.length ≥ 2`.
-The Lean library provides this theorem under the name `Nat.ge_of_not_lt`.
-The program is now complete:
-```leantac
-{{#example_decl Examples/ProgramsProofs/Inequalities.lean mergeSort}}
-```
-
-The function can be tested on examples:
-```lean
-{{#example_in Examples/ProgramsProofs/Inequalities.lean mergeSortRocks}}
-```
-```output info
-{{#example_out Examples/ProgramsProofs/Inequalities.lean mergeSortRocks}}
-```
-```lean
-{{#example_in Examples/ProgramsProofs/Inequalities.lean mergeSortNumbers}}
-```
-```output info
-{{#example_out Examples/ProgramsProofs/Inequalities.lean mergeSortNumbers}}
-```
-
-## Division as Iterated Subtraction
-
-Just as multiplication is iterated addition and exponentiation is iterated multiplication, division can be understood as iterated subtraction.
-The [very first description of recursive functions in this book](../getting-to-know/datatypes-and-patterns.md#recursive-functions) presents a version of division that terminates when the divisor is not zero, but that Lean does not accept.
-Proving that division terminates requires the use of a fact about inequalities.
-
-The first step is to refine the definition of division so that it requires evidence that the divisor is not zero:
-```lean
-{{#example_in Examples/ProgramsProofs/Div.lean divTermination}}
-```
-The error message is somewhat longer, due to the additional argument, but it contains essentially the same information:
-```output error
-{{#example_out Examples/ProgramsProofs/Div.lean divTermination}}
-```
-
-This definition of `div` terminates because the first argument `n` is smaller on each recursive call.
-This can be expressed using a `termination_by` clause:
-```lean
-{{#example_in Examples/ProgramsProofs/Div.lean divRecursiveNeedsProof}}
-```
-Now, the error is confined to the recursive call:
-```output error
-{{#example_out Examples/ProgramsProofs/Div.lean divRecursiveNeedsProof}}
-```
-
-This can be proved using a theorem from the standard library, `Nat.sub_lt`.
-This theorem states that `{{#example_out Examples/ProgramsProofs/Div.lean NatSubLt}}` (the curly braces indicate that `n` and `k` are implicit arguments).
-Using this theorem requires demonstrating that both `n` and `k` are greater than zero.
-Because `k > 0` is syntactic sugar for `0 < k`, the only necessary goal is to show that `0 < n`.
-There are two possibilities: either `n` is `0`, or it is `n' + 1` for some other `Nat` `n'`.
-But `n` cannot be `0`.
-The fact that the `if` selected the second branch means that `¬ n < k`, but if `n = 0` and `k > 0` then `n` must be less than `k`, which would be a contradiction.
-This, `n = Nat.succ n'`, and `Nat.succ n'` is clearly greater than `0`.
-
-The full definition of `div`, including the termination proof, is:
-```leantac
-{{#example_decl Examples/ProgramsProofs/Div.lean div}}
-```
-
-
-## Exercises
-
-Prove the following theorems:
-
- * For all natural numbers \\( n \\), \\( 0 < n + 1 \\).
- * For all natural numbers \\( n \\), \\( 0 \\leq n \\).
- * For all natural numbers \\( n \\) and \\( k \\), \\( (n + 1) - (k + 1) = n - k \\)
- * For all natural numbers \\( n \\) and \\( k \\), if \\( k < n \\) then \\( n \neq 0 \\)
- * For all natural numbers \\( n \\), \\( n - n = 0 \\)
- * For all natural numbers \\( n \\) and \\( k \\), if \\( n + 1 < k \\) then \\( n < k \\)
+{{#example_in Examples/ProgramsProof

@@ -1,16 +1,14 @@
-# Acknowledgments
+# 謝辞
 
+この無料のオンラインブックは、マイクロソフトリサーチの寛大なサポートにより可能となりました。彼らはこれを書くための資金を提供し、無料で配布することを支援しました。
+執筆の過程で、Lean開発チームの専門知識を私が質問に答えることや、Leanをより使いやすくするために活用しました。
+特に、レオナルド・デ・モウラがプロジェクトを開始し、私が始めるための手助けをしてくれました。クリス・ラベットはCIとデプロイオートメーションの設定を行い、テストリーダーとして素晴らしいフィードバックを提供しました。ガブリエル・エブナーは技術的なレビューを行い、サラ・スミスは管理面をスムーズに運営し、ヴァネッサ・ロドリゲスは、iOS上のSafariの特定のバージョンとソースコードハイライトライブラリとの間の難しい相互作用の診断を手伝ってくれました。
 
-This free online book was made possible by the generous support of Microsoft Research, who paid for it to be written and given away.
-During the process of writing, they made the expertise of the Lean development team available to both answer my questions and make Lean easier to use.
-In particular, Leonardo de Moura initiated the project and helped me get started, Chris Lovett set up the CI and deployment automation and provided great feedback as a test reader, Gabriel Ebner provided technical reviews, Sarah Smith kept the administrative side working well, and Vanessa Rodriguez helped me diagnose a tricky interaction between the source-code highlighting library and certain versions of Safari on iOS.
+この本の執筆は、通常の労働時間外に多くの時間を要しました。
+私の妻エリー・スレーン・クリスチャンセンは、家族を支えるために通常以上の仕事を引き受けてくれました。彼女がそうしてくれなければ、この本は存在し得ませんでした。
+毎週の追加労働日は私の家族にとって簡単なことではありませんでした—執筆中も辛抱強く支えてくれてありがとうございました。
 
-Writing this book has taken up many hours outside of normal working hours.
-My wife Ellie Thrane Christiansen has taken on a larger than usual share of running the family, and this book could not exist if she had not done so.
-An extra day of work each week has not been easy for my family—thank you for your patience and support while I was writing.
-
-The online community surrounding Lean provided enthusiastic support for the project, both technical and emotional.
-In particular, Sebastian Ullrich provided key help when I was learning Lean's metaprogramming system in order to write the supporting code that allowed the text of error messages to be both checked in CI and easily included in the book itself.
-Within hours of posting a new revision, excited readers would be finding mistakes, providing suggestions, and showering me with kindness.
-In particular, I'd like to thank Arien Malec, Asta Halkjær From, Bulhwi Cha, Craig Stuntz, Daniel Fabian, Evgenia Karunus, eyelash, Floris van Doorn, František Silváši, Henrik Böving, Ian Young, Jeremy Salwen, Jireh Loreaux, Kevin Buzzard, Lars Ericson, Liu Yuxi, Mac Malone, Malcolm Langfield, Mario Carneiro, Newell Jensen, Patrick Massot, Paul Chisholm, Pietro Monticone, Tomas Puverle, Yaël Dillies, Zhiyuan Bao, and Zyad Hassan for their many suggestions, both stylistic and technical.
-
+Leanを取り巻くオンラインコミュニティは、このプロジェクトに対し、技術的な支援と感情的なサポートの両方を熱心に提供してくれました。
+特に、Sebastian Ullrichは、エラーメッセージのテキストをCIでチェックし、そして本自体に簡単に含めることができるサポートコードを書くためにLeanのメタプログラミングシステムを学んでいる時に重要な助けを与えてくれました。
+新しい改訂版を投稿すると、数時間以内に、熱心な読者たちが間違いを見つけて提案を提供し、私に優しさを与えてくれました。
+特に、Arien Malec, Asta Halkjær From, Bulhwi Cha, Craig Stuntz, Daniel Fabian, Evgenia Karunus, eyelash, Floris van Doorn, František Silváši, Henrik Böving, Ian Young, Jeremy Salwen, Jireh Loreaux, Kevin Buzzard, Lars Ericson, Liu Yuxi, Mac Malone, Malcolm Langfield, Mario Carneiro, Newell Jensen, Patrick Massot, Paul Chisholm, Pietro Monticone, Tomas Puverle, Yaël Dillies, Zhiyuan Bao, Zyad Hassanから、スタイルと技術の両面で数々の提案をありがとうございました。

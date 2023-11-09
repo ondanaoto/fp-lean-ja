@@ -1,28 +1,25 @@
-# Programming, Proving, and Performance
+# プログラミング、証明、そしてパフォーマンス
 
-This chapter is about programming.
-Programs need to compute the correct result, but they also need to do so efficiently.
-To write efficient functional programs, it's important to know both how to use data structures appropriately and how to think about the time and space needed to run a program.
+この章はプログラミングについてです。
+プログラムは正しい結果を計算する必要がありますが、効率的に行うことも必要です。
+効率的な関数型プログラムを書くためには、データ構造を適切に使用する方法と、プログラムを実行するのに必要な時間と空間を考える方法の両方を知ることが重要です。
 
-This chapter is also about proofs.
-One of the most important data structures for efficient programming in Lean is the array, but safe use of arrays requires proving that array indices are in bounds.
-Furthermore, most interesting algorithms on arrays do not follow the pattern of structural recursion—instead, they iterate over the array.
-While these algorithms terminate, Lean will not necessarily be able to automatically check this.
-Proofs can be used to demonstrate why a program terminates.
+この章はまた、証明についても述べています。
+Leanで効率的なプログラミングにおいて最も重要なデータ構造の一つは配列ですが、配列のインデックスが範囲内にあることを証明することによってのみ、配列を安全に使用することができます。
+さらに、多くの興味深い配列上のアルゴリズムは構造的な再帰のパターンに従わない代わりに、配列を反復処理します。
+これらのアルゴリズムは終了しますが、Leanが自動的にこれをチェックできるとは限りません。
+証明はなぜプログラムが終了するのかを示すために使用できます。
 
-Rewriting programs to make them faster often results in code that is more difficult to understand.
-Proofs can also show that two programs always compute the same answers, even if they do so with different algorithms or implementation techniques.
-In this way, the slow, straightforward program can serve as a specification for the fast, complicated version.
+プログラムを書き換えてより速くすることは、しばしば理解が難しいコードになる原因になります。
+証明はまた、異なるアルゴリズムや実装技術を使用しても、二つのプログラムが常に同じ答えを計算することを示すこともできます。
+このようにして、遅いがわかりやすいプログラムは、速くて複雑なバージョンの仕様として機能することができます。
 
-Combining proofs and programming allows programs to be both safe and efficient.
-Proofs allow elision of run-time bounds checks, they render many tests unnecessary, and they provide an extremely high level of confidence in a program without introducing any runtime performance overhead.
-However, proving theorems about programs can be time consuming and expensive, so other tools are often more economical.
+証明とプログラムを組み合わせることで、プログラムは安全かつ効率的になります。
+証明により、ランタイムの境界チェックの省略が可能になり、多くのテストが不要になり、ランタイムパフォーマンスのオーバーヘッドを導入することなく非常に高いレベルの信頼性がプログラムに提供されます。
+しかし、プログラムに関する定理を証明することは時間がかかり、費用がかかる場合があるため、他のツールがしばしばより経済的です。
 
-Interactive theorem proving is a deep topic.
-This chapter provides only a taste, oriented towards the proofs that come up in practice while programming in Lean.
-Most interesting theorems are not closely related to programming.
-Please refer to [Next Steps](next-steps.md) for a list of resources for learning more.
-Just as when learning programming, however, there's no substitute for hands-on experience when learning to write proofs—it's time to get started!
-
-
-
+対話型定理証明は深いトピックです。
+この章は、Leanでプログラミングを行いながら実際に発生する証明に向けてのみの味わいを提供します。
+ほとんどの興味深い定理はプログラミングと密接に関連していません。
+より多くを学ぶためのリソースのリストについては、[次のステップ](next-steps.md)を参照してください。
+しかし、プログラミングを学ぶときと同様に、証明を書くことを学ぶには実践的な経験が代わりになるものではありません—始める時が来ました！

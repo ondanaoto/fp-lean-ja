@@ -1,18 +1,17 @@
-# Monad Transformers
+# モナドトランスフォーマー
 
-A monad is a way to encode some collection of side effects in a pure language.
-Different monads provide different effects, such as state and error handling.
-Many monads even provide useful effects that aren't available in most languages, such as nondeterministic searches, readers, and even continuations.
+モナドとは、副作用をエンコードする方法の一つで、純粋な言語内で利用されます。
+異なるモナドは様々な効果を提供し、例えば状態管理やエラー処理などです。
+多くのモナドは、多くの言語では利用できない有用な効果も提供します。例えば非決定論的検索、リーダー、さらにはコンティニュエーションなどです。
 
-A typical application has a core set of easily testable functions written without monads paired with an outer wrapper that uses a monad to encode the necessary application logic.
-These monads are constructed from well-known components.
-For example:
- * Mutable state is encoded with a function parameter and a return value that have the same type
- * Error handling is encoded by having a return type that is similar to `Except`, with constructors for success and failure
- * Logging is encoded by pairing the return value with the log
- 
-Writing each monad by hand is tedious, however, involving boilerplate definitions of the various type classes.
-Each of these components can also be extracted to a definition that modifies some other monad to add an additional effect.
-Such a definition is called a _monad transformer_.
-A concrete monad can be build from a collection of monad transformers, which enables much more code re-use.
+一般的なアプリケーションでは、モナドを使用せずに書かれた、簡単にテスト可能な関数のコアセットと、必要なアプリケーションロジックをエンコードするためにモナドを使用する外部ラッパーが組み合わされます。
+これらのモナドは、よく知られたコンポーネントから構築されます。
+例えば：
+ * 可変状態は、同じ型の関数パラメータと戻り値でエンコードされます
+ * エラー処理は、成功と失敗のためのコンストラクタを持つ、`Except`に似たタイプの戻り値でエンコードされます
+ * ログは、戻り値とログをペアリングすることでエンコードされます
 
+ただし、各モナドを手動で書くことは面倒であり、さまざまな型クラスの定義にボイラープレートが必要とされます。
+これらのコンポーネントは、他のモナドを変更して追加の効果を追加する定義としても抽出されることがあります。
+このような定義は「_モナドトランスフォーマー_」と呼ばれています。
+具体的なモナドは、モナドトランスフォーマーの集合から構築することができ、これによりコードの再利用がはるかに向上します。

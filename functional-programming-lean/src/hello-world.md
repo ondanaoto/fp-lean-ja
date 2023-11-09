@@ -1,8 +1,8 @@
-# Hello, World!
+# こんにちは、世界！
 
-While Lean has been designed to have a rich interactive environment in which programmers can get quite a lot of feedback from the language without leaving the confines of their favorite text editor, it is also a language in which real programs can be written.
-This means that it also has a batch-mode compiler, a build system, a package manager, and all the other tools that are necessary for writing programs.
+Leanは豊かなインタラクティブ環境を持つように設計されており、プログラマーはお気に入りのテキストエディタを離れることなく、言語から多くのフィードバックを得ることができます。さらに、実際のプログラムを書くことができる言語でもあります。
+つまり、バッチモードのコンパイラ、ビルドシステム、パッケージマネージャ、およびプログラムの作成に必要なその他のツールが含まれているということです。
 
-While the [previous chapter](./getting-to-know.md) presented the basics of functional programming in Lean, this chapter explains how to start a programming project, compile it, and run the result.
-Programs that run and interact with their environment (e.g. by reading input from standard input or creating files) are difficult to reconcile with the understanding of computation as the evaluation of mathematical expressions.
-In addition to a description of the Lean build tools, this chapter also provides a way to think about functional programs that interact with the world.
+[前の章](./getting-to-know.md)ではLeanでの関数型プログラミングの基礎を紹介しましたが、この章ではプログラミングプロジェクトの開始、コンパイル、および結果の実行方法について説明します。
+標準入力からの入力を読み取ったりファイルを作成したりするなど、環境と対話しながら動作するプログラムは、計算を数学的表現の評価として理解することとは合致しにくいものです。
+この章ではLeanのビルドツールの説明に加えて、世界と対話する関数型プログラムを考える方法についても提供します。

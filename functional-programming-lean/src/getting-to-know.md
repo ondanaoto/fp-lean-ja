@@ -1,22 +1,23 @@
-According to tradition, a programming language should be introduced by
-compiling and running a program that displays `"Hello, world!"` on the
-console. This simple program ensures that the language tooling is
-installed correctly and that the programmer is able to run the
-compiled code.
+伝統によれば、プログラミング言語を紹介する際には、
+コンソールに `"Hello, world!"` と表示するプログラムをコンパイルして実行するべきです。
+このシンプルなプログラムにより、言語ツールが正しくインストールされており、
+プログラマーがコンパイルしたコードを実行できるかが保証されます。
 
-Since the 1970s, however, programming has changed. Today, compilers
-are typically integrated into text editors, and the programming
-environment offers feedback as the program is written. Lean is no
-exception: it implements an extended version of the Language Server
-Protocol that allows it to communicate with a text editor and provide
-feedback as the user types.
+しかし、1970年代以降、プログラミングは変化しました。
+今日では、コンパイラは通常テキストエディタに統合されており、
+プログラムが書かれる際にプログラミング環境がフィードバックを提供します。
+Leanも例外ではありません：LeanはLanguage Server Protocolの拡張版を実装しており、
+テキストエディタと通信してユーザーがタイプする際のフィードバックを提供できます。
 
-Languages as varied as Python, Haskell, and JavaScript offer a read-eval-print-loop (REPL), also known as an interactive toplevel or a browser console, in which expressions or statements can be entered.
-The language then computes and displays the result of the user's input.
-Lean, on the other hand, integrates these features into the interaction with the editor, providing commands that cause the text editor to display feedback integrated into the program text itself.
-This chapter provides a short introduction to interacting with Lean in an editor, while [Hello, World!]() describes how to use Lean traditionally from the command line in batch mode.
+Python、Haskell、JavaScriptなどのさまざまな言語は、
+read-eval-print-loop（REPL）もしくはインタラクティブトップレベル、
+あるいはブラウザコンソールとして知られている機能を提供しており、
+式や文を入力できます。
+その後、言語はユーザーの入力の結果を計算して表示します。
+Leanは、これらの機能をエディタとの対話に統合し、
+テキストエディタがプログラムテキスト自体に統合されたフィードバックを表示するコマンドを提供します。
+この章では、エディタでLeanと対話する簡単な導入を提供していますが、[Hello, World!]()では、バッチモードでコマンドラインから従来の方法でLeanを使用する方法を説明しています。
 
-It is best if you read this book with Lean open in your editor,
-following along and typing in each example. Please play with the
-examples, and see what happens!
-
+この本を読む際には、エディタでLeanを開いた状態で、
+各例を進めるごとにタイピングをしてみてください。
+例を試して遊びながら、何が起きるかを見てみてください！

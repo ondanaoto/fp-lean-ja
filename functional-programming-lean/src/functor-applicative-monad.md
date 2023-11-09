@@ -1,19 +1,17 @@
-# Functors, Applicative Functors, and Monads
+# ファンクター、アプリカティブファンクター、モナド
 
-`Functor` and `Monad` both describe operations for types that are still waiting for a type argument.
-One way to understand them is that `Functor` describes containers in which the contained data can be transformed, and `Monad` describes an encoding of programs with side effects.
-This understanding is incomplete, however.
-After all, `Option` has instances for both `Functor` and `Monad`, and simultaneously represents an optional value _and_ a computation that might fail to return a value.
+`Functor` と `Monad` は、まだ型引数を待機している型に対する操作を説明します。
+これらを理解する一つの方法は、`Functor` は含まれるデータが変換可能なコンテナとして、そして `Monad` は副作用を持つプログラムのコーディング方法として説明することです。
+しかし、この理解は不完全です。
+結局のところ、`Option` は `Functor` と `Monad` の両方のインスタンスを持ち、同時にオプショナルな値と値の返却に失敗するかもしれない計算を表しています。
 
-From the perspective of data structures, `Option` is a bit like a nullable type or like a list that can contain at most one entry.
-From the perspective of control structures, `Option` represents a computation that might terminate early without a result.
-Typically, programs that use the `Functor` instance are easiest to think of as using `Option` as a data structure, while programs that use the `Monad` instance are easiest to think of as using `Option` to allow early failure, but learning to use both of these perspectives fluently is an important part of becoming proficient at functional programming.
+データ構造として見た場合、`Option` はヌラブル型や最大で一つのエントリを含むリストのようなものです。
+制御構造の観点からは、`Option` は結果なしで早期終了するかもしれない計算を代表します。
+通常、`Functor` インスタンスを使用するプログラムは、`Option` をデータ構造として使用していると考えるのが最も簡単ですが、`Monad` インスタンスを使用するプログラムは、早期失敗を許容するために `Option` を使用していると考えるのが最も簡単ですが、両方の観点を流暢に使い分けることは、関数型プログラミングに習熟する上で重要な部分です。
 
-There is a deeper relationship between functors and monads.
-It turns out that _every monad is a functor_.
-Another way to say this is that the monad abstraction is more powerful than the functor abstraction, because not every functor is a monad.
-Furthermore, there is an additional intermediate abstraction, called _applicative functors_, that has enough power to write many interesting programs and yet permits libraries that cannot use the `Monad` interface.
-The type class `Applicative` provides the overloadable operations of applicative functors.
-Every monad is an applicative functor, and every applicative functor is a functor, but the converses do not hold.
-
-
+ファンクターとモナドとの間には、より深い関係があります。
+結論として、_すべてのモナドはファンクターです_。
+これを別の言い方で表すなら、モナドの抽象化はファンクターの抽象化よりも強力であるということです。なぜなら、すべてのファンクターがモナドであるわけではないからです。
+さらに、アプリカティブファンクターと呼ばれる追加の中間抽象化があり、多くの興味深いプログラムを記述するのに十分な力を持ちながら、`Monad` インターフェースを使用できないライブラリに許可を与えます。
+型クラス `Applicative` は、アプリカティブファンクターのオーバーロード可能な操作を提供します。
+すべてのモナドはアプリカティブファンクターであり、すべてのアプリカティブファンクターはファンクターですが、その逆は成り立ちません。

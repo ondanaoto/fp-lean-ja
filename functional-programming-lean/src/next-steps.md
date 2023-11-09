@@ -1,57 +1,57 @@
-# Next Steps
+# 次のステップ
 
-This book introduces the very basics of functional programming in Lean, including a tiny amount of interactive theorem proving.
-Using dependently-typed functional languages like Lean is a deep topic, and much can be said.
-Depending on your interests, the following resources might be useful for learning Lean 4.
+この本は、Leanにおける関数型プログラミングの非常に基本的な内容、そしてほんの少しの対話型定理証明について紹介しています。
+依存型関数言語であるLeanを使うことは深いトピックであり、多くのことが言えます。
+あなたの興味に依存して、Lean 4を学ぶための以下のリソースが役立つかもしれません。
 
-## Learning Lean
+## Leanの学習
 
-Lean 4 itself is described in the following resources:
+Lean 4自体については以下のリソースで説明されています：
 
- * [Theorem Proving in Lean 4](https://leanprover.github.io/theorem_proving_in_lean4/) is a tutorial on writing proofs using Lean.
- * [The Lean 4 Manual](https://leanprover.github.io/lean4/doc/) provides a reference for the language and its features. At the time of writing, it is still incomplete, but it describes many aspects of Lean in greater detail than this book.
- * [How To Prove It With Lean](https://djvelleman.github.io/HTPIwL/) is a Lean-based accompaniment to the well-regarded textbook [_How To Prove It_](https://www.cambridge.org/highereducation/books/how-to-prove-it/6D2965D625C6836CD4A785A2C843B3DA#overview) that provides an introduction to writing paper-and-pencil mathematical proofs.
- * [Metaprogramming in Lean 4](https://github.com/arthurpaulino/lean4-metaprogramming-book) provides an overview of Lean's extension mechanisms, from infix operators and notations to macros, custom tactics, and full-on custom embedded languages.
- * [Functional Programming in Lean](https://leanprover.github.io/functional_programming_in_lean/) may be interesting to readers who enjoy jokes about recursion.
+ * [Lean 4での定理証明](https://leanprover.github.io/theorem_proving_in_lean4/) はLeanを使った証明を書くためのチュートリアルです。
+ * [Lean 4マニュアル](https://leanprover.github.io/lean4/doc/) は言語とその機能のリファレンスを提供しています。執筆時点ではまだ不完全ですが、この本よりも詳細に多くのLeanの側面について説明しています。
+ * [Leanでそれを証明する方法](https://djvelleman.github.io/HTPIwL/) は、ペーパーペンによる数学的証明の書き方を紹介する著名な教科書 [_How To Prove It_](https://www.cambridge.org/highereducation/books/how-to-prove-it/6D2965D625C6836CD4A785A2C843B3DA#overview) のLeanベースの対応物です。
+ * [Lean 4のメタプログラミング](https://github.com/arthurpaulino/lean4-metaprogramming-book) は、インフィックスオペレーターや記法からマクロ、カスタムタクティクス、そして完全なカスタム組み込み言語に至るまで、Leanの拡張メカニズムの概観を提供します。
+ * [Leanでの関数型プログラミング](https://leanprover.github.io/functional_programming_in_lean/) は、再帰に関するジョークを楽しむ読者にとって興味深いものかもしれません。
 
-However, the best way to continue learning Lean is to start reading and writing code, consulting the documentation when you get stuck.
-Additionally, the [Lean Zulip](https://leanprover.zulipchat.com/) is an excellent place to meet other Lean users, ask for help, and help others.
+しかしながら、Leanの学習を続ける最良の方法は、コードを読んで書き始めること、そして立ち往生した時にはドキュメントを参照することです。
+さらに、[Lean Zulip](https://leanprover.zulipchat.com/) は他のLeanユーザーと出会い、助けを求め、他の人を助けるための優れた場所です。
 
-## The Standard Library
+## 標準ライブラリ
 
-Out of the box, Lean itself includes a fairly minimal library.
-Lean is self-hosted, and the included code is just enough to implement Lean itself.
-For many applications, a larger standard library is needed.
+Lean自体は、箱から出してすぐには非常に最小限のライブラリしか含んでいません。
+Leanは自己ホスト型で、含まれているコードはLean自体を実装するのにちょうど十分です。
+多くのアプリケーションでは、より大きな標準ライブラリが必要です。
 
-[std4](https://github.com/leanprover/std4) is an in-progress standard library that includes many data structures, tactics, type class instances, and functions that are out of scope for the Lean compiler itself.
-To use `std4`, the first step is to find a commit in its history that's compatible with the version of Lean 4 that you're using (that is, one in which the `lean-toolchain` file matches the one in your project).
-Then, add the following to the top level of your `lakefile.lean`, where `COMMIT_HASH` is the appropriate version:
+[std4](https://github.com/leanprover/std4) は進行中の標準ライブラリで、Leanのコンパイラ自体の範囲外である多くのデータ構造、タクティクス、型クラスのインスタンス、関数を含んでいます。
+`std4`を使うためには、最初にあなたが使用しているLean 4のバージョンと互換性のあるコミットをその履歴から見つけることがステップの一つです（つまり、`lean-toolchain`ファイルがプロジェクトのものと一致しているもの）。
+そして、適切なバージョンの`COMMIT_HASH`を以下のようにあなたの`lakefile.lean`のトップレベルに追加します：
 ```lean
 require std from git
   "https://github.com/leanprover/std4/" @ "COMMIT_HASH"
 ```
 
 
-## Mathematics in Lean
+## Leanにおける数学
 
-Most resources for mathematicians are written for Lean 3.
-A wide selection are available at [the community site](https://leanprover-community.github.io/learn.html).
-To get started doing mathematics in Lean 4, it is probably easiest to participate in the process of porting the mathematics library `mathlib` from Lean 3 to Lean 4.
-Please see the [`mathlib4` README](https://github.com/leanprover-community/mathlib4) for further information.
+数学者向けのほとんどのリソースはLean 3用に書かれています。
+広範囲にわたる選択肢は[コミュニティサイト](https://leanprover-community.github.io/learn.html)で利用可能です。
+Lean 4で数学を始めるには、数学ライブラリ`mathlib`をLean 3からLean 4に移植するプロセスに参加することがおそらく最も簡単です。
+さらなる情報については、[`mathlib4` README](https://github.com/leanprover-community/mathlib4)をご覧ください。
 
-## Using Dependent Types in Computer Science
+## コンピューターサイエンスでの依存型の使用
 
-Coq is a language that has a lot in common with Lean.
-For computer scientists, the [Software Foundations](https://softwarefoundations.cis.upenn.edu/) series of interactive textbooks provides an excellent introduction to applications of Coq in computer science.
-The fundamental ideas of Lean and Coq are very similar, and skills are readily transferable between the systems.
+CoqはLeanと多くの共通点がある言語です。
+コンピューターサイエンティストにとって、対話型の教科書である[Software Foundations](https://softwarefoundations.cis.upenn.edu/) シリーズは、コンピューターサイエンスにおけるCoqの適用に関して素晴らしい導入を提供します。
+LeanとCoqの基礎的なアイデアは非常に似ており、スキルはシステム間で容易に転用することができます。
 
-## Programming with Dependent Types
+## 依存型を使ったプログラミング
 
-For programmers who are interested in learning to use indexed families and dependent types to structure programs, Edwin Brady's [_Type Driven Development with Idris_](https://www.manning.com/books/type-driven-development-with-idris) provides an excellent introduction.
-Like Coq, Idris is a close cousin of Lean, though it lacks tactics.
+インデックス付きファミリーや依存型を使用してプログラムを構築することに興味のあるプログラマーにとって、Edwin Bradyの[_Type Driven Development with Idris_](https://www.manning.com/books/type-driven-development-with-idris) は優れた導入書を提供しています。
+Coqのように、IdrisもLeanの近い親戚ですが、タクティクスを欠いています。
 
-## Understanding Dependent Types
+## 依存型の理解
 
-[_The Little Typer_](https://thelittletyper.com/) is a book for programmers who haven't formally studied logic or the theory of programming languages, but who want to build an understanding of the core ideas of dependent type theory.
-While all of the above resources aim to be as practical as possible, _The Little Typer_ presents an approach to dependent type theory where the very basics are built up from scratch, using only concepts from programming.
-Disclaimer: the author of _Functional Programming in Lean_ is also an author of _The Little Typer_.
+[_The Little Typer_](https://thelittletyper.com/) は、公式には論理学やプログラミング言語理論を研究していないが、依存型理論の核となるアイデアを構築することに関心のあるプログラマー向けの本です。
+上記のリソースはできるだけ実践的であろうとしていますが、_The Little Typer_はプログラミングからの概念を使って非常に基本的から構築される依存型理論へのアプローチを提示します。
+免責事項：_Leanでの関数型プログラミング_ の著者は、_The Little Typer_ の著者でもあります。
