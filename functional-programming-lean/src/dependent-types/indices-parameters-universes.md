@@ -1,53 +1,54 @@
-# Indices, Parameters, and Universe Levels
+以下は、指定された `.md` ファイルを日本語に翻訳したものです：
 
-The distinction between indices and parameters of an inductive type is more than just a way to describe arguments to the type that either vary or do not between the constructors.
-Whether an argument to an inductive type is a parameter or an index also matters when it comes time to determine the relationships between their universe levels.
-In particular, an inductive type may have the same universe level as a parameter, but it must be in a larger universe than its indices.
-This restriction is necessary to ensure that Lean can be used as a theorem prover as well as a programming language—without it, Lean's logic would be inconsistent.
-Experimenting with error messages is a good way to illustrate these rules, as well as the precise rules that determine whether an argument to a type is a parameter or an index.
+# インデックス、パラメータ、およびユニバースレベル
 
-Generally speaking, the definition of an inductive type takes its parameters before a colon and its indices after the colon.
-Parameters are given names like function arguments, whereas indices only have their types described.
-This can be seen in the definition of `Vect`:
+帰納型のインデックスとパラメータの区別は、構成要素の間で変化するかしないかという型の引数を記述する方法以上のものです。
+帰納型への引数がパラメータなのかインデックスなのかは、それらのユニバースレベルの関係を決定する時にも重要です。
+特に、帰納型はパラメータと同じユニバースレベルを持つことができますが、インデックスよりも大きいユニバースにある必要があります。
+この制約は、Leanが定理証明者であると同時にプログラミング言語として使われるために必要です—これがないと、Leanの論理は矛盾をおこします。
+エラーメッセージを試すことは、これらのルールを示すだけでなく、型の引数がパラメータなのかインデックスなのかを決定する正確なルールを説明する良い方法です。
+
+一般的に、帰納型の定義はそのパラメータをコロンの前に、そしてそのインデックスをコロンの後に取ります。
+パラメータは関数引数のように名前を与えられますが、インデックスはその型のみが記述されます。
+これは `Vect` の定義で見ることができます：
 ```lean
 {{#example_decl Examples/DependentTypes.lean Vect}}
 ```
-In this definition, `α` is a parameter and the `Nat` is an index.
-Parameters may be referred to throughout the definition (for example, `Vect.cons` uses `α` for the type of its first argument), but they must always be used consistently.
-Because indices are expected to change, they are assigned individual values at each constructor, rather than being provided as arguments at the top of the datatype definition.
+この定義では、`α` はパラメータであり、`Nat` はインデックスです。
+パラメータは定義全体を通じて参照することができます（例えば、`Vect.cons` はその最初の引数の型として `α` を使用します）、しかし常に一貫して使用されなければなりません。
+インデックスは変わることを期待されているため、データ型定義の先頭で引数として提供されるのではなく、各構造体で個別の値が割り当てられます。
 
-
-A very simple datatype with a parameter is `WithParameter`:
+パラメータを持つ非常にシンプルなデータ型は `WithParameter` です：
 ```lean
 {{#example_decl Examples/DependentTypes/IndicesParameters.lean WithParameter}}
 ```
-The universe level `u` can be used for both the parameter and for the inductive type itself, illustrating that parameters do not increase the universe level of a datatype.
-Similarly, when there are multiple parameters, the inductive type receives whichever universe level is greater:
+ユニバースレベル `u` はパラメータと帰納型自体のために使われますが、それがパラメータがデータ型のユニバースレベルを増加させないことを示しています。
+同様に、複数のパラメータが存在する場合、帰納型は最大のユニバースレベルを受け取ります：
 ```lean
 {{#example_decl Examples/DependentTypes/IndicesParameters.lean WithTwoParameters}}
 ```
-Because parameters do not increase the universe level of a datatype, they can be more convenient to work with.
-Lean attempts to identify arguments that are described like indices (after the colon), but used like parameters, and turn them into parameters:
-Both of the following inductive datatypes have their parameter written after the colon:
+パラメータがデータ型のユニバースレベルを増加させないので、取り扱うのがより便利です。
+Leanはコロンの後（インデックスとして記述されていますが）に記述されたような引数がパラメータのように使用される場合にそれをパラメータに変換しようとします：
+以下の両方の帰納データ型は、コロンの後にパラメータを記述しています：
 ```lean
 {{#example_decl Examples/DependentTypes/IndicesParameters.lean WithParameterAfterColon}}
 
 {{#example_decl Examples/DependentTypes/IndicesParameters.lean WithParameterAfterColon2}}
 ```
 
-When a parameter is not named in the initial datatype declaration, different names may be used for it in each constructor, so long as they are used consistently.
-The following declaration is accepted:
+パラメータが最初のデータ型宣言で名前が付けられていない場合、それは各構造体で違う名前を使用することができますが、それらは一貫して使用されなければなりません。
+次の宣言は受け入れられます：
 ```lean
 {{#example_decl Examples/DependentTypes/IndicesParameters.lean WithParameterAfterColonDifferentNames}}
 ```
-However, this flexibility does not extend to datatypes that explicitly declare the names of their parameters:
+しかし、この柔軟性はパラメータの名前を明示的に宣言するデータ型には及ばないものです：
 ```lean
 {{#example_in Examples/DependentTypes/IndicesParameters.lean WithParameterBeforeColonDifferentNames}}
 ```
 ```output error
 {{#example_out Examples/DependentTypes/IndicesParameters.lean WithParameterBeforeColonDifferentNames}}
 ```
-Similarly, attempting to name an index results in an error:
+同様に、インデックスに名前を付けようとするとエラーが発生します：
 ```lean
 {{#example_in Examples/DependentTypes/IndicesParameters.lean WithNamedIndex}}
 ```
@@ -55,14 +56,13 @@ Similarly, attempting to name an index results in an error:
 {{#example_out Examples/DependentTypes/IndicesParameters.lean WithNamedIndex}}
 ```
 
-Using an appropriate universe level and placing the index after the colon results in a declaration that is acceptable:
+適切なユニバースレベルを使用し、コロンの後にインデックスを配置することにより、受け入れられる宣言が結果します：
 ```lean
 {{#example_decl Examples/DependentTypes/IndicesParameters.lean WithIndex}}
 ```
 
-
-Even though Lean can sometimes determine that an argument after the colon in an inductive type declaration is a parameter when it is used consistently in all constructors, all parameters are still required to come before all indices.
-Attempting to place a parameter after an index results in the argument being considered an index itself, which would require the universe level of the datatype to increase:
+Leanは時々、帰納型宣言のコロンの後の引数が全ての構造体で一貫して使用され、どのインデックスの後ろにも来ない場合にパラメータであると判断できますが、全てのパラメータはインデックスの前になければなりません。
+インデックスの後にパラメータを置くことを試みると、引数はインデックスと見なされることになり、その結果、データ型のユニバースレベルが増加する必要があります：
 ```lean
 {{#example_in Examples/DependentTypes/IndicesParameters.lean ParamAfterIndex}}
 ```
@@ -70,31 +70,29 @@ Attempting to place a parameter after an index results in the argument being con
 {{#example_out Examples/DependentTypes/IndicesParameters.lean ParamAfterIndex}}
 ```
 
-Parameters need not be types.
-This example shows that ordinary datatypes such as `Nat` may be used as parameters:
+パラメータは型である必要はありません。
+次の例は、`Nat` のような普通のデータ型がパラメータとして使用できることを示しています：
 ```lean
 {{#example_in Examples/DependentTypes/IndicesParameters.lean NatParamFour}}
 ```
 ```output error
 {{#example_out Examples/DependentTypes/IndicesParameters.lean NatParamFour}}
 ```
-Using the `n` as suggested causes the declaration to be accepted:
+提案されている `n` を使用すると、宣言が受け入れられます：
 ```lean
 {{#example_decl Examples/DependentTypes/IndicesParameters.lean NatParam}}
 ```
 
 
+これらの実験から何が結論付けられるでしょうか？
+パラメータとインデックスのルールは以下の通りです：
+ 1. 各構成要素の型でパラメータは同じように使われなければなりません。
+ 2. 全てのパラメータは全てのインデックスの前になければなりません。
+ 3. 定義されているデータ型のユニバースレベルは、最も大きいパラメータと同じかそれ以上でなければならず、最も大きいインデックスより厳密に大きくなければなりません。
+ 4. コロンの前に書かれた名前のある引数は常にパラメータであり、コロンの後の引数は通常インデックスです。Leanはコロンの後の引数の使用が一貫している場合、それをパラメータにすると判断するかもしれませんが、それがインデックスの後ろに来ない場合です。
 
-
-What can be concluded from these experiments?
-The rules of parameters and indices are as follows:
- 1. Parameters must be used identically in each constructor's type.
- 2. All parameters must come before all indices.
- 3. The universe level of the datatype being defined must be at least as large as the largest parameter, and strictly larger than the largest index.
- 4. Named arguments written before the colon are always parameters, while arguments after the colon are typically indices. Lean may determine that the usage of arguments after the colon makes them into parameters if they are used consistently in all constructors and don't come after any indices.
-
-When in doubt, the Lean command `#print` can be used to check how many of a datatype's arguments are parameters.
-For example, for `Vect`, it points out that the number of parameters is 1:
+疑わしい場合、Leanのコマンド `#print` を使用して帰納型引数のうちどれがパラメータであるかをチェックできます。
+例えば、`Vect` の場合、パラメータの数が1であることを指摘しています：
 ```lean
 {{#example_in Examples/DependentTypes/IndicesParameters.lean printVect}}
 ```
@@ -102,9 +100,9 @@ For example, for `Vect`, it points out that the number of parameters is 1:
 {{#example_out Examples/DependentTypes/IndicesParameters.lean printVect}}
 ```
 
-It is worth thinking about which arguments should be parameters and which should be indices when choosing the order of arguments to a datatype.
-Having as many arguments as possible be parameters helps keep universe levels under control, which can make a complicated program easier to type check.
-One way to make this possible is to ensure that all parameters come before all indices in the argument list.
+データ型に引数の順番を決める際には、どの引数がパラメータでどの引数がインデックスであるべきかを考えることが重要です。
+できるだけ多くの引数をパラメータにすることはユニバースレベルを制御下に保つのに役立ち、これにより複雑なプログラムがタイプチェックしやすくなることがあります。
+これを可能にする一つの方法は、引数リストで全てのパラメータが全てのインデックスの前に来るようにすることです。
 
-Additionally, even though Lean is capable of determining that arguments after the colon are nonetheless parameters by their usage, it's a good idea to write parameters with explicit names.
-This makes the intention clear to readers, and it causes Lean to report an error if the argument is mistakenly used inconsistently across the constructors.
+さらに、Leanがコロンの後の引数がパラメータであることを使用法によって決定できるにもかかわらず、パラメータを明確な名前で書くことは良い考えです。
+これにより、読者に意図が明確になり、構造体間で引数が間違って不一致で使用されていた場合にLeanがエラーを報告することになります。

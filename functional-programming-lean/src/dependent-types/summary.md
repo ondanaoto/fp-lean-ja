@@ -1,73 +1,74 @@
-# Summary
+```markdown
+# 概要
 
-## Dependent Types
+## 依存型
 
-Dependent types, where types contain non-type code such as function calls and ordinary data constructors, lead to a massive increase in the expressive power of a type system.
-The ability to _compute_ a type from the _value_ of an argument means that the return type of a function can vary based on which argument is provided.
-This can be used, for example, to have the result type of a database query depend on the database's schema and the specific query issued, without needing any potentially-failing cast operations on the result of the query.
-When the query changes, so does the type that results from running it, enabling immediate compile-time feedback.
+型が関数呼び出しや通常のデータコンストラクタのような非型コードを含む依存型は、型システムの表現力を大幅に増加させます。
+引数の_value_から型を_compute_する能力は、関数の戻り値の型が提供された引数に基づいて変化することを意味します。
+これは例えば、データベースのスキーマや特定のクエリに依存したデータベースクエリの結果型を、クエリの結果に対する潜在的に失敗するキャスト操作を必要とせずに持たせるために使用することができます。
+クエリが変わると、それを実行した結果として得られる型も変わり、即時のコンパイル時のフィードバックを可能にします。
 
-When a function's return type depends on a value, analyzing the value with pattern matching can result in the type being _refined_, as a variable that stands for a value is replaced by the constructors in the pattern.
-The type signature of a function documents the way that the return type depends on the argument value, and pattern matching then explains how the return type can be fulfilled for each potential argument.
+関数の戻り値の型が値に依存する場合、パターンマッチングによる値の分析は型が_refined_される結果をもたらし、値を表すための変数がパターン内のコンストラクタに置き換えられます。
+関数の型シグネチャは、戻り値の型が引数値にどのように依存しているかを文書化し、パターンマッチングは潜在的な引数ごとに戻り値の型がどのように達成されるかを説明します。
 
-Ordinary code that occurs in types is run during type checking, though `partial` functions that might loop infinitely are not called.
-Mostly, this computation follows the rules of ordinary evaluation that were introduced in [the very beginning of this book](../getting-to-know/evaluating.md), with expressions being progressively replaced by their values until a final value is found.
-Computation during type checking has an important difference from run-time computation: some values in types may be _variables_ whose values are not yet known.
-In these cases, pattern-matching gets "stuck" and does not proceed until or unless a particular constructor is selected, e.g. by pattern matching.
-Type-level computation can be seen as a kind of partial evaluation, where only the parts of the program that are sufficiently known need to be evaluated and other parts are left alone.
+型の中に現れる通常のコードは型チェック中に実行されますが、無限ループする可能性がある`partial`関数は呼び出されません。
+ほとんどの場合、この計算は[この本の最初に紹介された](../getting-to-know/evaluating.md)通常の評価のルールに従い、式がその値によって逐次置き換えられるまで続き、最終的な値が見つかります。
+型チェック中の計算は、実行時の計算と重要な違いがあります：型内のいくつかの値は、まだ未知の_variables_の可能性があります。
+これらの場合、パターンマッチングは「スタック」状態になり、特定のコンストラクタが選択されるまで、例えばパターンマッチングによって、進行しません。
+型レベルの計算は、プログラムの十分に知られている部分だけを評価し、他の部分を放置する部分評価の一種と見なすことができます。
 
-## The Universe Pattern
+## ユニバースパターン
 
-A common pattern when working with dependent types is to section off some subset of the type system.
-For example, a database query library might be able to return varying-length strings, fixed-length strings, or numbers in certain ranges, but it will never return a function, a user-defined datatype, or an `IO` action.
-A domain-specific subset of the type system can be defined by first defining a datatype with constructors that match the structure of the desired types, and then defining a function that interprets values from this datatype into honest-to-goodness types.
-The constructors are referred to as _codes_ for the types in question, and the entire pattern is sometimes referred to as a _universe à la Tarski_, or just as a _universe_ when context makes it clear that universes such as `Type 3` or `Prop` are not what's meant.
+依存型を扱う際の一般的なパターンは、型システムの特定のサブセットを区切ることです。
+例えば、データベースクエリライブラリは可変長文字列、固定長文字列、あるいは特定の範囲の数値を返すことができますが、関数、ユーザ定義のデータ型、または`IO`アクションを返すことはありません。
+型システムのドメイン固有のサブセットは、まず希望する型の構造に一致するコンストラクタを持つデータ型を定義することによって、そしてその後、このデータ型の値をオーソドックスな型に解釈する関数を定義することによって定義されます。
+コンストラクタは問題の型の_codes_として参照され、この全体のパターンはしばしば_Tarski風のユニバース_あるいはコンテキストが明確な場合は単に_ユニバース_と呼ばれることがあります。
 
-Custom universes are an alternative to defining a type class with instances for each type of interest.
-Type classes are extensible, but extensibility is not always desired.
-Defining a custom universe has a number of advantages over using the types directly:
- * Generic operations that work for _any_ type in the universe, such as equality testing and serialization, can be implemented by recursion on codes.
- * The types accepted by external systems can be represented precisely, and the definition of the code datatype serves to document what can be expected.
- * Lean's pattern matching completeness checker ensures that no codes are forgotten, while solutions based on type classes defer missing instance errors to client code.
+カスタムユニバースは、興味のある各型に対してインスタンスを定義する型クラスを定義する代替手段です。
+型クラスは拡張可能ですが、拡張性が常に望まれるわけではありません。
+カスタムユニバースを定義することは、直接型を使用することに対していくつかの利点があります：
+ * ユニバース内の_any_型に対して機能する汎用操作（例えば等価性テストやシリアライゼーション）は、コード上での再帰によって実装することができます。
+ * 外部システムに受け入れられる型を正確に表現することができ、コードデータ型の定義は何が期待されるかを文書化するために役立ちます。
+ * Leanのパターンマッチング完全性チェッカーは、忘れられたコードがないことを保証する一方で、型クラスに基づくソリューションは、欠けているインスタンスのエラーをクライアントコードに委ねます。
 
+## 索引付きファミリー
 
-## Indexed Families
+データ型は、二つの別々の種類の引数を取ることができます：_パラメータ_はデータ型の各コンストラクタ内で同一ですが、_インデックス_はコンストラクタ間で変化することがあります。
+特定のインデックスの選択に対して、データ型の一部のコンストラクタのみが利用可能になります。
+例として、`Vect.nil`は長さのインデックスが`0`の場合にのみ利用でき、`Vect.cons`は長さのインデックスがある`n+1`に対してのみ利用できます。
+パラメータは通常、データ型宣言のコロンの前に名前付きの引数として書かれ、インデックスは関数型のコロン後の引数として表現されますが、Leanはコロン後の引数がパラメータとして使用される場合を推論することができます。
 
-Datatypes can take two separate kinds of arguments: _parameters_ are identical in each constructor of the datatype, while _indices_ may vary between constructors.
-For a given choice of index, only some constructors of the datatype are available.
-As an example, `Vect.nil` is available only when the length index is `0`, and `Vect.cons` is available only when the length index is `n+1` for some `n`.
-While parameters are typically written as named arguments before the colon in a datatype declaration, and indices as arguments in a function type after the colon, Lean can infer when an argument after the colon is used as a parameter.
+索引付きファミリは、コンパイラによってチェックされるデータ間の複雑な関係を表現することを可能にします。
+データ型の不変条件は直接エンコードされ、暫定的な方法でさえそれらを破る方法はありません。
+コンパイラにデータ型の不変条件について情報を提供することは、大きな利点をもたらします：コンパイラは今やプログラマーにそれを満たすために何をしなければならないかを伝えることができるのです。
+アンダースコアによるコンパイル時エラーの戦略的な使用は、Leanにプログラミング思考プロセスの一部を委ねることができ、プログラマーの心を他のことに向けるために開放することが可能です。
 
-Indexed families allow the expression of complicated relationships between data, all checked by the compiler.
-The datatype's invariants can be encoded directly, and there is no way to violate them, not even temporarily.
-Informing the compiler about the datatype's invariants brings a major benefit: the compiler can now inform the programmer about what must be done to satisfy them.
-The strategic use of compile-time errors, especially those resulting from underscores, can make it possible to offload some of the programming thought process to Lean, freeing up the programmer's mind to worry about other things.
+しかし、索引付きファミリを使って不変条件をエンコードすることは困難を引き起こす可能性があります。
+まず第一に、それぞれの不変条件を持つデータ型が必要で、それには独自のサポートライブラリも必要です。
+`List.append`と`Vect.append`は交換可能ではありません。
+これはコードの重複を引き起こす可能性があります。
+第二に、索引付きファミリを便利に使うためには、型中で使用される関数の再帰構造が型チェックされているプログラムの再帰構造と一致する必要があります。
+索引付きファミリでのプログラミングは、正しい偶然が起こるように手配する芸術です。
+偶然が欠けている場合には、等価性証明に依存して回避することは可能ですが、難しく、さらにそれは暗号のような正当性を持つプログラムでいっぱいになることをもたらします。
+第三に、型チェック中に大きな値で複雑なコードを実行することは、コンパイル時に遅延を引き起こす可能性があります。
+複雑なプログラムでこれらの遅延を避けるには、特殊な技術が要求されることがあります。
 
-Encoding invariants using indexed families can lead to difficulties.
-First off, each invariant requires its own datatype, which then requires its own support libraries.
-`List.append` and `Vect.append` are not interchangeable, after all.
-This can lead to code duplication.
-Secondly, convenient use of indexed families requires that the recursive structure of functions used in types match the recursive structure of the programs being type checked.
-Programming with indexed families is the art of arranging for the right coincidences to occur.
-While it's possible to work around missing coincidences with appeals to equality proofs, it is difficult, and it leads to programs littered with cryptic justifications.
-Thirdly, running complicated code on large values during type checking can lead to compile-time slowdowns.
-Avoiding these slowdowns for complicated programs can require specialized techniques.
+## 定義上の等価性と命題上の等価性
 
-## Definitional and Propositional Equality
+Leanの型チェッカーは、時々、二つの型を交換可能とみなすべきかをチェックする必要があります。
+型は任意のプログラムを含むことができるため、それは任意のプログラムの等価性をチェックする能力を持たなければなりません。
+しかしながら、任意のプログラムを完全に一般的な数学的等価性でチェックするための効率的なアルゴリズムは存在しません。
+この問題を解決するため、Leanには二つの等価性の概念が含まれています：
 
-Lean's type checker must, from time to time, check whether two types should be considered interchangeable.
-Because types can contain arbitrary programs, it must therefore be able to check arbitrary programs for equality.
-However, there is no efficient algorithm to check arbitrary programs for fully-general mathematical equality.
-To work around this, Lean contains two notions of equality:
+ * _定義上の等価性_は、基本的には計算と束縛変数のリネーミングを無視した構文表現の等価性をチェックする等価性の下限近似です。Leanは、それが必要な状況において自動的に定義上の等価性をチェックします。
 
- * _Definitional equality_ is an underapproximation of equality that essentially checks for equality of syntactic representation modulo computation and renaming of bound variables. Lean automatically checks for definitional equality in situations where it is required.
+ * _命題上の等価性_は、プログラマーによって明示的に証明され、明示的に呼び出される必要があります。それに見返りとして、Leanは証明が有効であり、呼び出しが正しい目標を達成していることを自動的にチェックします。
 
- * _Propositional equality_ must be explicitly proved and explicitly invoked by the programmer. In return, Lean automatically checks that the proofs are valid and that the invocations accomplish the right goal.
+これら二つの等価性の概念はプログラマーとLean自体との間の労働の分離を表しています。
+定義上の等価性は単純ですが自動的であり、一方命題上の等価性は手動ですが表現力があります。
+命題上の等価性は、型レベルの計算でそうでなければスタックしてしまうプログラムを解除するために使用することができます。
 
-The two notions of equality represent a division of labor between programmers and Lean itself.
-Definitional equality is simple, but automatic, while propositional equality is manual, but expressive.
-Propositional equality can be used to unstick otherwise-stuck programs in types.
-
-However, the frequent use of propositional equality to unstick type-level computation is typically a code smell.
-It typically means that coincidences were not well-engineered, and it's usually a better idea to either redesign the types and indices or to use a different technique to enforce the needed invariants.
-When propositional equality is instead used to prove that a program meets a specification, or as part of a subtype, there is less reason to be suspicious.
+しかし、型レベルの計算を解除するために命題上の等価性を頻繁に使用することは、通常はコードの臭いを発散します。
+それは通常、偶然性がよくエンジニアリングされていないことを意味し、タイプとインデックスを再設計するか、必要な不変条件を強制するために異なる技術を使用する方が通常は良いアイデアです。
+代わりに、プログラムが仕様を満たしていることを証明するためや、サブタイプの一部として命題上の等価性を使用するときには、疑わしくないことになります。
+```
