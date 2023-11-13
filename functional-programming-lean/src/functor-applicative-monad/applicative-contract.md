@@ -1,127 +1,125 @@
-# The Applicative Contract
+# アプリカティブ契約
 
-Just like `Functor`, `Monad`, and types that implement `BEq` and `Hashable`, `Applicative` has a set of rules that all instances should adhere to.
+`Functor`、`Monad`、`BEq` や `Hashable` を実装する型と同様に、`Applicative` もすべてのインスタンスが従うべき一連の規則を持っています。
 
-There are four rules that an applicative functor should follow:
-1. It should respect identity, so `pure id <*> v = v`
-2. It should respect function composition, so `pure (· ∘ ·) <*> u <*> v <*> w = u <*> (v <*> w)`
-3. Sequencing pure operations should be a no-op, so `pure f <*> pure x = pure (f x)`
-4. The ordering of pure operations doesn't matter, so `u <*> pure x = pure (fun f => f x) <*> u`
+アプリカティブファンクターが従うべきルールは以下の四つです:
+1. 結合律を尊重し、`pure id <*> v = v` であるべきです。
+2. 関数の合成を尊重し、`pure (· ∘ ·) <*> u <*> v <*> w = u <*> (v <*> w)` であるべきです。
+3. 純粋な操作のシーケンスは、ノーオペレーション（no-op）になるべきなので、`pure f <*> pure x = pure (f x)` です。
+4. 純粋な操作の順序は関係なく、`u <*> pure x = pure (fun f => f x) <*> u` であるべきです。
 
-To check these for the `Applicative Option` instance, start by expanding `pure` into `some`.
+これらを `Applicative Option` インスタンスについてチェックするには、`pure`を`s​​ome`に展開することから始めます。
 
-The first rule states that `some id <*> v = v`.
-The definition of `seq` for `Option` states that this is the same as `id <$> v = v`, which is one of the `Functor` rules that have already been checked.
+最初のルールは、`some id <*> v = v`です。
+`Option`の`seq`の定義によると、これは`id <$> v = v`と同じであり、これはすでに確認された`Functor`の規則の1つです。
 
-The second rule states that `some (· ∘ ·) <*> u <*> v <*> w = u <*> (v <*> w)`.
-If any of `u`, `v`, or `w` is `none`, then both sides are `none`, so the property holds.
-Assuming that `u` is `some f`, that `v` is `some g`, and that `w` is `some x`, then this is equivalent to saying that `some (· ∘ ·) <*> some f <*> some g <*> some x = some f <*> (some g <*> some x)`.
-Evaluating the two sides yields the same result:
+二番目のルールは、`some (· ∘ ·) <*> u <*> v <*> w = u <*> (v <*> w)`です。
+`u`、`v`、または`w`のいずれかが`none`の場合、両方の側が`none`になりますので、特性が保持されます。
+`u`が`some f`であり、`v`が`some g`であり、`w`が`some x`であると仮定すると、これは`some (· ∘ ·) <*> some f <*> some g <*> some x = some f <*> (some g <*> some x)`ということになります。
+両側を評価すると同じ結果が得られます：
 ```lean
 {{#example_eval Examples/FunctorApplicativeMonad.lean OptionHomomorphism1}}
 
 {{#example_eval Examples/FunctorApplicativeMonad.lean OptionHomomorphism2}}
 ```
 
-The third rule follows directly from the definition of `seq`:
+三番目のルールは、`seq`の定義から直接導かれます：
 ```lean
 {{#example_eval Examples/FunctorApplicativeMonad.lean OptionPureSeq}}
 ```
 
-In the fourth case, assume that `u` is `some f`, because if it's `none`, both sides of the equation are `none`.
-`some f <*> some x` evaluates directly to `some (f x)`, as does `some (fun g => g x) <*> some f`.
+四番目のケースでは、`u`が`some f`であると仮定します。なぜならそれが`none`の場合、方程式の両側は`none`になるからです。
+`some f <*> some x`は直接`some (f x)`に評価され、`some (fun g => g x) <*> some f`もそうなります。
 
 
-## All Applicatives are Functors
+## すべてのアプリカティブはファンクターです
 
-The two operators for `Applicative` are enough to define `map`:
+`Applicative`の二つのオペレーターは、`map`を定義するのに十分です：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean ApplicativeMap}}
 ```
 
-This can only be used to implement `Functor` if the contract for `Applicative` guarantees the contract for `Functor`, however.
-The first rule of `Functor` is that `id <$> x = x`, which follows directly from the first rule for `Applicative`.
-The second rule of `Functor` is that `map (f ∘ g) x = map f (map g x)`.
-Unfolding the definition of `map` here results in `pure (f ∘ g) <*> x = pure f <*> (pure g <*> x)`.
-Using the rule that sequencing pure operations is a no-op, the left side can be rewritten to `pure (· ∘ ·) <*> pure f <*> pure g <*> x`.
-This is an instance of the rule that states that applicative functors respect function composition.
+しかしながら、これが`Functor`を実装することに使うことは、`Applicative`の契約が`Functor`の契約を保証する場合に限られます。
+`Functor`の最初のルールは、`id <$> x = x`であり、これは`Applicative`の最初のルールから直接導かれます。
+`Functor`の二番目のルールは、`map (f ∘ g) x = map f (map g x)`です。
+ここで`map`の定義を展開すると、`pure (f ∘ g) <*> x = pure f <*> (pure g <*> x)`になります。
+純粋な操作のシーケンスがノーオペレーションであるという規則を使って、左側を`pure (· ∘ ·) <*> pure f <*> pure g <*> x`に書き換えることができます。
+これはアプリカティブファンクターが関数の合成を尊重するという規則の一例です。
 
-This justifies a definition of `Applicative` that extends `Functor`, with a default definition of `map` given in terms of `pure` and `seq`:
+これは、`Applicative`が`Functor`を拡張している定義を正当化し、`pure`と`seq`を使って`map`のデフォルト定義を提供します：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean ApplicativeExtendsFunctorOne}}
 ```
 
-## All Monads are Applicative Functors
+## すべてのモナドはアプリカティブファンクターです
 
-An instance of `Monad` already requires an implementation of `pure`.
-Together with `bind`, this is enough to define `seq`:
+`Monad`のインスタンスは既に`pure`の実装を必要としています。
+これと`bind`と一緒に、`seq`を定義するのに十分です：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean MonadSeq}}
 ```
-Once again, checking that the `Monad` contract implies the `Applicative` contract will allow this to be used as a default definition for `seq` if `Monad` extends `Applicative`.
+もう一度、`Monad`の契約が`Applicative`の契約を含意していることをチェックすれば、これを`Applicative`を拡張する`Monad`に対する`seq`のデフォルト定義として使うことができます。
 
-The rest of this section consists of an argument that this implementation of `seq` based on `bind` in fact satisfies the `Applicative` contract.
-One of the beautiful things about functional programming is that this kind of argument can be worked out on a piece of paper with a pencil, using the kinds of evaluation rules from [the initial section on evaluating expressions](../getting-to-know/evaluating.md).
-Thinking about the meanings of the operations while reading these arguments can sometimes help with understanding.
+この部分の残りは、`bind`に基づいて`seq`を実装するこの定義が実際に`Applicative`の契約を満たしているという主張で構成されています。
+関数プログラミングの素晴らしいことの一つは、この種の主張を[式の評価に関する最初のセクション](../getting-to-know/evaluating.md)からの評価ルールを使って、紙と鉛筆で解き出すことができるということです。
+これらの引数を読む際に操作の意味を考えると、理解に役立つことがあります。
 
-Replacing `do`-notation with explicit uses of `>>=` makes it easier to apply the `Monad` rules:
+`do`記法を明示的な`>>=`の使用に置き換えると、`Monad`のルールを適用しやすくなります：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean MonadSeqDesugar}}
 ```
 
 
-To check that this definition respects identity, check that `seq (pure id) (fun () => v) = v`.
-The left hand side is equivalent to `pure id >>= fun g => (fun () => v) () >>= fun y => pure (g y)`.
-The unit function in the middle can be eliminated immediately, yielding `pure id >>= fun g => v >>= fun y => pure (g y)`.
-Using the fact that `pure` is a left identity of `>>=`, this is the same as `v >>= fun y => pure (id y)`, which is `v >>= fun y => pure y`.
-Because `fun x => f x` is the same as `f`, this is the same as `v >>= pure`, and the fact that `pure` is a right identity of `>>=` can be used to get `v`.
+結合律を尊重しているかをチェックするには、`seq (pure id) (fun () => v) = v`であることを確認します。
+左側は`pure id >>= fun g => (fun () => v) () >>= fun y => pure (g y)`に相当します。
+中央の単位関数はすぐに削除でき、`pure id >>= fun g => v >>= fun y => pure (g y)`になります。
+`pure`が`>>=`の左単位元であるという事実を使用すると、これは`v >>= fun y => pure (id y)`、つまり`v >>= fun y => pure y`と同じです。
+`fun x => f x`が`f`と同じなので、これは`v >>= pure`と同じであり、`pure`が`>>=`の右単位元であるという事実を使用して`v`となります。
 
-This kind of informal reasoning can be made easier to read with a bit of reformatting.
-In the following chart, read "EXPR1 ={ REASON }= EXPR2" as "EXPR1 is the same as EXPR2 because REASON":
+この種の非公式な推論は、少しのフォーマッティングでより読みやすくすることができます。
+以下のチャートでは、「EXPR1 ={ REASON }= EXPR2」を「EXPR1はREASONのためEXPR2と同じ」と読みます：
 {{#equations Examples/FunctorApplicativeMonad.lean mSeqRespId}}
 
 
-To check that it respects function composition, check that `pure (· ∘ ·) <*> u <*> v <*> w = u <*> (v <*> w)`.
-The first step is to replace `<*>` with this definition of `seq`.
-After that, a (somewhat long) series of steps that use the identity and associativity rules from the `Monad` contract is enough to get from one to the other:
+それが関数の合成を尊重しているかをチェックするには、「`pure (· ∘ ·) <*> u <*> v <*> w = u <*> (v <*> w)`」であることを確認します。
+最初のステップは`<*>`をこの定義の`seq`で置き換えることです。
+その後、`Monad`の契約から恒等性と結合性のルールを使用した（やや長い）一連のステップで一方から他方への十分な取得です：
 {{#equations Examples/FunctorApplicativeMonad.lean mSeqRespComp}}
 
-To check that sequencing pure operations is a no-op:
+純粋な操作のシーケンスがノーオペレーションであることをチェックするには：
 {{#equations Examples/FunctorApplicativeMonad.lean mSeqPureNoOp}}
 
-And finally, to check that the ordering of pure operations doesn't matter:
+最後に、純粋な操作の順序が関係ないことをチェックするには：
 {{#equations Examples/FunctorApplicativeMonad.lean mSeqPureNoOrder}}
 
-This justifies a definition of `Monad` that extends `Applicative`, with a default definition of `seq`:
+これにより、`Applicative`を拡張する`Monad`の定義が正当化され、`seq`のデフォルト定義が提供されます：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean MonadExtends}}
 ```
-`Applicative`'s own default definition of `map` means that every `Monad` instance automatically generates `Applicative` and `Functor` instances as well.
+`Applicative`自身の`map`のデフォルト定義により、すべての`Monad`インスタンスは自動的に`Applicative`と`Functor`のインスタンスも生成します。
 
-## Additional Stipulations
+## 追加の定義
 
-In addition to adhering to the individual contracts associated with each type class, combined implementations `Functor`, `Applicative` and `Monad` should work equivalently to these default implementations.
-In other words, a type that provides both `Applicative` and `Monad` instances should not have an implementation of `seq` that works differently from the version that the `Monad` instance generates as a default implementation.
-This is important because polymorphic functions may be refactored to replace a use of `>>=` with an equivalent use of `<*>`, or a use of `<*>` with an equivalent use of `>>=`.
-This refactoring should not change the meaning of programs that use this code.
+各型クラスに関連する個々の契約に準拠することに加えて、`Functor`、`Applicative`、および`Monad`の組み合わせ実装は、これらのデフォルト実装に相当するように動作するべきです。
+言い換えれば、`Applicative`と`Monad`の両方のインスタンスを提供する型は、バージョンが`Monad`インスタンスがデフォルト実装として生成するバージョンとは異なる動作をする`seq`の実装を持つべきではありません。
+これは重要です。なぜなら、多相関数は`>>=`の使用を`<*>`の同等の使用に置き換える、あるいは`<*>`の使用を`>>=`の同等の使用に置き換えるためにリファクタリングされるかもしれないからです。
+このリファクタリングは、このコードを使用するプログラムの意味を変更するべきではありません。
 
-This rule explains why `Validate.andThen` should not be used to implement `bind` in a `Monad` instance.
-On its own, it obeys the monad contract.
-However, when it is used to implement `seq`, the behavior is not equivalent to `seq` itself.
-To see where they differ, take the example of two computations, both of which return errors.
-Start with an example of a case where two errors should be returned, one from validating a function (which could have just as well resulted from a prior argument to the function), and one from validating an argument:
+このルールは、`Validate.andThen`を`Monad`インスタンスで`bind`を実装するために使用すべきではない理由を説明しています。
+それ自体はモナド契約に従います。
+ただし、それを`seq`の実装に使用した場合、動作は`seq`自体と同等ではありません。
+どこが異なるかを見るために、両方がエラーを返す二つの計算の例を取ります。
+関数を検証する際に二つのエラーが返されるべきケースの例を出発点としてください（これは関数への以前の引数から得られたものと同様になるかもしれません）、および引数を検証する際のエラーです：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean counterexample}}
 ```
 
-Combining them with the version of `<*>` from `Validate`'s `Applicative` instance results in both errors being reported to the user:
+`Validate`の`Applicative`インスタンスからの`<*>`のバージョンでそれらを組み合わせると、ユーザーに両方のエラーが報告されます：
 ```lean
 {{#example_eval Examples/FunctorApplicativeMonad.lean realSeq}}
 ```
 
-Using the version of `seq` that was implemented with `>>=`, here rewritten to `andThen`, results in only the first error being available:
+`>>=`に書き換えられた`seq`のバージョンを使って実装され、ここでは`andThen`に書き換えられたバージョンを使うと、最初のエラーのみが利用可能になります：
 ```lean
 {{#example_eval Examples/FunctorApplicativeMonad.lean fakeSeq}}
 ```
-
-

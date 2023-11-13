@@ -1,99 +1,99 @@
-# Alternatives
+# 代替案
 
 
-## Recovery from Failure
+## 失敗からの回復
 
-`Validate` can also be used in situations where there is more than one way for input to be acceptable.
-For the input form `RawInput`, an alternative set of business rules that implement conventions from a legacy system might be the following:
+`Validate`は、入力が受け入れられる方法が複数ある状況でも使用できます。
+入力フォーム`RawInput`に対して、レガシーシステムからの慣習を実装したビジネスルールの別のセットは以下の通りです：
 
- 1. All human users must provide a birth year that is four digits.
- 2. Users born prior to 1970 do not need to provide names, due to incomplete older records.
- 3. Users born after 1970 must provide names.
- 4. Companies should enter `"FIRM"` as their year of birth and provide a company name.
+ 1. すべての人間のユーザーは、4桁の生年を提供しなければなりません。
+ 2. 1970年以前に生まれたユーザーは、不完全な旧記録のため、名前を提供する必要はありません。
+ 3. 1970年以降に生まれたユーザーは、名前を提供しなければなりません。
+ 4. 企業は、出生年として`"FIRM"`を入力し、企業名を提供する必要があります。
  
-No particular provision is made for users born in 1970.
-It is expected that they will either give up, lie about their year of birth, or call.
-The company considers this an acceptable cost of doing business.
- 
-The following inductive type captures the values that can be produced from these stated rules:
+1970年に生まれたユーザーについては特に規定がなされていません。
+彼らには、諦めるか、出生年を偽るか、または電話をかけることが期待されています。
+会社はこれをビジネスを行う上での許容可能なコストと考えています。
+
+以下の帰納的型は、これらの規則から生成される値を捉えます：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean LegacyCheckedInput}}
 ```
 
-A validator for these rules is more complicated, however, as it must address all three cases.
-While it can be written as a series of nested `if` expressions, it's easier to design the three cases independently and then combine them.
-This requires a means of recovering from failure while preserving error messages:
+しかし、これらのルールのバリデータはより複雑であり、３つのケースすべてに対処しなければなりません。
+それは一連のネストした`if`式として書くこともできますが、３つのケースを独立して設計し、その後に統合する方が簡単です。
+これには、エラーメッセージを保持しながら、失敗からの回復が可能な手段が必要です：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean ValidateorElse}}
 ```
 
-This pattern of recovery from failures is common enough that Lean has built-in syntax for it, attached to a type class named `OrElse`:
+この失敗からの回復パターンは十分に一般的であり、Leanにはそれ用の組み込み構文があります。これは`OrElse`という型クラスに付随しています：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean OrElse}}
 ```
-The expression `{{#example_in Examples/FunctorApplicativeMonad.lean OrElseSugar}}` is short for `{{#example_out Examples/FunctorApplicativeMonad.lean OrElseSugar}}`.
-An instance of `OrElse` for `Validate` allows this syntax to be used for error recovery:
+式`{{#example_in Examples/FunctorApplicativeMonad.lean OrElseSugar}}`は`{{#example_out Examples/FunctorApplicativeMonad.lean OrElseSugar}}`の略です。
+`Validate`の`OrElse`インスタンスにより、この構文をエラー回復に使用することができます：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean OrElseValidate}}
 ```
 
-The validator for `LegacyCheckedInput` can be built from a validator for each constructor.
-The rules for a company state that the birth year should be the string `"FIRM"` and that the name should be non-empty.
-The constructor `LegacyCheckedInput.company`, however, has no representation of the birth year at all, so there's no easy way to carry it out using `<*>`.
-The key is to use a function with `<*>` that ignores its argument.
+`LegacyCheckedInput`のバリデータは、各コンストラクタのバリデータから構築することができます。
+企業のルールは、出生年は文字列`"FIRM"`でなければならず、名前は非空でなければなりません。
+しかし、コンストラクタ`LegacyCheckedInput.company`には出生年の表現がまったくないため、`<*>`を使ってこれを実行する簡単な方法はありません。
+重要なのは、その引数を無視する関数を`<*>`と一緒に使用することです。
 
-Checking that a Boolean condition holds without recording any evidence of this fact in a type can be accomplished with `checkThat`:
+型にこの事実を何も記録せずに真偽条件が成り立つことを確認するには、`checkThat`を使用できます：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean checkThat}}
 ```
-This definition of `checkCompany` uses `checkThat`, and then throws away the resulting `Unit` value:
+この`checkCompany`の定義は`checkThat`を使用して、その結果の`Unit`値を廃棄します：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean checkCompanyProv}}
 ```
 
-However, this definition is quite noisy.
-It can be simplified in two ways.
-The first is to replace the first use of `<*>` with a specialized version that automatically ignores the value returned by the first argument, called `*>`.
-This operator is also controlled by a type class, called `SeqRight`, and `{{#example_in Examples/FunctorApplicativeMonad.lean seqRightSugar}}` is syntactic sugar for `{{#example_out Examples/FunctorApplicativeMonad.lean seqRightSugar}}`:
+しかしながら、この定義はかなり雑音が多いです。
+２つの方法で簡略化できます。
+最初の方法は、最初の`<*>`を使う代わりに、最初の引数によって返される値を自動的に無視する特殊バージョンである`*>`を使用することです。
+この演算子もまた、`SeqRight`という型クラスによって制御されており、`{{#example_in Examples/FunctorApplicativeMonad.lean seqRightSugar}}`は`{{#example_out Examples/FunctorApplicativeMonad.lean seqRightSugar}}`の糖衣構文です：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean ClassSeqRight}}
 ```
-There is a default implementation of `seqRight` in terms of `seq`: `seqRight (a : f α) (b : Unit → f β) : f β := pure (fun _ x => x) <*> a <*> b ()`.
+`seqRight`のデフォルト実装は`seq`の観点からです：`seqRight (a : f α) (b : Unit → f β) : f β := pure (fun _ x => x) <*> a <*> b ()`。
 
-Using `seqRight`, `checkCompany` becomes simpler:
+`seqRight`を使用すると、`checkCompany`はよりシンプルになります：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean checkCompanyProv2}}
 ```
-One more simplification is possible.
-For every `Applicative`, `pure F <*> E` is equivalent to `f <$> E`.
-In other words, using `seq` to apply a function that was placed into the `Applicative` type using `pure` is overkill, and the function could have just been applied using `Functor.map`.
-This simplification yields:
+さらに簡略化することが可能です。
+すべての`Applicative`において、`pure F <*> E`は`f <$> E`と等価です。
+言い換えれば、`pure`を使って`Applicative`型に置かれた関数を適用するために`seq`を使用することは過剰であり、その関数は`Functor.map`を使って適用できたはずです。
+この簡略化により：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean checkCompany}}
 ```
 
-The remaining two constructors of `LegacyCheckedInput` use subtypes for their fields.
-A general-purpose tool for checking subtypes will make these easier to read:
+`LegacyCheckedInput`の残りの２つのコンストラクタは、そのフィールドにサブタイプを使用しています。
+サブタイプをチェックするための汎用ツールは、これらを読みやすくするでしょう：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean checkSubtype}}
 ```
-In the function's argument list, it's important that the type class `[Decidable (p v)]` occur after the specification of the arguments `v` and `p`.
-Otherwise, it would refer to an additional set of automatic implicit arguments, rather than to the manually-provided values.
-The `Decidable` instance is what allows the proposition `p v` to be checked using `if`.
+関数の引数リストでは、型クラス`[Decidable (p v)]`が引数`v`と`p`の指定の後で発生することが重要です。
+さもなければ、これは手動で提供された値ではなく、追加の一連の自動的な暗黙の引数を指すことになるでしょう。
+`Decidable`インスタンスは、`if`を使用して命題`p v`をチェックすることを可能にするものです。
 
-The two human cases do not need any additional tools:
+２つの人間のケースは追加のツールを必要としません：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean checkHumanBefore1970}}
 
 {{#example_decl Examples/FunctorApplicativeMonad.lean checkHumanAfter1970}}
 ```
 
-The validators for the three cases can be combined using `<|>`:
+３つのケースのバリデータは`<|>`を使用して組み合わせることができます：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean checkLegacyInput}}
 ```
 
-The successful cases return constructors of `LegacyCheckedInput`, as expected:
+成功したケースは予想通り`LegacyCheckedInput`のコンストラクタを返します：
 ```lean
 {{#example_in Examples/FunctorApplicativeMonad.lean trollGroomers}}
 ```
@@ -113,7 +113,7 @@ The successful cases return constructors of `LegacyCheckedInput`, as expected:
 {{#example_out Examples/FunctorApplicativeMonad.lean johnnyAnon}}
 ```
 
-The worst possible input returns all the possible failures:
+最悪の入力はすべての失敗を返します：
 ```lean
 {{#example_in Examples/FunctorApplicativeMonad.lean allFailures}}
 ```
@@ -122,41 +122,41 @@ The worst possible input returns all the possible failures:
 ```
 
 
-## The `Alternative` Class
+## `Alternative` クラス
 
-Many types support a notion of failure and recovery.
-The `Many` monad from the section on [evaluating arithmetic expressions in a variety of monads](../monads/arithmetic.md#nondeterministic-search) is one such type, as is `Option`.
-Both support failure without providing a reason (unlike, say, `Except` and `Validate`, which require some indication of what went wrong).
+多くの型は、失敗と回復の概念をサポートしています。
+[さまざまなモナドで算術表現を評価する](../monads/arithmetic.md#nondeterministic-search)セクションの`Many`モナドはこのような型の一つですし、`Option`もそうです。
+両方とも失敗をサポートしていますが、理由を提供することなく（例えば`Except`や`Validate`のように、何が間違っているかの何らかの指示が必要です）。
 
-The `Alternative` class describes applicative functors that have additional operators for failure and recovery:
+`Alternative`クラスは、失敗と回復のための追加の演算子を持つ適用関数型子を記述します：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean FakeAlternative}}
 ```
-Just as implementors of `Add α` get `HAdd α α α` instances for free, implementors of `Alternative` get `OrElse` instances for free:
+`Add α`の実装者が自動的に`HAdd α α α`インスタンスを得るのと同様に、`Alternative`の実装者は`OrElse`インスタンスを無料で取得します：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean AltOrElse}}
 ```
 
-The implementation of `Alternative` for `Option` keeps the first none-`none` argument:
+`Option`の`Alternative`の実装は、最初のnone-`none`引数を保持します：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean AlternativeOption}}
 ```
-Similarly, the implementation for `Many` follows the general structure of `Many.union`, with minor differences due to the laziness-inducing `Unit` parameters being placed differently:
+同様に、`Many`の実装は`Many.union`の一般的な構造に従いますが、怠惰を誘発する`Unit`パラメータの配置が異なるために若干の違いがあります：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean AlternativeMany}}
 ```
 
-Like other type classes, `Alternative` enables the definition of a variety of operations that work for _any_ applicative functor that implements `Alternative`.
-One of the most important is `guard`, which causes `failure` when a decidable proposition is false:
+他の型クラスと同様に、`Alternative`は`Alternative`を実装する任意の適用関数型子に対して動作するさまざまな操作の定義を可能にします。
+最も重要なのは、否定的な命題が偽であるときに`failure`を引き起こす`guard`です：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean guard}}
 ```
-It is very useful in monadic programs to terminate execution early.
-In `Many`, it can be used to filter out a whole branch of a search, as in the following program that computes all even divisors of a natural number:
+これはモナドプログラムで実行を早期に終了させるために非常に有効です。
+`Many`では、自然数のすべての偶数の除数を計算する以下のプログラムで、検索の全枝をフィルタリングするために使用できます：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean evenDivisors}}
 ```
-Running it on `20` yields the expected results:
+`20`で実行すると予想される結果が得られます：
 ```lean
 {{#example_in Examples/FunctorApplicativeMonad.lean evenDivisors20}}
 ```
@@ -165,20 +165,18 @@ Running it on `20` yields the expected results:
 ```
 
 
-## Exercises
+## 練習問題
 
-### Improve Validation Friendliness
+### バリデーションの親しみやすさの向上
 
-The errors returned from `Validate` programs that use `<|>` can be difficult to read, because inclusion in the list of errors simply means that the error can be reached through _some_ code path.
-A more structured error report can be used to guide the user through the process more accurately:
+`<|>`を使用する`Validate`プログラムから返されるエラーは、リストに含まれるエラーは単に_いくつかの_コードパスを通じて到達可能であることを意味するため、読むのが難しいことがあります。
+より構造化されたエラーレポートを使用することで、ユーザーをより正確にガイドすることができます：
 
- * Replace the `NonEmptyList` in `Validate.error` with a bare type variable, and then update the definitions of the `Applicative (Validate ε)` and `OrElse (Validate ε α)` instances to require only that there be an `Append ε` instance available.
- * Define a function `Validate.mapErrors : Validate ε α → (ε → ε') → Validate ε' α` that transforms all the errors in a validation run.
- * Using the datatype `TreeError` to represent errors, rewrite the legacy validation system to track its path through the three alternatives.
- * Write a function `report : TreeError → String` that outputs a user-friendly view of the `TreeError`'s accumulated warnings and errors.
- 
+ * `Validate.error`の`NonEmptyList`を素の型変数に置き換え、そして`Applicative (Validate ε)`および`OrElse (Validate ε α)`インスタンスの定義を更新して、`Append ε`インスタンスが利用可能であるだけを要求します。
+ * `Validate.mapErrors : Validate ε α → (ε → ε') → Validate ε' α`という関数を定義し、検証実行中のすべてのエラーを変換します。
+ * エラーを代表するデータ型`TreeError`を使い、３つの代替案を通じたパスを追跡するようにレガシーバリデーションシステムを書き換えます。
+ * `report : TreeError → String`という関数を書き、`TreeError`の蓄積された警告とエラーのユーザーフレンドリーなビューを出力します。
+
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad.lean TreeError}}
 ```
-
-

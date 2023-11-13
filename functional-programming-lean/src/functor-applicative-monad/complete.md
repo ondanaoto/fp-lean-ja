@@ -1,132 +1,134 @@
-# The Complete Definitions
+```markdown
+# 完全な定義
 
-Now that all the relevant language features have been presented, this section describes the complete, honest definitions of `Functor`, `Applicative`, and `Monad` as they occur in the Lean standard library.
-For the sake of understanding, no details are omitted.
+ここに、Lean 標準ライブラリにおける `Functor`、`Applicative`、そして `Monad` の完全かつ正直な定義を記述しました。
+理解のために、詳細は省略されていません。
 
 ## Functor
 
-The complete definition of the `Functor` class makes use of universe polymorphism and a default method implementation:
+`Functor` クラスの完全な定義は、宇宙多相性 (universe polymorphism) とデフォルトメソッド実装を使用します：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad/ActualDefs.lean HonestFunctor}}
 ```
-In this definition, `Function.comp` is function composition, which is typically written with the `∘` operator.
-`Function.const` is the _constant function_, which is a two-argument function that ignores its second argument.
-Applying this function to only one argument produces a function that always returns the same value, which is useful when an API demands a function but a program doesn't need to compute different results for different arguments.
-A simple version of `Function.const` can be written as follows:
+この定義において、`Function.comp` は関数の合成であり、通常 `∘` 演算子で書かれます。
+`Function.const` は_定数関数 (constant function)_ で、第二引数を無視する二つの引数を取る関数です。
+この関数に一つの引数だけを適用すると、常に同じ値を返す関数が得られ、APIが関数を要求するものの、プログラムが異なる引数に対して異なる結果を計算する必要がない場合に便利です。
+`Function.const` のシンプルなバージョンは次のように書けます：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad/ActualDefs.lean simpleConst}}
 ```
-Using it with one argument as the function argument to `List.map` demonstrates its utility:
+これを `List.map` に対する関数引数として一つの引数で使用するとその有用性がわかります：
 ```lean
 {{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean mapConst}}
 ```
 ```output info
 {{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean mapConst}}
 ```
-The actual function has the following signature:
+実際の関数には以下のようなシグネチャがあります：
 ```output info
 {{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean FunctionConstType}}
 ```
-Here, the type argument `β` is an explicit argument, so the default definition of `Functor.mapConst` provides an `_` argument that instructs Lean to find a unique type to pass to `Function.const` that would cause the program to type check.
-`{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean unfoldCompConst}}` is equivalent to `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean unfoldCompConst}}`.
+ここで、型引数 `β` は明示的な引数であり、そのため `Functor.mapConst` のデフォルト定義は `_` 引数を提供し、プログラムがタイプチェックされるように `Function.const` に渡すユニークな型を Lean が見つけるよう指示します。
+`{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean unfoldCompConst}}` は `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean unfoldCompConst}}` と同等です。
 
-The `Functor` type class inhabits a universe that is the greater of `u+1` and `v`.
-Here, `u` is the level of universes accepted as arguments to `f`, while `v` is the universe returned by `f`.
-To see why the structure that implements the `Functor` type class must be in a universe that's larger than `u`, begin with a simplified definition of the class:
+`Functor` 型クラスは `u+1` と `v` の大きな方にある宇宙に属しています。
+ここで、`u` は `f` に対して引数として受け入れられる宇宙のレベル、`v` は `f` によって返される宇宙です。
+`Functor` 型クラスを実装する構造が `u` よりも大きな宇宙になければならない理由を理解するためには、クラスの簡素化された定義から始めます：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad/ActualDefs.lean FunctorSimplified}}
 ```
-This type class's structure type is equivalent to the following inductive type:
+この型クラスの構造型は次の帰納型と等価です：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad/ActualDefs.lean FunctorDatatype}}
 ```
-The implementation of the `map` method that is passed as an argument to `Functor.mk` contains a function that takes two types in `Type u` as arguments.
-This means that the type of the function itself is in `Type (u+1)`, so `Functor` must also be at a level that is at least `u+1`.
-Similarly, other arguments to the function have a type built by applying `f`, so it must also have a level that is at least `v`.
-All the type classes in this section share this property.
+`Functor.mk` に引数として渡される `map` メソッドの実装には、`Type u` 内の二つの型を引数とする関数が含まれています。
+これは関数自身の型が `Type (u+1)` 内にあることを意味するため、`Functor` も少なくとも `u+1` のレベルになければなりません。
+同様に、関数の他の引数には `f` を適用して作られた型が含まれるため、`v` のレベルにも達している必要があります。
+この節で共有されているすべての型クラスがこのプロパティを共有しています。
 
 ## Applicative
 
-The `Applicative` type class is actually built from a number of smaller classes that each contain some of the relevant methods.
-The first are `Pure` and `Seq`, which contain `pure` and `seq` respectively:
+`Applicative` 型クラスは実際には、`pure` や `seq` などの関連メソッドを含むいくつかの小さなクラスから構成されています。
+最初に `Pure` と `Seq` があり、それぞれ `pure` と `seq` を含んでいます：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad/ActualDefs.lean Pure}}
 
 {{#example_decl Examples/FunctorApplicativeMonad/ActualDefs.lean Seq}}
 ```
 
-In addition to these, `Applicative` also depends on `SeqRight` and an analogous `SeqLeft` class:
+これに加えて、`Applicative` は `SeqRight` と類似の `SeqLeft` クラスにも依存しています：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad/ActualDefs.lean SeqRight}}
 
 {{#example_decl Examples/FunctorApplicativeMonad/ActualDefs.lean SeqLeft}}
 ```
 
-The `seqRight` function, which was introduced in the [section about alternatives and validation](alternative.md), is easiest to understand from the perspective of effects.
-`{{#example_in Examples/FunctorApplicativeMonad.lean seqRightSugar}}`, which desugars to `{{#example_out Examples/FunctorApplicativeMonad.lean seqRightSugar}}`, can be understood as first executing `E1`, and then `E2`, resulting only in `E2`'s result.
-Effects from `E1` may result in `E2` not being run, or being run multiple times.
-Indeed, if `f` has a `Monad` instance, then `E1 *> E2` is equivalent to `do let _ ← E1; E2`, but `seqRight` can be used with types like `Validate` that are not monads.
+[代替と検証に関する節](alternative.md)で紹介された `seqRight` 関数は、効果の観点から理解するのが最も簡単です。
+`{{#example_in Examples/FunctorApplicativeMonad.lean seqRightSugar}}` は `{{#example_out Examples/FunctorApplicativeMonad.lean seqRightSugar}}` に展開され、`E1` を実行してから `E2` を実行し、`E2` の結果だけを結果として得ると理解できます。
+`E1` の効果によって `E2` が実行されなかったり、複数回実行されたりすることがあります。
+確かに、`f` が `Monad` のインスタンスを持っているならば、`E1 *> E2` は `do let _ ← E1; E2` と同等ですが、`seqRight` は `Validate` のようなモナドではない型で使用できます。
 
-Its cousin `seqLeft` is very similar, except the leftmost expression's value is returned.
-`{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean seqLeftSugar}}` desugars to `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean seqLeftSugar}}`.
-`{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean seqLeftType}}` has type `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean seqLeftType}}`, which is identical to that of `seqRight` except for the fact that it returns `f α`.
-`{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean seqLeftSugar}}` can be understood as a program that first executes `E1`, and then `E2`, returning the original result for `E1`.
-If `f` has a `Monad` instance, then `E1 <* E2` is equivalent to `do let x ← E1; _ ← E2; pure x`.
-Generally speaking, `seqLeft` is useful for specifying extra conditions on a value in a validation or parser-like workflow without changing the value itself.
+そのいとこ `seqLeft` も非常に似ていますが、左側の式の値が返されます。
+`{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean seqLeftSugar}}` は `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean seqLeftSugar}}` に展開されます。
+`{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean seqLeftType}}` の型は `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean seqLeftType}}` となり、これは `seqRight` と同じですが、`f α` を返すという点だけが異なります。
+`{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean seqLeftSugar}}` は `E1` を最初に実行し、次に `E2` を実行し、`E1` に対する元の結果を返すプログラムとして理解できます。
+`f` が `Monad` のインスタンスを持っているならば、`E1 <* E2` は `do let x ← E1; _ ← E2; pure x` と同等です。
+一般的に、`seqLeft` は、値自体を変更することなく、検証やパーサーのようなワークフローにおいて値に追加の条件を指定するために役立ちます。
 
-The definition of `Applicative` extends all these classes, along with `Functor`:
+`Applicative` の定義はこれらのクラスすべてを拡張しますが、`Functor` も含んでいます：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad/ActualDefs.lean Applicative}}
 ```
-A complete definition of `Applicative` requires only definitions for `pure` and `seq`.
-This is because there are default definitions for all of the methods from `Functor`, `SeqLeft`, and `SeqRight`.
-The `mapConst` method of `Functor` has its own default implementation in terms of `Functor.map`.
-These default implementations should only be overridden with new functions that are behaviorally equivalent, but more efficient.
-The default implementations should be seen as specifications for correctness as well as automatically-created code.
+`Applicative` の完全な定義には `pure` と `seq` の定義だけが必要です。
+これは `Functor`、`SeqLeft`、`SeqRight` のすべてのメソッドにデフォルトの定義があるためです。
+`Functor` の `mapConst` メソッドには `Functor.map` に基づく独自のデフォルト実装があります。
+これらのデフォルト実装は、振る舞いが同等でありながら効率的な新たな関数に置き換えられるべきです。
+デフォルトの実装は、正確性の仕様と同時に自動生成されたコードとして見るべきです。
 
-The default implementation for `seqLeft` is very compact.
-Replacing some of the names with their syntactic sugar or their definitions can provide another view on it, so:
+`seqLeft` のデフォルト実装は非常にコンパクトです。
+いくつかの名前を構文糖やそれらの定義に置き換えることで別の視点が得られるため：
 ```lean
 {{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean unfoldMapConstSeqLeft}}
 ```
-becomes
+になります
 ```lean
 {{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean unfoldMapConstSeqLeft}}
 ```
-How should `(fun x _ => x) <$> a` be understood?
-Here, `a` has type `f α`, and `f` is a functor.
-If `f` is `List`, then `{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstList}}` evaluates to `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstList}}`.
-If `f` is `Option`, then `{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstOption}}` evaluates to `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstOption}}`.
-In each case, the values in the functor are replaced by functions that return the original value, ignoring their argument.
-When combined with `seq`, this function discards the values from `seq`'s second argument.
+`(fun x _ => x) <$> a` はどのように理解すべきでしょうか？
+ここでは、`a` は型 `f α` を持ち、`f` はファンクターです。
+`f` が `List` である場合、`{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstList}}` は `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstList}}` と評価されます。
+`f` が `Option` である場合、`{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstOption}}` は `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstOption}}` と評価されます。
+どちらの場合でも、ファンクター内の値は引数を無視して元の値を返す関数に置き換えられます。
+`seq` と組み合わせると、この関数は `seq` の第二引数の値を破棄します。
 
-The default implementation for `seqRight` is very similar, except `const` has an additional argument `id`.
-This definition can be understood similarly, by first introducing some standard syntactic sugar and then replacing some names with their definitions:
+`seqRight` のデフォルト実装も非常に類似していますが、`const` には追加の引数 `id` があります。
+この定義も、いくつかの標準的な構文糖を導入し、それからいくつかの名前をそれらの定義に置き換えることで同様に理解することができます：
 ```lean
 {{#example_eval Examples/FunctorApplicativeMonad/ActualDefs.lean unfoldMapConstSeqRight}}
 ```
-How should `(fun _ x => x) <$> a` be understood?
-Once again, examples are useful.
-`{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstIdList}}` is equivalent to `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstIdList}}`, and `{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstIdOption}}` is equivalent to `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstIdOption}}`.
-In other words, `(fun _ x => x) <$> a` preserves the overall shape of `a`, but each value is replaced by the identity function.
-From the perspective of effects, the side effects of `a` occur, but the values are thrown out when it is used with `seq`.
+`(fun _ x => x) <$> a` はどのように理解すべきでしょうか？
+やはり、例が役立ちます。
+`{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstIdList}}` は `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstIdList}}` と同等であり、`{{#example_in Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstIdOption}}` は `{{#example_out Examples/FunctorApplicativeMonad/ActualDefs.lean mapConstIdOption}}` と同等です。
+言い換えれば、`(fun _ x => x) <$> a` は `a` の全体的な形を維持しつつ、各値がアイデンティティ関数で置き換えられます。
+効果の観点から、`a` の副作用は起こりますが、それが `seq` で使われるときに値は捨てられます。
 
 ## Monad
 
-Just as the constituent operations of `Applicative` are split into their own type classes, `Bind` has its own class as well:
+`Applicative` の構成操作がそれぞれ独自の型クラスに分割されているように、`Bind` も独自のクラスを持っています：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad/ActualDefs.lean Bind}}
 ```
-`Monad` extends `Applicative` with `Bind`:
+`Monad` は `Applicative` と `Bind` で拡張されます：
 ```lean
 {{#example_decl Examples/FunctorApplicativeMonad/ActualDefs.lean Monad}}
 ```
-Tracing the collection of inherited methods and default methods from the entire hierarchy shows that a `Monad` instance requires only implementations of `bind` and `pure`.
-In other words, `Monad` instances automatically yield implementations of `seq`, `seqLeft`, `seqRight`, `map`, and `mapConst`.
-From the perspective of API boundaries, any type with a `Monad` instance gets instances for `Bind`, `Pure`, `Seq`, `Functor`, `SeqLeft`, and `SeqRight`.
+インスタンスが要求するメソッドの集合と、階層全体から得られるデフォルトメソッドを追跡すると、`Monad` インスタンスには `bind` と `pure` の実装だけが必要です。
+言い換えれば、`Monad` インスタンスは自動的に `seq`、`seqLeft`、`seqRight`、`map`、`mapConst` の実装を導出します。
+API 境界の観点から、`Monad` のインスタンスを持つ任意の型は `Bind`、`Pure`、`Seq`、`Functor`、`SeqLeft`、`SeqRight` のインスタンスを得ます。
 
 
-## Exercises
+## エクササイズ
 
- 1. Understand the default implementations of `map`, `seq`, `seqLeft`, and `seqRight` in `Monad` by working through examples such as `Option` and `Except`. In other words, substitute their definitions for `bind` and `pure` into the default definitions, and simplify them to recover the versions `map`, `seq`, `seqLeft`, and `seqRight` that would be written by hand.
- 2. On paper or in a text file, prove to yourself that the default implementations of `map` and `seq` satisfy the contracts for `Functor` and `Applicative`. In this argument, you're allowed to use the rules from the `Monad` contract as well as ordinary expression evaluation.
+ 1. `Monad` における `map`、`seq`、`seqLeft`、`seqRight` のデフォルト実装を、`Option` や `Except` などの例を通じて理解してみてください。つまり、その定義を `bind` と `pure` に代替してデフォルト定義に代入し、手書きされるであろうバージョンの `map`、`seq`、`seqLeft`、`seqRight` に単純化してください。
+ 2. 紙に書いたりテキストファイルに記述したりして、`map` と `seq` のデフォルト実装が `Functor` および `Applicative` の契約を満たすことを自分自身に証明してみてください。この議論で使用するのは `Monad` 契約からの規則と通常の式の評価です。
+```

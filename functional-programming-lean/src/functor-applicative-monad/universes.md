@@ -1,11 +1,11 @@
-# Universes
+# 宇宙 (Universes)
 
-In the interests of simplicity, this book has thus far papered over an important feature of Lean: _universes_.
-A universe is a type that classifies other types.
-Two of them are familiar: `Type` and `Prop`.
-`Type` classifies ordinary types, such as `Nat`, `String`, `Int → String × Char`, and `IO Unit`.
-`Prop` classifies propositions that may be true or false, such as `"nisse" = "elf"` or `3 > 2`.
-The type of `Prop` is `Type`:
+簡単のため、この本はここまでLeanの重要な特徴である_宇宙_ (universes) を省略してきました。
+宇宙とは、他の型を分類する型です。
+`Type` と `Prop` の2つは馴染み深いでしょう。
+`Type` は `Nat`、`String`、`Int → String × Char`、`IO Unit` のような通常の型を分類します。
+`Prop` は `"nisse" = "elf"` や `3 > 2` のような真か偽かの命題を分類します。
+`Prop` の型は `Type` です:
 ```lean
 {{#example_in Examples/Universes.lean PropType}}
 ```
@@ -13,62 +13,62 @@ The type of `Prop` is `Type`:
 {{#example_out Examples/Universes.lean PropType}}
 ```
 
-For technical reasons, more universes than these two are needed.
-In particular, `Type` cannot itself be a `Type`.
-This would allow a logical paradox to be constructed and undermine Lean's usefulness as a theorem prover.
+技術的な理由から、これら2つよりも多くの宇宙が必要です。
+特に、`Type`自体は`Type`にはなり得ません。
+これを許すと論理的パラドックスが構築され、Leanの定理証明者としての有用性が損なわれることになります。
 
-The formal argument for this is known as _Girard's Paradox_.
-It related to a better-known paradox known as _Russell's Paradox_, which was used to show that early versions of set theory were inconsistent.
-In these set theories, a set can be defined by a property.
-For example, one might have the set of all red things, the set of all fruit, the set of all natural numbers, or even the set of all sets.
-Given a set, one can ask whether a given element is contained in it.
-For instance, a bluebird is not contained in the set of all red things, but the set of all red things is contained in the set of all sets.
-Indeed, the set of all sets even contains itself.
+このための公式な議論は _ジラールのパラドックス_ (Girard's Paradox) として知られています。
+これはセット理論の初期バージョンが矛盾していたことを示すために使用された、よりよく知られているパラドックスである _ラッセルのパラドックス_ (Russell's Paradox) に関連しています。
+これらのセット理論では、セットはプロパティによって定義することができます。
+たとえば、全ての赤いもののセット、全ての果物のセット、全ての自然数のセット、または全てのセットのセットなどです。
+セットが与えられたら、特定の要素がそれに含まれているかどうかを尋ねることができます。
+例えば、青い鳥は全ての赤いもののセットには含まれませんが、全ての赤いもののセットは全てのセットのセットに含まれます。
+事実、全てのセットのセットはそれ自体をも含んでいます。
 
-What about the set of all sets that do not contain themselves?
-It contains the set of all red things, as the set of all red things is not itself red.
-It does not contain the set of all sets, because the set of all sets contains itself.
-But does it contain itself?
-If it does contain itself, then it cannot contain itself.
-But if it does not, then it must.
+では、自己を含まない全てのセットのセットはどうでしょうか？
+それは全ての赤いもののセットを含んでいます。なぜならそのセットは赤くはありません。
+しかし、全てのセットのセットは含んでいません。なぜならそれ自体を含んでいるからです。
+しかし、そのセットは自分自身を含んでいるのでしょうか？
+もし含んでいるならば、それ自体を含むことはできません。
+しかし含んでいないのならば、それを含むべきです。
 
-This is a contradiction, which demonstrates that something was wrong with the initial assumptions.
-In particular, allowing sets to be constructed by providing an arbitrary property is too powerful.
-Later versions of set theory restrict the formation of sets to remove the paradox.
+これは矛盾であり、初期の前提に何か間違いがあったことを示しています。
+特に、任意のプロパティを提供してセットを構築することを許すのは強力さが過ぎます。
+後のバージョンのセット理論はパラドックスを取り除くためにセットの形成を制限しています。
 
-A related paradox can be constructed in versions of dependent type theory that assign the type `Type` to `Type`.
-To ensure that Lean has consistent logical foundations and can be used as a tool for mathematics, `Type` needs to have some other type.
-This type is called `Type 1`:
+依存型理論のバージョンで`Type`に`Type`という型を割り当てると同様のパラドックスが構築されます。
+Leanが一貫した論理的基盤を持ち、数学のためのツールとして利用できるようにするためには、`Type`には別の型が必要です。
+この型は`Type 1`と呼ばれます:
 ```lean
 {{#example_in Examples/Universes.lean TypeType}}
 ```
 ```output info
 {{#example_out Examples/Universes.lean TypeType}}
 ```
-Similarly, `{{#example_in Examples/Universes.lean Type1Type}}` is a `{{#example_out Examples/Universes.lean Type1Type}}`,
-`{{#example_in Examples/Universes.lean Type2Type}}` is a `{{#example_out Examples/Universes.lean Type2Type}}`,
-`{{#example_in Examples/Universes.lean Type3Type}}` is a `{{#example_out Examples/Universes.lean Type3Type}}`, and so forth.
+同様に、`{{#example_in Examples/Universes.lean Type1Type}}`は`{{#example_out Examples/Universes.lean Type1Type}}`であり、
+`{{#example_in Examples/Universes.lean Type2Type}}`は`{{#example_out Examples/Universes.lean Type2Type}}`であり、
+`{{#example_in Examples/Universes.lean Type3Type}}`は`{{#example_out Examples/Universes.lean Type3Type}}`です、など。
 
-Function types occupy the smallest universe that can contain both the argument type and the return type.
-This means that `{{#example_in Examples/Universes.lean NatNatType}}` is a `{{#example_out Examples/Universes.lean NatNatType}}`, `{{#example_in Examples/Universes.lean Fun00Type}}` is a `{{#example_out Examples/Universes.lean Fun00Type}}`, and `{{#example_in Examples/Universes.lean Fun12Type}}` is a `{{#example_out Examples/Universes.lean Fun12Type}}`.
+関数型は両方の引数型と戻り値型を含むことのできる最小の宇宙に配置されます。
+これは`{{#example_in Examples/Universes.lean NatNatType}}`が`{{#example_out Examples/Universes.lean NatNatType}}`であり、`{{#example_in Examples/Universes.lean Fun00Type}}`が`{{#example_out Examples/Universes.lean Fun00Type}}`であり、`{{#example_in Examples/Universes.lean Fun12Type}}`が`{{#example_out Examples/Universes.lean Fun12Type}}`であることを意味します。
 
-There is one exception to this rule.
-If the return type of a function is a `Prop`, then the whole function type is in `Prop`, even if the argument is in a larger universe such as `Type` or even `Type 1`.
-In particular, this means that predicates over values that have ordinary types are in `Prop`.
-For example, the type `{{#example_in Examples/Universes.lean FunPropType}}` represents a function from a `Nat` to evidence that it is equal to itself plus zero.
-Even though `Nat` is in `Type`, this function type is in `{{#example_out Examples/Universes.lean FunPropType}}` due to this rule.
-Similarly, even though `Type` is in `Type 1`, the function type `{{#example_in Examples/Universes.lean FunTypePropType}}` is still in `{{#example_out Examples/Universes.lean FunTypePropType}}`.
+このルールには一つの例外があります。
+関数の戻り値型が`Prop`の場合、その関数型全体は`Prop`になります。たとえ引数がより大きな宇宙である`Type`や`Type 1`にあったとしてもです。
+特に、これは通常の値に対する述語が`Prop`にあることを意味します。
+例えば、型`{{#example_in Examples/Universes.lean FunPropType}}`は`Nat`からそれが自分自身プラスゼロと等しい証拠への関数を表しています。
+`Nat`は`Type`にありますが、この関数型はこのルールにより`{{#example_out Examples/Universes.lean FunPropType}}`にあります。
+同様に、`Type`は`Type 1`にありますが、関数型`{{#example_in Examples/Universes.lean FunTypePropType}}`は`{{#example_out Examples/Universes.lean FunTypePropType}}`にあります。
 
-## User Defined Types
+## ユーザー定義型
 
-Structures and inductive datatypes can be declared to inhabit particular universes.
-Lean then checks whether each datatype avoids paradoxes by being in a universe that's large enough to prevent it from containing its own type.
-For instance, in the following declaration, `MyList` is declared to reside in `Type`, and so is its type argument `α`:
+構造や帰納的データ型は特定の宇宙に属するように宣言することができます。
+Leanはそれぞれのデータ型が十分に大きな宇宙にあり、自身の型を含むことを防ぐことによってパラドックスを避けるかをチェックします。
+例えば、次の宣言では`MyList`が`Type`に居住すると宣言されており、その型引数`α`もそうです:
 ```lean
 {{#example_decl Examples/Universes.lean MyList1}}
 ```
-`{{#example_in Examples/Universes.lean MyList1Type}}` itself is a `{{#example_out Examples/Universes.lean MyList1Type}}`.
-This means that it cannot be used to contain actual types, because then its argument would be `Type`, which is a `Type 1`:
+`{{#example_in Examples/Universes.lean MyList1Type}}`自体は`{{#example_out Examples/Universes.lean MyList1Type}}`です。
+これは実際の型を含むことに使われることができないことを意味します、なぜならその引数が`Type`になり、それは`Type 1`だからです:
 ```lean
 {{#example_in Examples/Universes.lean myListNat1Err}}
 ```
@@ -76,68 +76,68 @@ This means that it cannot be used to contain actual types, because then its argu
 {{#example_out Examples/Universes.lean myListNat1Err}}
 ```
 
-Updating `MyList` so that its argument is a `Type 1` results in a definition rejected by Lean:
+`MyList`を更新して、その引数が`Type 1`である結果はLeanによって拒絶される定義です:
 ```lean
 {{#example_in Examples/Universes.lean MyList2}}
 ```
 ```output error
 {{#example_out Examples/Universes.lean MyList2}}
 ```
-This error occurs because the argument to `cons` with type `α` is from a larger universe than `MyList`.
-Placing `MyList` itself in `Type 1` solves this issue, but at the cost of `MyList` now being itself inconvenient to use in contexts that expect a `Type`.
+このエラーは`cons`の引数となる型`α`が`MyList`より大きな宇宙のものだから発生します。
+`MyList`自身を`Type 1`に配置することでこの問題が解決しますが、`Type`が期待されるコンテキストでの`MyList`の利用が不便になるという代償があります。
 
-The specific rules that govern whether a datatype is allowed are somewhat complicated.
-Generally speaking, it's easiest to start with the datatype in the same universe as the largest of its arguments.
-Then, if Lean rejects the definition, increase its level by one, which will usually go through.
+データ型が許可されるかどうかを決める具体的なルールはやや複雑です。
+一般的には、最大の引数と同じ宇宙からそのデータ型を始めるのが最も簡単です。
+そして、もしその定義がLeanに拒絶されたら、そのレベルを1つ上に上げることが普通は通ります。
 
-## Universe Polymorphism
+## 宇宙多相性 (Universe Polymorphism)
 
-Defining a datatype in a specific universe can lead to code duplication.
-Placing `MyList` in `Type → Type` means that it can't be used for an actual list of types.
-Placing it in `Type 1 → Type 1` means that it can't be used for a list of lists of types.
-Rather than copy-pasting the datatype to create versions in `Type`, `Type 1`, `Type 2`, and so on, a feature called _universe polymorphism_ can be used to write a single definition that can be instantiated in any of these universes.
+特定の宇宙内でデータ型を定義すると、コードが重複する場合があります。
+`MyList`を`Type → Type`内で配置することは、実際の型のリストに使用できないことを意味します。
+それを`Type 1 → Type 1`に配置すると、型のリストのリストには使用できません。
+`Type`、`Type 1`、`Type 2`などにバージョンをコピー＆ペーストする代わりに、任意のこれらの宇宙でインスタンス化できる単一の定義を書くために宇宙多相性という機能を使用することができます。
 
-Ordinary polymorphic types use variables to stand for types in a definition.
-This allows Lean to fill in the variables differently, which enables these definitions to be used with a variety of types.
-Similarly, universe polymorphism allows variables to stand for universes in a definition, enabling Lean to fill them in differently so that they can be used with a variety of universes.
-Just as type arguments are conventionally named with Greek letters, universe arguments are conventionally named `u`, `v`, and `w`.
+通常の多相型は定義で型を表す変数を使用します。
+これによりLeanは変数を異なる方法で埋めることができ、これらの定義がいろいろな型で使用されることを可能にします。
+同様に、宇宙多相性によって、変数が定義の宇宙を表すことを可能にし、それらが多様な宇宙で使用されることを可能にします。
+型引数が一般的にギリシャ文字で命名されるのと同じように、宇宙引数は慣習的に`u`、`v`、`w`で命名されます。
 
-This definition of `MyList` doesn't specify a particular universe level, but instead uses a variable `u` to stand for any level.
-If the resulting datatype is used with `Type`, then `u` is `0`, and if it's used with `Type 3`, then `u` is `3`:
+この`MyList`の定義は特定の宇宙レベルを指定せず、代わりに任意のレベルを表す変数`u`を使用しています。
+生成されたデータ型が`Type`で使われる場合`u`は`0`であり、`Type 3`で使用される場合`u`は`3`です:
 ```lean
 {{#example_decl Examples/Universes.lean MyList3}}
 ```
 
-With this definition, the same definition of `MyList` can be used to contain both actual natural numbers and the natural number type itself:
+この定義により、自然数自体と自然数型自体の両方を含む`MyList`の同じ定義を使用することができます:
 ```lean
 {{#example_decl Examples/Universes.lean myListOfNat3}}
 ```
-It can even contain itself:
+それ自身を含むことさえできます:
 ```lean
 {{#example_decl Examples/Universes.lean myListOfList3}}
 ```
 
-It would seem that this would make it possible to write a logical paradox.
-After all, the whole point of the universe system is to rule out self-referential types.
-Behind the scenes, however, each occurrence of `MyList` is provided with a universe level argument.
-In essence, the universe-polymorphic definition of `MyList` created a _copy_ of the datatype at each level, and the level argument selects which copy is to be used.
-These level arguments are written with a dot and curly braces, so `{{#example_in Examples/Universes.lean MyListDotZero}} : {{#example_out Examples/Universes.lean MyListDotZero}}`, `{{#example_in Examples/Universes.lean MyListDotOne}} : {{#example_out Examples/Universes.lean MyListDotOne}}`, and `{{#example_in Examples/Universes.lean MyListDotTwo}} : {{#example_out Examples/Universes.lean MyListDotTwo}}`.
+これにより論理的パラドックスを書くことが可能になるかのように思われるかもしれません。
+結局のところ、宇宙システムの全体的な目的は自己参照型を排除することです。
+しかし裏では、`MyList`の各出現に宇宙レベル引数が提供されます。
+本質的に、宇宙多相性の`MyList`の定義は各レベルでのデータ型の_コピー_を作り、レベル引数は使用するコピーを選ぶためにあります。
+これらのレベル引数はドットと中括弧で書かれるので、`{{#example_in Examples/Universes.lean MyListDotZero}} : {{#example_out Examples/Universes.lean MyListDotZero}}`、`{{#example_in Examples/Universes.lean MyListDotOne}} : {{#example_out Examples/Universes.lean MyListDotOne}}`、`{{#example_in Examples/Universes.lean MyListDotTwo}} : {{#example_out Examples/Universes.lean MyListDotTwo}}`です。
 
-Writing the levels explicitly, the prior example becomes:
+レベルを明示的に書くと、前の例は以下のようになります:
 ```lean
 {{#example_decl Examples/Universes.lean myListOfList3Expl}}
 ```
 
-When a universe-polymorphic definition takes multiple types as arguments, it's a good idea to give each argument its own level variable for maximum flexibility.
-For example, a version of `Sum` with a single level argument can be written as follows:
+宇宙多相性の定義が複数の型を引数として取る場合、それぞれの引数にそれぞれのレベル変数を与えることが最大の柔軟性のために良い考えです。
+たとえば、単一のレベル引数を持つ`Sum`のバージョンは次のように書かれます:
 ```lean
 {{#example_decl Examples/Universes.lean SumNoMax}}
 ```
-This definition can be used at multiple levels:
+この定義は複数のレベルで使用できます:
 ```lean
 {{#example_decl Examples/Universes.lean SumPoly}}
 ```
-However, it requires that both arguments be in the same universe:
+ただし、両方の引数が同じ宇宙にある必要があります:
 ```lean
 {{#example_in Examples/Universes.lean stringOrTypeLevels}}
 ```
@@ -145,62 +145,59 @@ However, it requires that both arguments be in the same universe:
 {{#example_out Examples/Universes.lean stringOrTypeLevels}}
 ```
 
-This datatype can be made more flexible by using different variables for the two type arguments' universe levels, and then declaring that the resulting datatype is in the largest of the two:
+このデータ型は2つの型引数の宇宙レベルに異なる変数を使用し、その結果のデータ型が2つの中で最大の宇宙にあることを宣言することでより柔軟にできます:
 ```lean
 {{#example_decl Examples/Universes.lean SumMax}}
 ```
-This allows `Sum` to be used with arguments from different universes:
+これにより`Sum`は異なる宇宙からの引数で使用できます:
 ```lean
 {{#example_decl Examples/Universes.lean stringOrTypeSum}}
 ```
     
-In positions where Lean expects a universe level, any of the following are allowed:
- * A concrete level, like `0` or `1`
- * A variable that stands for a level, such as `u` or `v`
- * The maximum of two levels, written as `max` applied to the levels
- * A level increase, written with `+ 1`
+Leanが宇宙レベルを期待する位置では、次のどれかが使用できます:
+ * 具体的なレベル、例えば`0`や`1`
+ * レベルを表す変数、例えば`u`や`v`
+ * 2つのレベルの最大値、`max`がレベルに適用される形
+ * レベルの増加、`+ 1`と書かれる形
 
-### Writing Universe-Polymorphic Definitions
+### 宇宙多相性定義の書き方
 
-Until now, every datatype defined in this book has been in `Type`, the smallest universe of data.
-When presenting polymorphic datatypes from the Lean standard library, such as `List` and `Sum`, this book created non-universe-polymorphic versions of them.
-The real versions use universe polymorphism to enable code re-use between type-level and non-type-level programs.
+これまでのこの本で定義されているデータ型は、データの最小宇宙である`Type`にあります。
+Lean標準ライブラリから多相型、例えば`List`や`Sum`を紹介する際、この本はそれらの非宇宙多相性バージョンを作成しました。
+実際のバージョンは宇宙多相性を使用して型レベルおよび非型レベルプログラム間でのコードの再利用を可能にします。
 
-There are a few general guidelines to follow when writing universe-polymorphic types.
-First off, independent type arguments should have different universe variables, which enables the polymorphic definition to be used with a wider variety of arguments, increasing the potential for code reuse.
-Secondly, the whole type is itself typically either in the maximum of all the universe variables, or one greater than this maximum.
-Try the smaller of the two first.
-Finally, it's a good idea to put the new type in as small of a universe as possible, which allows it to be used more flexibly in other contexts.
-Non-polymorphic types, such as `Nat` and `String`, can be placed directly in `Type 0`.
+宇宙多相性型を書く際にはいくつか一般的な指針に従うと良いでしょう。
+まず、独立した型引数は異なる宇宙変数を持つべきで、これにより多相性の定義がより多様な引数で使用されることを可能にし、コード再利用の可能性を高めます。
+次に、全体の型自体は通常、全ての宇宙変数の最大値か、この最大値よりも1つ大きい値になります。最初に小さい方を試してみてください。
+最後に、できるだけ小さい宇宙で新しい型を定義することで、他の文脈での使用が柔軟になります。
+非多相型、例えば`Nat`や`String`などは直接`Type 0`に配置します。
 
-### `Prop` and Polymorphism
+### `Prop`と多相性
 
-Just as `Type`, `Type 1`, and so on describe types that classify programs and data, `Prop` classifies logical propositions.
-A type in `Prop` describes what counts as convincing evidence for the truth of a statement.
-Propositions are like ordinary types in many ways: they can be declared inductively, they can have constructors, and functions can take propositions as arguments.
-However, unlike datatypes, it typically doesn't matter _which_ evidence is provided for the truth of a statement, only _that_ evidence is provided.
-On the other hand, it is very important that a program not only return a `Nat`, but that it's the _correct_ `Nat`.
+`Type`、`Type 1`などがプログラムやデータを分類する型を記述するのと同じように、`Prop`は論理的な命題を分類します。
+`Prop`の型は、ステートメントの真実性に対する説得力のある証拠が何であるかを記述します。
+命題は多くの面で通常の型と似ています：帰納的に宣言でき、コンストラクタがあり、関数が命題を引数として取ることができます。
+しかし、データ型と異なり、ステートメントの真実性に対する証拠が提供されることは通常重要であるものの、証拠が_どのようなものであるか_は通常は重要ではありません。
+一方で、プログラムが`Nat`を返す場合には、それが_正しい_ `Nat`であることは非常に重要です。
 
-`Prop` is at the bottom of the universe hierarchy, and the type of `Prop` is `Type`.
-This means that `Prop` is a suitable argument to provide to `List`, for the same reason that `Nat` is.
-Lists of propositions have type `List Prop`:
+`Prop`は宇宙階層の最下位にあり、`Prop`の型は`Type`です。
+これは`Prop`が`Nat`と同じ理由で`List`に提供するための適切な引数であることを意味します。
+命題のリストは `List Prop`型を持ちます:
 ```lean
 {{#example_decl Examples/Universes.lean someTrueProps}}
 ```
-Filling out the universe argument explicitly demonstrates that `Prop` is a `Type`:
+宇宙の引数を明示的に記入することにより、`Prop`が`Type`であることが示されます:
 ```lean
 {{#example_decl Examples/Universes.lean someTruePropsExp}}
 ```
 
-Behind the scenes, `Prop` and `Type` are united into a single hierarchy called `Sort`.
-`Prop` is the same as `Sort 0`, `Type 0` is `Sort 1`, `Type 1` is `Sort 2`, and so forth.
-In fact, `Type u` is the same as `Sort (u+1)`.
-When writing programs with Lean, this is typically not relevant, but it may occur in error messages from time to time, and it explains the name of the `CoeSort` class.
-Additionally, having `Prop` as `Sort 0` allows one more universe operator to become useful.
-The universe level `imax u v` is `0` when `v` is `0`, or the larger of `u` or `v` otherwise.
-Together with `Sort`, this allows the special rule for functions that return `Prop`s to be used when writing code that should be as portable as possible between `Prop` and `Type` universes.
+内部的には、`Prop`と`Type`は`Sort`と呼ばれる単一の階層に統合されています。
+`Prop`は`Sort 0`と同じで、`Type 0`は`Sort 1`、`Type 1`は`Sort 2`であり、その先も続きます。
+実際には、`Type u`は`Sort (u+1)`と同じです。
+Leanでプログラムを書くときにはこれは通常関係ありませんが、時々エラーメッセージに現れることがあり、また`CoeSort`クラスの名前の由来を説明するものでもあります。
+さらに、`Prop`を`Sort 0`として持つことで、`Prop`と`Type`の宇宙の間でできる限り移植性のあるコードを書くときに`Prop`を返す関数に特別なルールを使用するようになります。
 
-## Polymorphism in Practice
+## 実践における多相性
 
-In the remainder of the book, definitions of polymorphic datatypes, structures, and classes will use universe polymorphism in order to be consistent with the Lean standard library.
-This will enable the complete presentation of the `Functor`, `Applicative`, and `Monad` classes to be completely consistent with their actual definitions.
+この本の残りの部分では、Lean標準ライブラリと一致するために、多相的なデータ型、構造体、およびクラスの定義に宇宙多相性が使用されます。
+これにより`Functor`、`Applicative`、`Monad`クラスの完全な提示が実際の定義と完全に一致することが可能になります。
