@@ -1,137 +1,134 @@
-# Tail Recursion
+# 末尾再帰
 
-While Lean's `do`-notation makes it possible to use traditional loop syntax such as `for` and `while`, these constructs are translated behind the scenes to invocations of recursive functions.
-In most programming languages, recursive functions have a key disadvantage with respect to loops: loops consume no space on the stack, while recursive functions consume stack space proportional to the number of recursive calls.
-Stack space is typically limited, and it is often necessary to take algorithms that are naturally expressed as recursive functions and rewrite them as loops paired with an explicit mutable heap-allocated stack.
+Leanの`do`記法では、`for`や`while`などの伝統的なループ構文を使用することが可能ですが、これらの構成は背後で再帰関数の呼び出しに変換されます。
+多くのプログラミング言語において、再帰関数はループと比較して重要な不利点を持っています：ループはスタック上のスペースを消費しないのに対して、再帰関数は再帰呼び出しの数に比例してスタック空間を消費します。
+スタック空間は典型的に限られており、自然に再帰関数として表されるアルゴリズムをループに書き換え、明示的にヒープ割り当てスタックを伴うことがしばしば必要です。
 
-In functional programming, the opposite is typically true.
-Programs that are naturally expressed as mutable loops may consume stack space, while rewriting them to recursive functions can cause them to run quickly.
-This is due to a key aspect of functional programming languages: _tail-call elimination_.
-A tail call is a call from one function to another that can be compiled to an ordinary jump, replacing the current stack frame rather than pushing a new one, and tail-call elimination is the process of implementing this transformation.
+関数型プログラミングでは、通常は逆のことが当てはまります。
+可変ループとして自然に表されるプログラムはスタック空間を消費する場合がありますが、それらを再帰関数に書き換えると、高速に実行されることがあります。
+これは関数型プログラミング言語の重要な側面である _末尾呼び出し除去_ によるものです。
+末尾呼び出しとは、一つの関数から別の関数への呼び出しが、新しいスタックフレームをプッシュするのではなく、通常のジャンプにコンパイルされるものであり、末尾呼び出し除去とはこの変換を行うプロセスです。
 
-Tail-call elimination is not just merely an optional optimization.
-Its presence is a fundamental part of being able to write efficient functional code.
-For it to be useful, it must be reliable.
-Programmers must be able to reliably identify tail calls, and they must be able to trust that the compiler will eliminate them.
+末尾呼び出し除去は単なる任意の最適化ではありません。
+その存在は効率的な関数型コードを書くことができるようにするための根本的な部分です。
+これが有用であるためには、信頼できるものでなければなりません。
+プログラマーは信頼できる方法で末尾呼び出しを特定し、コンパイラがそれらを除去することを信頼できると確信する必要があります。
 
-The function `NonTail.sum` adds the contents of a list of `Nat`s:
+関数`NonTail.sum`は`Nat`のリストの内容を加算します：
 ```lean
 {{#example_decl Examples/ProgramsProofs/TCO.lean NonTailSum}}
 ```
-Applying this function to the list `[1, 2, 3]` results in the following sequence of evaluation steps:
+この関数をリスト`[1, 2, 3]`に適用すると、次の評価ステップのシーケンスが生じます：
 ```lean
 {{#example_eval Examples/ProgramsProofs/TCO.lean NonTailSumOneTwoThree}}
 ```
-In the evaluation steps, parentheses indicate recursive calls to `NonTail.sum`.
-In other words, to add the three numbers, the program must first check that the list is non-empty.
-To add the head of the list (`1`) to the sum of the tail of the list, it is first necessary to compute the sum of the tail of the list:
+評価ステップにおいて、括弧は`NonTail.sum`への再帰呼び出しを示しています。
+言い換えると、３つの数字を加算するために、プログラムはまずリストが空でないかを確認する必要があります。
+リストの先頭（`1`）をリストの末尾の合計に加算するためには、まずリストの末尾の合計を計算する必要があります：
 ```lean
 {{#example_eval Examples/ProgramsProofs/TCO.lean NonTailSumOneTwoThree 1}}
 ```
-But to compute the sum of the tail of the list, the program must check whether it is empty.
-It is not - the tail is itself a list with `2` at its head.
-The resulting step is waiting for the return of `NonTail.sum [3]`:
+しかしリストの末尾の合計を計算するためには、プログラムはそれが空かどうかを確認する必要があります。
+そしてそれは空ではありません - 末尾は自体が`2`を頭に持つリストです。
+結果として待っているステップは`NonTail.sum [3]`の戻りを待つものです：
 ```lean
 {{#example_eval Examples/ProgramsProofs/TCO.lean NonTailSumOneTwoThree 2}}
 ```
-The whole point of the run-time call stack is to keep track of the values `1`, `2`, and `3` along with the instruction to add them to the result of the recursive call.
-As recursive calls are completed, control returns to the stack frame that made the call, so each step of addition is performed.
-Storing the heads of the list and the instructions to add them is not free; it takes space proportional to the length of the list.
+実行時呼び出しスタックの全ポイントは、再帰的な呼び出しの結果に値`1`、`2`、`3`を加算する指示とともに追跡されます。
+再帰呼び出しが完了するにつれて、呼び出しを行ったスタックフレームに制御が戻り、加算の各ステップが実行されます。
+リストの先頭を保存し、それらを加算するための指示を保存することは無料ではありません。それはリストの長さに比例するスペースが必要です。
 
-The function `Tail.sum` also adds the contents of a list of `Nat`s:
+関数`Tail.sum`も`Nat`のリストの内容を加算します：
 ```lean
 {{#example_decl Examples/ProgramsProofs/TCO.lean TailSum}}
 ```
-Applying it to the list `[1, 2, 3]` results in the following sequence of evaluation steps:
+これをリスト`[1, 2, 3]`に適用すると、次の評価ステップのシーケンスが生じます：
 ```lean
 {{#example_eval Examples/ProgramsProofs/TCO.lean TailSumOneTwoThree}}
 ```
-The internal helper function calls itself recursively, but it does so in a way where nothing needs to be remembered in order to compute the final result.
-When `Tail.sumHelper` reaches its base case, control can be returned directly to `Tail.sum`, because the intermediate invocations of `Tail.sumHelper` simply return the results of their recursive calls unmodified.
-In other words, a single stack frame can be re-used for each recursive invocation of `Tail.sumHelper`.
-Tail-call elimination is exactly this re-use of the stack frame, and `Tail.sumHelper` is referred to as a _tail-recursive function_.
+内部のヘルパー関数は再帰的に自分自身を呼び出しますが、それをする際に最終結果を計算するために何も覚えておく必要がありません。
+`Tail.sumHelper`が基本ケースに達したとき、制御は直接`Tail.sum`に戻されます。なぜなら、中間の`Tail.sumHelper`の呼び出しは自身の再帰呼び出しの結果を修正せずに単に返すからです。
+言い換えると、各再帰的な`Tail.sumHelper`の呼び出しについて単一のスタックフレームを再利用することができます。
+末尾呼び出し除去とは、まさにこのスタックフレームの再利用であり、`Tail.sumHelper`は _末尾再帰関数_ として言及されます。
 
-The first argument to `Tail.sumHelper` contains all of the information that would otherwise need to be tracked in the call stack—namely, the sum of the numbers encountered so far.
-In each recursive call, this argument is updated with new information, rather than adding new information to the call stack.
-Arguments like `soFar` that replace the information from the call stack are called _accumulators_.
+`Tail.sumHelper`への最初の引数には、そうでなければ呼び出しスタックで追跡する必要がある全ての情報が含まれています。すなわち、これまでに遭遇した数字の合計です。
+各再帰呼び出しでは、この引数が新しい情報で更新されます。新しい情報を呼び出しスタックに追加するのではありません。
+呼び出しスタックからの情報を置き換えるような引数は _アキュムレータ_ と呼ばれます。
 
-At the time of writing and on the author's computer, `NonTail.sum` crashes with a stack overflow when passed a list with 216,856 or more entries.
-`Tail.sum`, on the other hand, can sum a list of 100,000,000 elements without a stack overflow.
-Because no new stack frames need to be pushed while running `Tail.sum`, it is completely equivalent to a `while` loop with a mutable variable that holds the current list.
-At each recursive call, the function argument on the stack is simply replaced with the next node of the list.
+執筆時点で、作者のコンピューター上では、`NonTail.sum`は216,856個以上のエントリを持つリストが渡されるとスタックオーバーフローでクラッシュします。一方で、`Tail.sum`は1億個の要素を持つリストをスタックオーバーフローなしに合計することができます。
+`Tail.sum`を実行する際に新しいスタックフレームをプッシュする必要がないため、それは可変変数を持つ`while`ループに完全に相当します。各再帰呼び出しでは、スタック上の関数引数が単にリストの次のノードに置き換わります。
 
 
-## Tail and Non-Tail Positions
+## 末尾と非末尾の位置
 
-The reason why `Tail.sumHelper` is tail recursive is that the recursive call is in _tail position_.
-Informally speaking, a function call is in tail position when the caller does not need to modify the returned value in any way, but will just return it directly.
-More formally, tail position can be defined explicitly for expressions.
+`Tail.sumHelper`が末尾再帰である理由は、再帰呼び出しが _末尾位置_ にあるためです。
+略式に言えば、関数呼び出しが末尾位置にあるとは、呼び出し元が返された値をどのようにも変更する必要がなく、ただ直接返すだけの場合です。
+より公式には、末尾位置は式に対して明確に定義することができます。
 
-If a `match`-expression is in tail position, then each of its branches is also in tail position.
-Once a `match` has selected a branch, control proceeds immediately to it.
-Similarly, both branches of an `if`-expression are in tail position if the `if`-expression itself is in tail position.
-Finally, if a `let`-expression is in tail position, then its body is as well.
+`match`式が末尾位置にある場合、その各ブランチも末尾位置にあります。
+`match`が一つのブランチを選択すると、制御は直接それに進みます。
+同様に、`if`式が末尾位置にあれば、その`if`式の両方のブランチが末尾位置です。
+最後に、`let`式が末尾位置にあるならば、そのボディもそうです。
 
-All other positions are not in tail position.
-The arguments to a function or a constructor are not in tail position because evaluation must track the function or constructor that will be applied to the argument's value.
-The body of an inner function is not in tail position because control may not even pass to it: function bodies are not evaluated until the function is called.
-Similarly, the body of a function type is not in tail position.
-To evaluate `E` in `(x : α) → E`, it is necessary to track that the resulting type must have `(x : α) → ...` wrapped around it.
+その他の位置は末尾位置ではありません。
+関数またはコンストラクタへの引数は末尾位置にないです。なぜなら評価は引数の値に適用される関数またはコンストラクタを追跡する必要があるからです。
+内部関数のボディは末尾位置にないです。なぜなら制御がそれに通過するとは限らないからです：関数ボディは関数が呼び出されるまで評価されません。
+同様に、関数型のボディも末尾位置ではありません。
+`(x : α) → E`で`E`を評価するには、結果の型が`(x : α) → ...`で囲まれている必要があると追跡する必要があります。
 
-In `NonTail.sum`, the recursive call is not in tail position because it is an argument to `+`.
-In `Tail.sumHelper`, the recursive call is in tail position because it is immediately underneath a pattern match, which itself is the body of the function.
+`NonTail.sum`では、再帰呼び出しは`+`の引数であるため末尾位置にありません。
+`Tail.sumHelper`では、再帰呼び出しはすぐ下にあるパターンマッチの下であり、それ自体が関数のボディであるため末尾位置にあります。
 
-At the time of writing, Lean only eliminates direct tail calls in recursive functions.
-This means that tail calls to `f` in `f`'s definition will be eliminated, but not tail calls to some other function `g`.
-While it is certainly possible to eliminate a tail call to some other function, saving a stack frame, this is not yet implemented in Lean.
+執筆時点で、Leanは再帰関数の直接的な末尾呼び出しのみを除去します。
+これは、`f`の定義における`f`への末尾呼び出しが除去されることを意味しますが、他の関数`g`への末尾呼び出しは除去されません。
+確かに、他の関数への末尾呼び出しを除去することも可能であり、スタックフレームを節約することもできますが、これはまだLeanでは実装されていません。
 
-## Reversing Lists
+## リストの反転
 
-The function `NonTail.reverse` reverses lists by appending the head of each sub-list to the end of the result:
+関数`NonTail.reverse`は各サブリストの先頭を結果の末尾へと追加することでリストを反転させます：
 ```lean
 {{#example_decl Examples/ProgramsProofs/TCO.lean NonTailReverse}}
 ```
-Using it to reverse `[1, 2, 3]` yields the following sequence of steps:
+これを使用して`[1, 2, 3]`を反転すると、次のようなステップのシーケンスになります：
 ```lean
 {{#example_eval Examples/ProgramsProofs/TCO.lean NonTailReverseSteps}}
 ```
 
-The tail-recursive version uses `x :: ·` instead of `· ++ [x]` on the accumulator at each step:
+末尾再帰バージョンは、アキュムレータで各ステップで`· ++ [x]`の代わりに`x :: ·`を使用します：
 ```lean
 {{#example_decl Examples/ProgramsProofs/TCO.lean TailReverse}}
 ```
-This is because the context saved in each stack frame while computing with `NonTail.reverse` is applied beginning at the base case.
-Each "remembered" piece of context is executed in last-in, first-out order.
-On the other hand, the accumulator-passing version modifies the accumulator beginning from the first entry in the list, rather than the original base case, as can be seen in the series of reduction steps:
+これは`NonTail.reverse`で計算する際に各スタックフレームに保存されたコンテキストが基本ケースから始めて適用されるからです。
+各々の「記憶された」コンテキストは後入れ先出しの順番で実行されます。
+一方で、アキュムレータをパスするバージョンは、元々の基本ケースからではなく、リストの最初のエントリから開始して、初期アキュムレータ値をリストを通じて左から右へ修正します。シリーズの還元ステップにおいて見ることができるように：
 ```lean
 {{#example_eval Examples/ProgramsProofs/TCO.lean TailReverseSteps}}
 ```
-In other words, the non-tail-recursive version starts at the base case, modifying the result of recursion from right to left through the list.
-The entries in the list affect the accumulator in a first-in, first-out order.
-The tail-recursive version with the accumulator starts at the head of the list, modifying an initial accumulator value from left to right through the list.
+言い換えると、非末尾再帰バージョンは基本ケースで始まり、リストを右から左へ再帰の結果の修正を行います。
+リスト中のエントリはアキュムレータに対して先入れ先出しの順番で影響を与えます。
+アキュムレータを持つ末尾再帰バージョンはリストの先頭から始まり、リストを通じて左から右へ初期アキュムレータ値を修正します。
 
-Because addition is commutative, nothing needed to be done to account for this in `Tail.sum`.
-Appending lists is not commutative, so care must be taken to find an operation that has the same effect when run in the opposite direction.
-Appending `[x]` after the result of the recursion in `NonTail.reverse` is analogous to adding `x` to the beginning of the list when the result is built in the opposite order.
+加算は交換可能なので、`Tail.sum`ではこのことを考慮に入れる必要がありませんでした。
+リストの連結は交換可能ではないので、逆の方向で実行されたときに同じ効果が得られる操作を慎重に見つける必要があります。
+`NonTail.reverse`で再帰の結果の後に`[x]`を連結することは、結果が逆順で構築される際に、リストの始めに`x`を追加することと同じです。
 
-## Multiple Recursive Calls
+## 複数の再帰呼び出し
 
-In the definition of `BinTree.mirror`, there are two recursive calls:
+`BinTree.mirror`の定義には、二つの再帰呼び出しがあります：
 ```lean
 {{#example_decl Examples/Monads/Conveniences.lean mirrorNew}}
 ```
-Just as imperative languages would typically use a while loop for functions like `reverse` and `sum`, they would typically use recursive functions for this kind of traversal.
-This function cannot be straightforwardly rewritten to be tail recursive using accumulator-passing style.
+`reverse`や`sum`のような関数を`while`ループで行うのが典型的な命令型言語が、「この種のトラバーサルでは再帰関数を使用します。
+この関数はアキュムレータをパスするスタイルを用いて末尾再帰に単純に書き直されることはできません。
 
-Typically, if more than one recursive call is required for each recursive step, then it will be difficult to use accumulator-passing style.
-This difficulty is similar to the difficulty of rewriting a recursive function to use a loop and an explicit data structure, with the added complication of convincing Lean that the function terminates.
-However, as in `BinTree.mirror`, multiple recursive calls often indicate a data structure that has a constructor with multiple recursive occurrences of itself.
-In these cases, the depth of the structure is often logarithmic with respect to its overall size, which makes the tradeoff between stack and heap less stark.
-There are systematic techniques for making these functions tail-recursive, such as using _continuation-passing style_, but they are outside the scope of this chapter.
+通常、各再帰的なステップに複数の再帰呼び出しが必要な場合、アキュムレータをパスするスタイルを使用することは難しいでしょう。
+この難しさは、再帰関数をループに書き換え、明示的なデータ構造を使用するという難しさに似ていますが、さらにLeanに対して関数が終了することを納得させるという複雑さが加わっています。
+しかしながら、`BinTree.mirror`の場合のように、複数の再帰的な呼び出しがしばしばそれ自体に複数の再帰的な発生をもつコンストラクタを持つデータ構造を示します。
+これらのケースでは、構造の深さはその全体的なサイズに比べてしばしば対数的であり、スタックとヒープ間のトレードオフはそれほど厳しくありません。これらの関数を末尾再帰的にするための系統的な技法がありますが、それは継続渡しスタイルを使用することなどですが、それらはこの章の範囲を超えています。
 
-## Exercises
+## 練習問題
 
-Translate each of the following non-tail-recursive functions into accumulator-passing tail-recursive functions:
+以下の非末尾再帰的な関数を累積引数を使った末尾再帰的な関数に変換してください：
 
 ```lean
 {{#example_decl Examples/ProgramsProofs/TCO.lean NonTailLength}} 
@@ -141,8 +138,8 @@ Translate each of the following non-tail-recursive functions into accumulator-pa
 {{#example_decl Examples/ProgramsProofs/TCO.lean NonTailFact}}
 ```
 
-The translation of `NonTail.filter` should result in a program that takes constant stack space through tail recursion, and time linear in the length of the input list.
-A constant factor overhead is acceptable relative to the original:
+`NonTail.filter`の変換は、末尾再帰を通じて一定のスタック空間を使用し、入力リストの長さに比例する線形な時間で実行されるプログラムとなるべきです。
+元のプログラムに対する許容可能な定数係数のオーバーヘッドが生じる場合があります：
 ```lean
 {{#example_decl Examples/ProgramsProofs/TCO.lean NonTailFilter}}
 ```
