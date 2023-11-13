@@ -1,139 +1,138 @@
-# Step By Step
+# ステップ・バイ・ステップ
 
-A `do` block can be executed one line at a time.
-Start with the program from the prior section:
+`do` ブロックは、1行ずつ実行することができます。
+前のセクションからプログラムを始めましょう：
 ```lean
 {{#include ../../../examples/hello-name/HelloName.lean:block1}}
 ```
 
-## Standard IO
+## 標準IO
 
-The first line is `{{#include ../../../examples/hello-name/HelloName.lean:line1}}`, while the remainder is:
+最初の行は `{{#include ../../../examples/hello-name/HelloName.lean:line1}}` ですが、残りは以下の通りです：
 ```lean
 {{#include ../../../examples/hello-name/HelloName.lean:block2}}
 ```
-To execute a `let` statement that uses a `←`, start by evaluating the expression to the right of the arrow (in this case, `IO.getStdIn`).
-Because this expression is just a variable, its value is looked up.
-The resulting value is a built-in primitive `IO` action.
-The next step is to execute this `IO` action, resulting in a value that represents the standard input stream, which has type `IO.FS.Stream`.
-Standard input is then associated with the name to the left of the arrow (here `stdin`) for the remainder of the `do` block.
+`←` を使用している `let` 文を実行するには、まず矢印の右側にある表現（この場合は `IO.getStdIn`）を評価します。
+この表現は単なる変数なので、その値は検索されます。
+結果として得られる値は組み込みの基本的な `IO` アクションです。
+次のステップは、この `IO` アクションを実行し、標準入力ストリームを表す値を得ることです。このタイプは `IO.FS.Stream` です。
+標準入力は、矢印の左にある名前（ここでは `stdin`）に関連付けられ、`do` ブロックの残りの間使用されます。
 
-Executing the second line, `{{#include ../../../examples/hello-name/HelloName.lean:line2}}`, proceeds similarly.
-First, the expression `IO.getStdout` is evaluated, yielding an `IO` action that will return the standard output.
-Next, this action is executed, actually returning the standard output.
-Finally, this value is associated with the name `stdout` for the remainder of the `do` block.
+二番目の行 `{{#include ../../../examples/hello-name/HelloName.lean:line2}}` の実行も同様に進みます。
+まず、表現 `IO.getStdout` が評価され、標準出力を返す `IO` アクションが生成されます。
+次に、このアクションが実行され、実際に標準出力が返されます。
+最後に、この値は `do` ブロックの残りの間に名前 `stdout` に関連付けられます。
 
-## Asking a Question
+## 質問をする
 
-Now that `stdin` and `stdout` have been found, the remainder of the block consists of a question and an answer:
+`stdin` と `stdout` が見つかったので、ブロックの残りは質問とその答えから成り立っています：
 ```lean
 {{#include ../../../examples/hello-name/HelloName.lean:block3}}
 ```
 
-The first statement in the block, `{{#include ../../../examples/hello-name/HelloName.lean:line3}}`, consists of an expression.
-To execute an expression, it is first evaluated.
-In this case, `IO.FS.Stream.putStrLn` has type `IO.FS.Stream → String → IO Unit`.
-This means that it is a function that accepts a stream and a string, returning an `IO` action.
-The expression uses [accessor notation](../getting-to-know/structures.md#behind-the-scenes) for a function call.
-This function is applied to two arguments: the standard output stream and a string.
-The value of the expression is an `IO` action that will write the string and a newline character to the output stream.
-Having found this value, the next step is to execute it, which causes the string and newline to actually be written to `stdout`.
-Statements that consist only of expressions do not introduce any new variables.
+ブロック内の最初の文 `{{#include ../../../examples/hello-name/HelloName.lean:line3}}` は表現から成っています。
+表現を実行するには、まず評価されます。
+この場合、`IO.FS.Stream.putStrLn` は `IO.FS.Stream → String → IO Unit` という型を持っています。
+これは、ストリームと文字列を受け取り、`IO` アクションを返す関数です。
+この表現は関数呼び出しに[アクセッサ記法](../getting-to-know/structures.md#behind-the-scenes)を使用しています。
+この関数は二つの引数、標準出力ストリームと文字列を受け取って適用されます。
+表現の値は、文字列と改行文字を出力ストリームに書き込む `IO` アクションです。
+この値が見つかった次のステップは、それを実行し、文字列と改行が実際に `stdout` に書き込まれることです。
+表現のみから成る文では、新しい変数は導入されません。
 
-The next statement in the block is `{{#include ../../../examples/hello-name/HelloName.lean:line4}}`.
-`IO.FS.Stream.getLine` has type `IO.FS.Stream → IO String`, which means that it is a function from a stream to an `IO` action that will return a string.
-Once again, this is an example of accessor notation.
-This `IO` action is executed, and the program waits until the user has typed a complete line of input.
-Assume the user writes "`David`".
-The resulting line (`"David\n"`) is associated with `input`, where the escape sequence `\n` denotes the newline character.
+次の文 `{{#include ../../../examples/hello-name/HelloName.lean:line4}}` では、`IO.FS.Stream.getLine` は `IO.FS.Stream → IO String` という型を持っており、これはストリームから文字列を返す `IO` アクションへの関数を意味します。
+これもアクセッサ記法の例です。
+この `IO` アクションが実行され、プログラムはユーザーが入力行を完了するまで待ちます。
+ユーザーが「`David`」と書いたと仮定します。
+結果として得られた行（`"David\n"`）は `input` と関連付けられ、エスケープシーケンス `\n` は改行を示します。
 
 ```lean
 {{#include ../../../examples/hello-name/HelloName.lean:block5}}
 ```
 
-The next line, `{{#include ../../../examples/hello-name/HelloName.lean:line5}}`, is a `let` statement.
-Unlike the other `let` statements in this program, it uses `:=` instead of `←`.
-This means that the expression will be evaluated, but the resulting value need not be an `IO` action and will not be executed.
-In this case, `String.dropRightWhile` takes a string and a predicate over characters and returns a new string from which all the characters at the end of the string that satisfy the predicate have been removed.
-For example,
+次の行 `{{#include ../../../examples/hello-name/HelloName.lean:line5}}` は `let` 文です。
+このプログラムの他の `let` 文とは異なり、`:=` を使用して `←` ではありません。
+これは表現が評価されることを意味し、結果として得られる値は `IO` アクションである必要はなく、実行されません。
+このケースでは、`String.dropRightWhile` は文字列と文字に対する述語を取り、述語を満たす文字がすべて取り除かれた新しい文字列を返します。
+たとえば、
 ```lean
 {{#example_in Examples/HelloWorld.lean dropBang}}
 ```
-yields
+は
 ```output info
 {{#example_out Examples/HelloWorld.lean dropBang}}
 ```
-and
+を生成し、
 ```lean
 {{#example_in Examples/HelloWorld.lean dropNonLetter}}
 ```
-yields
+は
 ```output info
 {{#example_out Examples/HelloWorld.lean dropNonLetter}}
 ```
-in which all non-alphanumeric characters have been removed from the right side of the string.
-In the current line of the program, whitespace characters (including the newline) are removed from the right side of the input string, resulting in `"David"`, which is associated with `name` for the remainder of the block.
+を生成します。この例では、文字列の右側からすべての非英数字文字が取り除かれます。
+現在のプログラムの行では、空白文字（改行を含む）が入力文字列の右側から取り除かれ、「"David"」が結果として得られ、ブロックの残りの間 `name` と関連付けられます。
 
 
-## Greeting the User
+## ユーザーに挨拶する
 
-All that remains to be executed in the `do` block is a single statement:
+`do` ブロックで実行される残りの文は、単一の文です：
 ```lean
 {{#include ../../../examples/hello-name/HelloName.lean:line6}}
 ```
-The string argument to `putStrLn` is constructed via string interpolation, yielding the string `"Hello, David!"`.
-Because this statement is an expression, it is evaluated to yield an `IO` action that will print this string with a newline to standard output.
-Once the expression has been evaluated, the resulting `IO` action is executed, resulting in the greeting.
+`putStrLn` への文字列引数は文字列補間を介して構築され、「"Hello, David!"」という文字列が生成されます。
+この文が表現であるため、それは改行付きの標準出力にこの文字列を印刷する `IO` アクションを生成するための評価されます。
+表現が評価された後、結果として得られる `IO` アクションが実行され、挨拶する結果になります。
 
-## `IO` Actions as Values
+## `IO` アクションの値として
 
-In the above description, it can be difficult to see why the distinction between evaluating expressions and executing `IO` actions is necessary.
-After all, each action is executed immediately after it is produced.
-Why not simply carry out the effects during evaluation, as is done in other languages?
+上記の説明では、表現を評価すると「IO」アクションを実行するという区別が必要な理由を見るのが難しい可能性があります。
+結局のところ、各アクションは生成された直後に実行されます。
+他の言語で行われているように、評価中に効果を単に持ち出すのではないでしょうか？
 
-The answer is twofold.
-First off, separating evaluation from execution means that programs must be explicit about which functions can have side effects.
-Because the parts of the program that do not have effects are much more amenable to mathematical reasoning, whether in the heads of programmers or using Lean's facilities for formal proof, this separation can make it easier to avoid bugs.
-Secondly, not all `IO` actions need be executed at the time that they come into existence.
-The ability to mention an action without carrying it out allows ordinary functions to be used as control structures.
+答えは二つあります。
+まず第一に、評価と実行を分けることで、プログラムはどの関数が副作用を持つことができるかについて明確にする必要があります。
+プログラムの効果がない部分は、プログラマーの頭の中であれリーンのフォーマルプルーフの機能を使用している場合であれ、数学的推論により適しているため、この分離はバグを避けるのに役立つ可能性があります。
+第二に、全ての `IO` アクションが存在する時に実行される必要はありません。
+言及されたアクションを実行せずに済む機能により、普通の関数が制御構造として使用されます。
 
-For instance, the function `twice` takes an `IO` action as its argument, returning a new action that will execute the first one twice.
+たとえば、関数 `twice` は `IO` アクションを引数としてとり、最初のものを2回実行する新しいアクションを返します。
 ```lean
 {{#example_decl Examples/HelloWorld.lean twice}}
 ```
-For instance, executing
+たとえば、
 ```lean
 {{#example_in Examples/HelloWorld.lean twiceShy}}
 ```
-results in
+を実行すると
 ```output info
 {{#example_out Examples/HelloWorld.lean twiceShy}}
 ```
-being printed.
-This can be generalized to a version that runs the underlying action any number of times:
+が印刷されます。
+これは、基礎となるアクションを任意の回数実行するバージョンに一般化することができます：
 ```lean
 {{#example_decl Examples/HelloWorld.lean nTimes}}
 ```
-In the base case for `Nat.zero`, the result is `pure ()`.
-The function `pure` creates an `IO` action that has no side effects, but returns `pure`'s argument, which in this case is the constructor for `Unit`.
-As an action that does nothing and returns nothing interesting, `pure ()` is at the same time utterly boring and very useful.
-In the recursive step, a `do` block is used to create an action that first executes `action` and then executes the result of the recursive call.
-Executing `{{#example_in Examples/HelloWorld.lean nTimes3}}` causes the following output:
+`Nat.zero` の基本ケースでは、結果は `pure ()` です。
+関数 `pure` は副作用がない `IO` アクションを作成しますが、この場合は `pure` の引数、つまり `Unit` のコンストラクタを返します。
+何もしないアクションとして何も興味深いものを返さない `pure ()` は、同時に完全につまらないと同時に非常に役立つものです。
+再帰ステップでは、`do` ブロックを使用して、最初に `action` を実行し、次に再帰呼び出しの結果を実行するアクションを作成します。
+`{{#example_in Examples/HelloWorld.lean nTimes3}}` の実行は、次の出力を引き起こします:
 ```output info
 {{#example_out Examples/HelloWorld.lean nTimes3}}
 ```
 
-In addition to using functions as control structures, the fact that `IO` actions are first-class values means that they can be saved in data structures for later execution.
-For instance, the function `countdown` takes a `Nat` and returns a list of unexecuted `IO` actions, one for each `Nat`:
+関数を制御構造として使用することに加えて、`IO` アクションが第一級の値である事実は、それらが後で実行するためにデータ構造に保存されることを意味します。
+たとえば、関数 `countdown` は `Nat` を取り、各 `Nat` に対する未実行の `IO` アクションのリストを返します：
 ```lean
 {{#example_decl Examples/HelloWorld.lean countdown}}
 ```
-This function has no side effects, and does not print anything.
-For example, it can be applied to an argument, and the length of the resulting list of actions can be checked:
+この関数には副作用がなく、何も印刷しません。
+例えば、それは引数に適用され、結果のアクションリストの長さをチェックすることができます：
 ```lean
 {{#example_decl Examples/HelloWorld.lean from5}}
 ```
-This list contains six elements (one for each number, plus a `"Blast off!"` action for zero):
+このリストには6つの要素（各数字に1つずつ、そしてゼロのために「"Blast off!"」アクション）が含まれています：
 ```lean
 {{#example_in Examples/HelloWorld.lean from5length}}
 ```
@@ -141,36 +140,36 @@ This list contains six elements (one for each number, plus a `"Blast off!"` acti
 {{#example_out Examples/HelloWorld.lean from5length}}
 ```
 
-The function `runActions` takes a list of actions and constructs a single action that runs them all in order:
+関数 `runActions` はアクションのリストを取り、それらをすべて順番に実行する単一のアクションを構築します：
 ```lean
 {{#example_decl Examples/HelloWorld.lean runActions}}
 ```
-Its structure is essentially the same as that of `nTimes`, except instead of having one action that is executed for each `Nat.succ`, the action under each `List.cons` is to be executed.
-Similarly, `runActions` does not itself run the actions.
-It creates a new action that will run them, and that action must be placed in a position where it will be executed as a part of `main`:
+その構造は `nTimes` のものと実質的に同じですが、`Nat.succ` の各々に実行されるのは1つのアクションではなく、`List.cons` の下にあるアクションが実行されることです。
+同様に、`runActions` 自体はアクションを実行しません。
+それはアクションを実行する新しいアクションを作成し、そのアクションは `main` の一部として実行される位置に置かれる必要があります：
 ```lean
 {{#example_decl Examples/HelloWorld.lean main}}
 ```
-Running this program results in the following output:
+このプログラムを実行すると、次の出力が得られます：
 ```output info
 {{#example_out Examples/HelloWorld.lean countdown5}}
 ```
 
-What happens when this program is run?
-The first step is to evaluate `main`. That occurs as follows:
+このプログラムが実行されると、何が起こるでしょうか？
+最初のステップは `main` を評価することです。それは次のようになります：
 ```lean
 {{#example_eval Examples/HelloWorld.lean evalMain}}
 ```
-The resulting `IO` action is a `do` block.
-Each step of the `do` block is then executed, one at a time, yielding the expected output.
-The final step, `pure ()`, does not have any effects, and it is only present because the definition of `runActions` needs a base case.
+結果として得られる `IO` アクションは `do` ブロックです。
+`do` ブロックの各ステップは、次々に実行され、期待される出力が得られます。
+最後のステップ、`pure ()` には効果がなく、`runActions` の定義に基本ケースが必要だからだけに存在します。
 
-## Exercise
+## 練習問題
 
-Step through the execution of the following program on a piece of paper:
+次のプログラムの実行を紙に書き出して、ステップごとにたどりましょう：
 ```lean
 {{#example_decl Examples/HelloWorld.lean ExMain}}
 ```
-While stepping through the program's execution, identify when an expression is being evaluated and when an `IO` action is being executed.
-When executing an `IO` action results in a side effect, write it down.
-After doing this, run the program with Lean and double-check that your predictions about the side effects were correct.
+プログラムの実行を追跡している間に、表現が評価されている時と `IO` アクションが実行されている時を識別します。
+`IO` アクションの実行が副作用を引き起こす場合は、それを書き留めます。
+これを行った後、Leanでプログラムを実行し、副作用に関してあなたの予測が正しかったかを再確認してください。

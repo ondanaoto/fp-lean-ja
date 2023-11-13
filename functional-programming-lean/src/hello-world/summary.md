@@ -1,62 +1,62 @@
-# Summary
+```markdown
+# 概要
 
-## Evaluation vs Execution
+## 評価と実行
 
-Side effects are aspects of program execution that go beyond the evaluation of mathematical expressions, such as reading files, throwing exceptions, or triggering industrial machinery.
-While most languages allow side effects to occur during evaluation, Lean does not.
-Instead, Lean has a type called `IO` that represents _descriptions_ of programs that use side effects.
-These descriptions are then executed by the language's run-time system, which invokes the Lean expression evaluator to carry out specific computations.
-Values of type `IO α` are called _`IO` actions_.
-The simplest is `pure`, which returns its argument and has no actual side effects.
+副作用とは、ファイルの読み込み、例外の投げ、工業機械の発動など、数学的表現の評価を超えたプログラム実行の側面を指します。
+ほとんどの言語では評価中に副作用が発生可能ですが、Leanはそうではありません。
+代わりにLeanには`IO`という型があり、副作用を使用するプログラムの_記述_を表しています。
+これらの記述は、特定の計算を行うためにLean式の評価器を呼び出す言語の実行時システムによって実行されます。
+型`IO α`の値は_`IO`アクション_と呼ばれます。
+最も簡単なのは`pure`で、その引数を返し、実際の副作用はありません。
 
-`IO` actions can also be understood as functions that take the whole world as an argument and return a new world in which the side effect has occurred.
-Behind the scenes, the `IO` library ensures that the world is never duplicated, created, or destroyed.
-While this model of side effects cannot actually be implemented, as the whole universe is too big to fit in memory, the real world can be represented by a token that is passed around through the program.
+`IO`アクションは、全世界を引数として取り、副作用が発生した新しい世界を返す関数としても理解することができます。
+`IO`ライブラリは、裏では世界が二重に、作られたり、破壊されたりすることはないように保証しています。
+この副作用モデルは実際には実装できません。なぜなら全宇宙がメモリに収まりきるほど小さくはないからです。しかし現実世界は、プログラムを通じて渡されるトークンによって表されることができます。
 
-An `IO` action `main` is executed when the program starts.
-`main` can have one of three types:
- * `main : IO Unit` is used for simple programs that cannot read their command-line arguments and always return exit code `0`,
- * `main : IO UInt32` is used for programs without arguments that may signal success or failure, and
- * `main : List String → IO UInt32` is used for programs that take command-line arguments and signal success or failure.
+プログラムが開始されるとき、`IO`アクション`main`が実行されます。
+`main`は3つの型のうちの1つを持つことができます：
+ * `main : IO Unit`は、コマンドライン引数を読むことができず常に退出コード`0`を返す簡単なプログラムに使用されます。
+ * `main : IO UInt32`は、成功や失敗をシグナルすることができるが引数を取らないプログラムに使用されます。
+ * `main : List String → IO UInt32`は、コマンドライン引数を取り、成功や失敗をシグナルするプログラムに使用されます。
 
+## `do`記法
 
-## `do` Notation
+Lean標準ライブラリは、ファイルの読み込み・書き込みや標準入力・標準出力との対話など、副作用を代表とする基本的な`IO`アクションを提供します。
+これらの基本的な`IO`アクションを使い、`do`記法を使用して大きな`IO`アクションに構成します。`do`記法は、副作用を持つプログラムの記述を作成するための組み込みのドメイン特化言語です。
+`do`式は、_ステートメント_のシーケンスを含みます。これらは次のものがあります：
+ * `IO`アクションを代表する式、
+ * `let`と`:=`を使った通常のローカル定義は、提供された式の値を参照する名前を定義します。
+ * `let`と`←`を使ったローカル定義は、提供された式の値を実行する結果を参照する名前を定義します。
 
-The Lean standard library provides a number of basic `IO` actions that represent effects such as reading from and writing to files and interacting with standard input and standard output.
-These base `IO` actions are composed into larger `IO` actions using `do` notation, which is a built-in domain-specific language for writing descriptions of programs with side effects.
-A `do` expression contains a sequence of _statements_, which may be:
- * expressions that represent `IO` actions,
- * ordinary local definitions with `let` and `:=`, where the defined name refers to the value of the provided expression, or
- * local definitions with `let` and `←`, where the defined name refers to the result of executing the value of the provided expression.
+`do`で書かれた`IO`アクションは、一つのステートメントずつ実行されます。
 
-`IO` actions that are written with `do` are executed one statement at a time.
- 
-Furthermore, `if` and `match` expressions that occur immediately under a `do` are implicitly considered to have their own `do` in each branch.
-Inside of a `do` expression, _nested actions_ are expressions with a left arrow immediately under parentheses.
-The Lean compiler implicitly lifts them to the nearest enclosing `do`, which may be implicitly part of a branch of a `match` or `if` expression, and gives them a unique name.
-This unique name then replaces the origin site of the nested action.
+さらに、`do`の直下にある`if`や`match`式は、各ブランチに独自の`do`があるかのように暗黙的に考慮されます。
+`do`式の内部では、_ネストされたアクション_は左矢印が直接カッコの下にある式です。
+Leanコンパイラはそれらを最も近い包含する`do`まで暗黙的に持ち上げ、その後それらに一意な名前を与えます。
+この一意な名前が、ネストされたアクションの原始的な場所に置き換えられます。
 
+## プログラムのコンパイルと実行
 
-## Compiling and Running Programs
+`main`定義で構成される単一ファイルのLeanプログラムは`lean --run FILE`を使用して実行できます。
+これはシンプルなプログラムを素早く始める良い方法ですが、ほとんどのプログラムは最終的に複数ファイルのプロジェクトになり、実行する前にコンパイルする必要があります。
 
-A Lean program that consists of a single file with a `main` definition can be run using `lean --run FILE`.
-While this can be a nice way to get started with a simple program, most programs will eventually graduate to a multiple-file project that should be compiled before running.
+Leanプロジェクトは、依存関係とビルド設定に関する情報を含めたライブラリと実行可能ファイルのコレクションである_パッケージ_によって構成されます。
+パッケージはLeanビルドツールであるLakeを使って記述されます。
+新しいディレクトリでLakeパッケージを作成するには`lake new`を使用し、また現在のディレクトリで作成するには`lake init`を使用します。
+Lakeパッケージ構成は別のドメイン特化言語です。
+プロジェクトをビルドするには`lake build`を使用します。
 
-Lean projects are organized into _packages_, which are collections of libraries and executables together with information about dependencies and a build configuration.
-Packages are described using Lake, a Lean build tool.
-Use `lake new` to create a Lake package in a new directory, or `lake init` to create one in the current directory.
-Lake package configuration is another domain-specific language.
-Use `lake build` to build a project.
+## 部分性
 
-## Partiality
+表現の評価の数学的モデルを守るための一つの結果は、すべての式が値を持つ必要があるということです。
+これは、データ型のすべてのコンストラクタを網羅していない不完全なパターンマッチ、および無限ループに陥る可能性のあるプログラムを除外します。
+Leanはすべての`match`式がすべてのケースを網羅し、すべての再帰関数が構造的に再帰的であるか終了の明示的な証明を持っていることを保証します。
 
-One consequence of following the mathematical model of expression evaluation is that every expression must have a value.
-This rules out both incomplete pattern matches that fail to cover all constructors of a datatype and programs that can fall into an infinite loop.
-Lean ensures that all `match` expressions cover all cases, and that all recursive functions are either structurally recursive or have an explicit proof of termination.
-
-However, some real programs require the possibility of looping infinitely, because they handle potentially-infinite data, such as POSIX streams.
-Lean provides an escape hatch: functions whose definition is marked `partial` are not required to terminate.
-This comes at a cost.
-Because types are a first-class part of the Lean language, functions can return types.
-Partial functions, however, are not evaluated during type checking, because an infinite loop in a function could cause the type checker to enter an infinite loop.
-Furthermore, mathematical proofs are unable to inspect the definitions of partial functions, which means that programs that use them are much less amenable to formal proof.
+ただし、POSIXストリームのような無限データを処理するために、実際に無限にループする可能性があるプログラムが必要な場合があります。
+Leanは逃げ路を提供します：`partial`とマークされた関数の定義は終了する必要はありません。
+これにはコストが伴います。
+型がLean言語の第一級の一部であるため、関数は型を返すことができます。
+しかし、部分関数は型チェック中に評価されません。なぜなら無限ループに陥る関数は型チェッカーを無限ループに結びつける可能性があるからです。
+さらに、部分関数の定義を検査できない数学的証明は、それを使用するプログラムの形式的証明にはあまり適していません。
+```

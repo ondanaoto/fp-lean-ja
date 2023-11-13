@@ -1,147 +1,142 @@
-# Running a Program
+以下は、指定された `.md` ファイルを日本語に翻訳したものです。
 
-The simplest way to run a Lean program is to use the `--run` option to the Lean executable.
-Create a file called `Hello.lean` and enter the following contents:
+---
+
+# プログラムの実行方法
+
+Leanプログラムを実行するもっとも簡単な方法は、Lean実行ファイルに `--run` オプションを使用することです。
+`Hello.lean` という名前のファイルを作成し、次の内容を入力します：
 ```lean
 {{#include ../../../examples/simple-hello/Hello.lean}}
 ```
-Then, from the command line, run:
+次に、コマンドラインから以下を実行します：
 ```
 {{#command {simple-hello} {hello} {lean --run Hello.lean} }}
 ```
-The program displays `{{#command_out {hello} {lean --run Hello.lean} }}` and exits.
+プログラムは `{{#command_out {hello} {lean --run Hello.lean} }}` を表示して終了します。
 
-## Anatomy of a Greeting
+## 挨拶の構造
 
-When Lean is invoked with the `--run` option, it invokes the program's `main` definition.
-In programs that do not take command-line arguments, `main` should have type `IO Unit`.
-This means that `main` is not a function, because there are no arrows (`→`) in its type.
-Instead of being a function that has side effects, `main` consists of a description of effects to be carried out.
+`--run` オプションでLeanが呼び出されると、プログラムの `main` 定義を呼び出します。
+コマンドライン引数を取らないプログラムでは、`main` は `IO Unit` 型であるべきです。
+これは `main` が関数ではないことを意味しています。なぜなら、型に矢印（`→`）がないからです。
+副作用を持つ関数であるのではなく、`main` は実行されるべき効果の説明です。
 
-As discussed in [the preceding chapter](../getting-to-know/polymorphism.md), `Unit` is the simplest inductive type.
-It has a single constructor called `unit` that takes no arguments.
-Languages in the C tradition have a notion of a `void` function that does not return any value at all.
-In Lean, all functions take an argument and return a value, and the lack of interesting arguments or return values can be signaled by using the `Unit` type instead.
-If `Bool` represents a single bit of information, `Unit` represents zero bits of information.
+[前の章](../getting-to-know/polymorphism.md)で議論されたように、`Unit` はもっともシンプルな帰納的型です。
+引数を取らない単一のコンストラクタ `unit` を持っています。
+C言語の伝統における言語は、値を全く返さない `void` 関数の概念を持っています。
+Leanでは、すべての関数は引数を取り、値を返します。そして、興味深い引数や返り値がないことを表すために `Unit` 型を使用できます。
+`Bool` が1ビットの情報を表すのに対し、`Unit` は0ビットの情報を表します。
 
-`IO α` is the type of a program that, when executed, will either throw an exception or return a value of type `α`.
-During execution, this program may have side effects.
-These programs are referred to as `IO` _actions_.
-Lean distinguishes between _evaluation_ of expressions, which strictly adheres to the mathematical model of substitution of values for variables and reduction of sub-expressions without side effects, and _execution_ of `IO` actions, which rely on an external system to interact with the world.
-`IO.println` is a function from strings to `IO` actions that, when executed, write the given string to standard output.
-Because this action doesn't read any interesting information from the environment in the process of emitting the string, `IO.println` has type `String → IO Unit`.
-If it did return something interesting, then that would be indicated by the `IO` action having a type other than `Unit`.
+`IO α` は、実行されたときに、例外を投げるか型 `α` の値を返すプログラムの型です。
+実行中、このプログラムは副作用を持つことがあります。
+これらのプログラムは `IO` _アクション_ と呼ばれます。
+Leanは、副作用なしで変数の値の代数的置換と部分式の還元に厳密に従って式の _評価_ と、世界とのやり取りに外部システムに依存する `IO` アクションの _実行_ を区別します。
+`IO.println` は、実行されると指定された文字列を標準出力に書き込む `IO` アクションへの文字列からの関数です。
+このアクションは文字列を出力する過程で環境から興味深い情報を読み取らないため、`IO.println` は `String → IO Unit` 型です。
+もし興味深いものを返すならば、それは `IO` アクションが `Unit` 以外の型を持っていると示されるでしょう。
 
+## 関数型プログラミング vs 効果
 
-## Functional Programming vs Effects
+Leanの計算モデルは、変数が時間が経っても変わらない具体的な単一の値を与えられる数学的表現の評価に基づいています。
+表現の評価結果は変わらず、同じ表現を再度評価しても常に同じ結果が得られます。
 
-Lean's model of computation is based on the evaluation of mathematical expressions, in which variables are given exactly one value that does not change over time.
-The result of evaluating an expression does not change, and evaluating the same expression again will always yield the same result.
+その一方で、実用的なプログラムは世界との相互作用が必要です。
+入出力を行わないプログラムは、ユーザーからデータを要求したり、ディスク上にファイルを作成したり、ネットワーク接続を開始したりすることはできません。
+そしてLean自体もLeanで記述されています。Leanコンパイラは確かにファイルを読み取り、ファイルを作成し、テキストエディタと対話しています。
+同じ表現が常に同じ結果をもたらす言語は、ディスクから読み取るファイルの内容が時間とともに変わることがあるため、どのようにしてこれらのプログラムをサポートできるのでしょうか？
 
-On the other hand, useful programs must interact with the world.
-A program that performs neither input nor output can't ask a user for data, create files on disk, or open network connections.
-Lean is written in itself, and the Lean compiler certainly reads files, creates files, and interacts with text editors.
-How can a language in which the same expression always yields the same result support programs that read files from disk, when the contents of these files might change over time?
+この明らかな矛盾は、副作用について少し異なる考え方をすることによって解決できます。
+コーヒーやサンドイッチを売っているカフェを想像してください。
+このカフェには、注文を満たすコックと顧客と対応し注文伝票を出すカウンターの従業員の2人がいます。
+コックは気難しい性格で、外界との接触を本当に望まないが、カフェの看板商品である食べ物と飲み物を一貫して提供するのが得意です。しかしながら、このためには静かな環境が必要で、会話で邪魔されてはいけません。
+カウンターの従業員は親しみやすいが、キッチンでは全く無能です。
+顧客はカウンターの従業員と相互作用し、実際の調理をすべてコックに委託しています。
+もしコックが顧客に質問がある場合、例えばアレルギーについて明確にしたい場合は、小さなメモをカウンターの従業員に送り、その従業員は顧客と相互作用し、結果をメモにしてコックに返すのです。
 
-This apparent contradiction can be resolved by thinking a bit differently about side effects.
-Imagine a café that sells coffee and sandwiches.
-This café has two employees: a cook who fulfills orders, and a worker at the counter who interacts with customers and places order slips.
-The cook is a surly person, who really prefers not to have any contact with the world outside, but who is very good at consistently delivering the food and drinks that the café is known for.
-In order to do this, however, the cook needs peace and quiet, and can't be disturbed with conversation.
-The counter worker is friendly, but completely incompetent in the kitchen.
-Customers interact with the counter worker, who delegates all actual cooking to the cook.
-If the cook has a question for a customer, such as clarifying an allergy, they send a little note to the counter worker, who interacts with the customer and passes a note back to the cook with the result.
+この例えで、コックはLean言語です。
+注文があれば、コックは忠実かつ一貫して要求されたものを提供します。
+カウンター従業員は、支払いを受け取り、食べ物を配布し、顧客と会話できる周囲のランタイムシステムです。
+二人で協力することで、レストランのすべての機能を果たしていますが、それぞれの役割が分かれていて、自分が得意な仕事を実行しています。
+顧客を遠ざけておくことでコックは本当に優れたコーヒーやサンドイッチ作りに集中できるように、Leanの副作用の欠如は、正式な数学的証明の一部としてプログラムが使われることを可能にします。
+また、隠された状態変化がコンポーネント間で微妙なカップリングを作り出すことがないため、プログラマーは部品を互いに独立して理解することを助けます。
+コックのメモは、Leanの式を評価することで生成される `IO` アクションを表し、カウンター従業員の返信は、効果から渡された値です。
 
-In this analogy, the cook is the Lean language.
-When provided with an order, the cook faithfully and consistently delivers what is requested.
-The counter worker is the surrounding run-time system that interacts with the world and can accept payments, dispense food, and have conversations with customers.
-Working together, the two employees serve all the functions of the restaurant, but their responsibilities are divided, with each performing the tasks that they're best at.
-Just as keeping customers away allows the cook to focus on making truly excellent coffee and sandwiches, Lean's lack of side effects allows programs to be used as part of formal mathematical proofs.
-It also helps programmers understand the parts of the program in isolation from each other, because there are no hidden state changes that create subtle coupling between components.
-The cook's notes represent `IO` actions that are produced by evaluating Lean expressions, and the counter worker's replies are the values that are passed back from effects.
+この副作用のモデルは、Lean言語、そのコンパイラ、ランタイムシステム（RTS）の全体像と非常によく似ています。
+ランタイムシステムにあるC言語で記述されたプリミティブは、すべての基本的な効果を実装しています。
+プログラムを実行する際、RTSは `main` アクションを呼び出し、実行のための新しい `IO` アクションをRTSに返します。
+RTSはこれらのアクションを実行し、計算を行うためにユーザーのLeanコードを使って委託します。
+Leanの内部視点からは、プログラムは副作用がなく、`IO` アクションは実行されるべき仕事の単なる説明です。
+プログラムのユーザーからの外部視点からは、プログラムの中核ロジックへのインターフェースを作成する副作用の層があります。
 
-This model of side effects is quite similar to how the overall aggregate of the Lean language, its compiler, and its run-time system (RTS) work.
-Primitives in the run-time system, written in C, implement all the basic effects.
-When running a program, the RTS invokes the `main` action, which returns new `IO` actions to the RTS for execution.
-The RTS executes these actions, delegating to the user's Lean code to carry out computations.
-From the internal perspective of Lean, programs are free of side effects, and `IO` actions are just descriptions of tasks to be carried out.
-From the external perspective of the program's user, there is a layer of side effects that create an interface to the program's core logic.
+## 実世界の関数型プログラミング
 
+Leanにおける副作用について別の有益な考え方は、`IO` アクションを、全世界を引数として取り、新しい世界とペアになった値とする関数と考えることです。
+この場合、標準入力からのテキスト行の読み取りは、毎回異なる世界が引数として提供されるため、純粋な関数です。
+標準出力へのテキスト行の書き込みは、関数が始まった世界とは異なる世界を返すため、純粋な関数です。
+プログラムは、決して世界を再利用したり、新しい世界を返却しないように注意する必要があります。これは結局、時間旅行または世界の終わりに他なりません。
+注意深い抽象化の境界線は、このスタイルのプログラミングを安全にすることができます。
+もしすべてのプリミティブ `IO` アクションが一つの世界を受け取り、新しいものを返し、そしてそれらがこの不変性を維持するツールでのみ組み合わせることができるならば、問題は発生しません。
 
-## Real-World Functional Programming
+このモデルは実装することはできません。
+結局のところ、宇宙全体をLeanの値に変換してメモリに配置することはできません。
+しかしながら、世界の抽象トークンを使ったこのモデルの変形を実装することは可能です。
+プログラムが始まると、それに世界トークンが提供されます。
+次に、このトークンはIOプリミティブに渡され、返されたトークンは次のステップに渡されます。
+プログラムの末尾で、トークンはオペレーティングシステムに返却されます。
 
-The other useful way to think about side effects in Lean is by considering `IO` actions to be functions that take the entire world as an argument and return a value paired with a new world.
-In this case, reading a line of text from standard input _is_ a pure function, because a different world is provided as an argument each time.
-Writing a line of text to standard output is a pure function, because the world that the function returns is different from the one that it began with.
-Programs do need to be careful to never re-use the world, nor to fail to return a new world—this would amount to time travel or the end of the world, after all.
-Careful abstraction boundaries can make this style of programming safe.
-If every primitive `IO` action accepts one world and returns a new one, and they can only be combined with tools that preserve this invariant, then the problem cannot occur.
+この副作用のモデルは、RTSによって実行されるタスクとしての `IO` アクションの説明がLean内部でどのように表現されるかの良い説明です。
+実際の世界を変換する実際の関数は抽象化のバリアの後ろにあります。
+しかし、実際のプログラムは通常、ただ一つではなく一連の効果から構成されています。
+複数の効果を使用できるようにするために、`do`表記と呼ばれるLeanのサブ言語があり、これを使ってこれらのプリミティブな `IO` アクションをより大きく有用なプログラムに安全に組み合わせることができます。
 
-This model cannot be implemented.
-After all, the entire universe cannot be turned into a Lean value and placed into memory.
-However, it is possible to implement a variation of this model with an abstract token that stands for the world.
-When the program is started, it is provided with a world token.
-This token is then passed on to the IO primitives, and their returned tokens are similarly passed to the next step.
-At the end of the program, the token is returned to the operating system.
+## `IO` アクションの組み合わせ
 
-This model of side effects is a good description of how `IO` actions as descriptions of tasks to be carried out by the RTS are represented internally in Lean.
-The actual functions that transform the real world are behind an abstraction barrier.
-But real programs typically consist of a sequence of effects, rather than just one.
-To enable programs to use multiple effects, there is a sub-language of Lean called `do` notation that allows these primitive `IO` actions to be safely composed into a larger, useful program.
-
-## Combining `IO` Actions
-
-Most useful programs accept input in addition to producing output.
-Furthermore, they may take decisions based on input, using the input data as part of a computation.
-The following program, called `HelloName.lean`, asks the user for their name and then greets them:
+ほとんどの有用なプログラムは出力を生成するだけでなく、入力も受け付けます。
+さらに、入力に基づいて決定を下し、入力データを計算の一部として使用する場合があります。
+以下のプログラムは `HelloName.lean` と呼ばれ、ユーザーに名前を尋ねてから挨拶します：
 ```lean
 {{#include ../../../examples/hello-name/HelloName.lean:all}}
 ```
 
-In this program, the `main` action consists of a `do` block.
-This block contains a sequence of _statements_, which can be both local variables (introduced using `let`) and actions that are to be executed.
-Just as SQL can be thought of as a special-purpose language for interacting with databases, the `do` syntax can be thought of as a special-purpose sub-language within Lean that is dedicated to modeling imperative programs.
-`IO` actions that are built with a `do` block are executed by executing the statements in order.
+このプログラムでは、`main` アクションは `do` ブロックで構成されています。
+このブロックは _ステートメント_ のシーケンスを含んでおり、ローカル変数（`let` を使用して導入）と実行されるアクションの両方があります。
+SQLがデータベースとの相互作用のための専用言語と考えることができるように、`do` 構文は命令型プログラムをモデル化するためにLean内の専用サブ言語と考えることができます。
+`do` ブロックで構築された `IO` アクションは、順番にステートメントを実行することで実行されます。
 
-This program can be run in the same manner as the prior program:
+このプログラムは、前のプログラムと同じ方法で実行できます：
 ```
 {{#command {hello-name} {hello-name} {./run} {lean --run HelloName.lean}}}
 ```
-If the user responds with `David`, a session of interaction with the program reads:
+ユーザーが `David` と応答する場合、プログラムとのやり取りのセッションは以下のようになります：
 ```
 {{#command_out {hello-name} {./run} }}
 ```
 
-The type signature line is just like the one for `Hello.lean`:
+型シグネチャ行は `Hello.lean` に対するものと全く同じです：
 ```lean
 {{#include ../../../examples/hello-name/HelloName.lean:sig}}
 ```
-The only difference is that it ends with the keyword `do`, which initiates a sequence of commands.
-Each indented line following the keyword `do` is part of the same sequence of commands.
+唯一の違いは、命令のシーケンスを開始するキーワード `do` で終わることです。
+キーワード `do` の後に続くインデントされた各行は、同じ命令のシーケンスの一部です。
 
-The first two lines, which read:
+最初の2行は以下の通りです：
 ```lean
 {{#include ../../../examples/hello-name/HelloName.lean:setup}}
 ```
-retrieve the `stdin` and `stdout` handles by executing the library actions `IO.getStdin` and `IO.getStdout`, respectively.
-In a `do` block, `let` has a slightly different meaning than in an ordinary expression.
-Ordinarily, the local definition in a `let` can be used in just one expression, which immediately follows the local definition.
-In a `do` block, local bindings introduced by `let` are available in all statements in the remainder of the `do` block, rather than just the next one.
-Additionally, `let` typically connects the name being defined to its definition using `:=`, while some `let` bindings in `do` use a left arrow (`←` or `<-`) instead.
-Using an arrow means that the value of the expression is an `IO` action that should be executed, with the result of the action saved in the local variable.
-In other words, if the expression to the right of the arrow has type `IO α`, then the variable has type `α` in the remainder of the `do` block.
-`IO.getStdin` and `IO.getStdout` are `IO` actions in order to allow `stdin` and `stdout` to be locally overridden in a program, which can be convenient.
-If they were global variables as in C, then there would be no meaningful way to override them, but `IO` actions can return different values each time they are executed.
+それぞれライブラリのアクション `IO.getStdin` と `IO.getStdout` を実行することで `stdin` と `stdout` のハンドルを取得します。
+`do` ブロック内では、`let` は通常の式の中での意味とは少し異なります。
+通常、`let` のローカル定義は直後に続く一つの表現内でのみ使用できますが、`do` ブロックでは `let` によって導入されたローカル束縛は `do` ブロックの残りのすべてのステートメントで利用可能です。そして、通常、定義を行う際に`:=`を使って名前とその定義を結び付けますが、`do`ブロック内でのいくつかの`let`束縛は左矢印（`←`または`<-`）を使用します。矢印を使用するということは、式の値が実行されるべき`IO`アクションであり、アクションの結果がローカル変数に保存されるべきだという意味です。つまり、矢印の右側の式が`IO α`型であれば、その変数は`do`ブロックの残りで`α`型として扱われます。`IO.getStdin`と`IO.getStdout`が`IO`アクションである理由は、プログラム内で`stdin`と`stdout`をローカルにオーバーライドできるようにするためです。これがC言語のようなグローバル変数だった場合、これらを意味ある方法でオーバーライドする手段はありませんが、`IO`アクションは実行のたびに異なる値を返すことができます。
 
-The next part of the `do` block is responsible for asking the user for their name:
+`do` ブロックの次の部分は、ユーザーから名前を尋ねるためのものです：
 ```lean
 {{#include ../../../examples/hello-name/HelloName.lean:question}}
 ```
-The first line writes the question to `stdout`, the second line requests input from `stdin`, and the third line removes the trailing newline (plus any other trailing whitespace) from the input line.
-The definition of `name` uses `:=`, rather than `←`, because `String.dropRightWhile` is an ordinary function on strings, rather than an `IO` action.
+最初の行は質問を`stdout`に書き込み、次の行は`stdin`からの入力を求め、三番目の行は入力された行末の改行（およびその他の末尾の空白）を削除します。
+`name`の定義は`←`ではなく`:=`を使用しています。それは`String.dropRightWhile`が`IO`アクションではなく、文字列に対する普通の関数だからです。
 
-Finally, the last line in the program is:
+最後に、プログラムの最後の行は：
 ```
 {{#include ../../../examples/hello-name/HelloName.lean:answer}}
 ```
-It uses [string interpolation](../getting-to-know/conveniences.md#string-interpolation) to insert the provided name into a greeting string, writing the result to `stdout`.
+これは[string interpolation](../getting-to-know/conveniences.md#string-interpolation)を使用して提供された名前を挨拶文に挿入し、結果を`stdout`に書き込みます。
