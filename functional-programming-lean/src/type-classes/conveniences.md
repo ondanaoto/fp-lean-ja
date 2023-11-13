@@ -1,49 +1,48 @@
-# Additional Conveniences
+# 追加の便利機能
 
-## Constructor Syntax for Instances
+## インスタンスのコンストラクタ構文
 
-Behind the scenes, type classes are structure types and instances are values of these types.
-The only differences are that Lean stores additional information about type classes, such as which parameters are output parameters, and that instances are registered for searching.
-While values that have structure types are typically defined using either `⟨...⟩` syntax or with braces and fields, and instances are typically defined using `where`, both syntaxes work for both kinds of definition.
+背後では、型クラスは構造型であり、インスタンスはこれらの型の値です。
+唯一の違いは、Leanが型クラスについての追加情報、たとえばどのパラメータが出力パラメータであるかなどを格納し、インスタンスが検索用に登録されているということです。
+構造型を持つ値は通常 `⟨...⟩` 構文または中括弧とフィールドを用いて定義されますが、インスタンスは通常 `where` を使用して定義されます。しかし、両方の構文は両方の定義で機能します。
 
-For example, a forestry application might represent trees as follows:
+たとえば、森林アプリケーションでは以下のように木を表現するかもしれません：
 ```lean
 {{#example_decl Examples/Classes.lean trees}}
 ```
-All three syntaxes are equivalent.
+これら三つの構文は等価です。
 
-Similarly, type class instances can be defined using all three syntaxes:
+同様に、型クラスのインスタンスをすべての三つの構文を使用して定義することができます：
 ```lean
 {{#example_decl Examples/Classes.lean Display}}
 ```
 
-Generally speaking, the `where` syntax should be used for instances, and the curly-brace syntax should be used for structures.
-The `⟨...⟩` syntax can be useful when emphasizing that a structure type is very much like a tuple in which the fields happen to be named, but the names are not important at the moment.
-However, there are situations where it can make sense to use other alternatives.
-In particular, a library might provide a function that constructs an instance value.
-Placing a call to this function after `:=` in an instance declaration is the easiest way to use such a function.
+一般的に、`where` 構文はインスタンスに使用すべきであり、中括弧の構文は構造に使用すべきです。
+`⟨...⟩` 構文は、構造型が名前付きのフィールドを持つタプルと非常に似ている場合に有効であり、その瞬間に名前が重要ではないときに強調するのに便利です。
+しかし、他の代替手段を使用することが理にかなっている状況もあります。
+特に、ライブラリがインスタンス値を構築する機能を提供する場合があります。
+インスタンス宣言の `:=` の後にこの機能への呼び出しを配置することは、このような機能を使用する最も簡単な方法です。
 
-## Examples
+## 例
 
-When experimenting with Lean code, definitions can be more convenient to use than `#eval` or `#check` commands.
-First off, definitions don't produce any output, which can help keep the reader's focus on the most interesting output.
-Secondly, it's easiest to write most Lean programs by starting with a type signature, allowing Lean to provide more assistance and better error messages while writing the program itself.
-On the other hand, `#eval` and `#check` are easiest to use in contexts where Lean is able to determine the type from the provided expression.
-Thirdly, `#eval` cannot be used with expressions whose types don't have `ToString` or `Repr` instances, such as functions.
-Finally, multi-step `do` blocks, `let`-expressions, and other syntactic forms that take multiple lines are particularly difficult to write with a type annotation in `#eval` or `#check`, simply because the required parenthesization can be difficult to predict.
+Leanのコードを実験する際には、`#eval` や `#check` コマンドよりも定義を使用する方が便利です。
+まず、定義は出力を生成しないため、読者の注目を最も興味深い出力に集中させるのに役立ちます。
+次に、ほとんどのLeanプログラムは型シグネチャから始める方が、プログラムそのものを書きながらLeanがより多くの支援を提供し、より良いエラーメッセージを与えることができます。
+一方で、Leanが提供された式から型を決定できる場合には、`#eval` と `#check` を使用する方が簡単です。
+さらに、`#eval` は `ToString` や `Repr` のインスタンスを持たない型の式、例えば関数と一緒には使用できません。
+最後に、複数ステップの `do` ブロックや、`let`-式、およびその他の複数行にまたがる構文形式は、`#eval` や `#check` で型注釈を付けるのが特に難しくなります。なぜなら、必要な括弧が予測しにくいからです。
 
-To work around these issues, Lean supports the explicit indication of examples in a source file.
-An example is like a definition without a name.
-For instance, a non-empty list of birds commonly found in Copenhagen's green spaces can be written:
+これらの問題を解決するため、Leanはソースファイルでの例の明示的な表示をサポートしています。
+例は名前を持たない定義のようなものです。
+例えば、コペンハーゲンの緑地に一般的に見られる鳥の空でないリストは以下のように書かれるかもしれません：
 ```lean
 {{#example_decl Examples/Classes.lean birdExample}}
 ```
 
-Examples may define functions by accepting arguments:
+例は引数を受け入れることで関数を定義することが可能です：
 ```lean
 {{#example_decl Examples/Classes.lean commAdd}}
 ```
-While this creates a function behind the scenes, this function has no name and cannot be called.
-Nonetheless, this is useful for demonstrating how a library can be used with arbitrary or unknown values of some given type.
-In source files, `example` declarations are best paired with comments that explain how the example illustrates the concepts of the library.
-
+これにより、裏側で関数が作成されますが、この関数には名前がなく、呼び出すことはできません。
+それでも、これは、いくつかの与えられた型の任意の値または不明な値を使用してライブラリがどのように使用され得るかを示すのに有用です。
+ソースファイルでは、`example` 宣言はライブラリのコンセプトを説明するコメントと一緒に使用するのが最も適しています。

@@ -1,27 +1,28 @@
-# Positive Numbers
+```markdown
+# 正の数値
 
-In some applications, only positive numbers make sense.
-For example, compilers and interpreters typically use one-indexed line and column numbers for source positions, and a datatype that represents only non-empty lists will never report a length of zero.
-Rather than relying on natural numbers, and littering the code with assertions that the number is not zero, it can be useful to design a datatype that represents only positive numbers.
+あるアプリケーションでは、正の数値のみが意味をなすことがあります。
+例えば、コンパイラーやインタプリターはソースコードの位置を示すために1から始まる行番号や列番号を使い、非空リストを表すデータ型では長さがゼロと報告されることはありません。
+自然数を用いて、数がゼロでないことを確認するアサーションをコードに散りばめるのではなく、正の数のみを表すデータ型を設計することが有効な場合があります。
 
-One way to represent positive numbers is very similar to `Nat`, except with `one` as the base case instead of `zero`:
+正の数値を表す一つの方法は`Nat`に似ていますが、基底ケースが`zero`の代わりに`one`です：
 ```lean
 {{#example_decl Examples/Classes.lean Pos}}
 ```
-This datatype represents exactly the intended set of values, but it is not very convenient to use.
-For example, numeric literals are rejected:
+このデータ型は正確に意図した値の集合を表していますが、使用するのは非常に不便です。
+例えば、数値リテラルは拒否されます：
 ```lean
 {{#example_in Examples/Classes.lean sevenOops}}
 ```
 ```output error
 {{#example_out Examples/Classes.lean sevenOops}}
 ```
-Instead, the constructors must be used directly:
+代わりに、コンストラクタを直接使用する必要があります：
 ```lean
 {{#example_decl Examples/Classes.lean seven}}
 ```
 
-Similarly, addition and multiplication are not easy to use:
+同様に、加算や乗算を使用するのも容易ではありません：
 ```lean
 {{#example_in Examples/Classes.lean fourteenOops}}
 ```
@@ -35,51 +36,50 @@ Similarly, addition and multiplication are not easy to use:
 {{#example_out Examples/Classes.lean fortyNineOops}}
 ```
 
-Each of these error messages begins with `failed to synthesize instance`.
-This indicates that the error is due to an overloaded operation that has not been implemented, and it describes the type class that must be implemented.
+これらのエラーメッセージはそれぞれ「failed to synthesize instance」で始まります。
+これは重複した操作が実装されていないためのエラーであり、実装する必要がある型クラスを説明しています。
 
-## Classes and Instances
+## クラスとインスタンス
 
-A type class consists of a name, some parameters, and a collection of _methods_.
-The parameters describe the types for which overloadable operations are being defined, and the methods are the names and type signatures of the overloadable operations.
-Once again, there is a terminology clash with object-oriented languages.
-In object-oriented programming, a method is essentially a function that is connected to a particular object in memory, with special access to the object's private state.
-Objects are interacted with via their methods.
-In Lean, the term "method" refers to an operation that has been declared to be overloadable, with no special connection to objects or values or private fields.
+型クラスは、名前といくつかのパラメーター、そしてメソッドのコレクションで構成されます。
+パラメーターはオーバーロード可能な操作が定義されている型を記述し、メソッドはオーバーロード可能な操作の名前と型シグネチャーです。
+再び、オブジェクト指向言語との用語の衝突があります。
+オブジェクト指向プログラミングでは、メソッドは特定のオブジェクトに接続された関数であり、オブジェクトのプライベート状態への特別なアクセスを持っています。
+オブジェクトはそのメソッドを介して操作されます。
+Leanでは、「メソッド」という用語はオーバーロード可能であると宣言された操作を指しますが、オブジェクトや値やプライベートフィールドと特別な関連はありません。
 
-One way to overload addition is to define a type class named `Plus`, with an addition method named `plus`.
-Once an instance of `Plus` for `Nat` has been defined, it becomes possible to add two `Nat`s using `Plus.plus`:
+加算をオーバーロードする一つの方法は、`Plus`という名前の型クラスを定義し、`plus`という加算メソッドを持つことです。
+`Nat`に対する`Plus`のインスタンスが定義されると、`Plus.plus`を使用して2つの`Nat`を加算することが可能になります：
 ```lean
 {{#example_in Examples/Classes.lean plusNatFiveThree}}
 ```
 ```output info
 {{#example_out Examples/Classes.lean plusNatFiveThree}}
 ```
-Adding more instances allows `Plus.plus` to take more types of arguments.
+引数の型を増やすことで`Plus.plus`をより多くの種類の引数に対応させます。
 
-In the following type class declaration, `Plus` is the name of the class, `α : Type` is the only argument, and `plus : α → α → α` is the only method:
+次の型クラス宣言では、`Plus`がクラスの名前であり、`α : Type`が唯一の引数であり、`plus : α → α → α`が唯一のメソッドです：
 ```lean
 {{#example_decl Examples/Classes.lean Plus}}
 ```
-This declaration says that there is a type class `Plus` that overloads operations with respect to a type `α`.
-In particular, there is one overloaded operation called `plus` that takes two `α`s and returns an `α`.
+この宣言により、型`α`に対して`Plus`という型クラスがオーバーロード操作を提供しているとされます。
+特に、`plus`というオーバーロード操作がありますが、これは2つの`α`を取り、`α`を返すものです。
 
-Type classes are first class, just as types are first class.
-In particular, a type class is another kind of type.
-The type of `{{#example_in Examples/Classes.lean PlusType}}` is `{{#example_out Examples/Classes.lean PlusType}}`, because it takes a type as an argument (`α`) and results in a new type that describes the overloading of `Plus`'s operation for `α`.
+型クラスは第一級の市民です。型も第一級の市民です。
+特に、型クラスは別の種類の型です。
+`{{#example_in Examples/Classes.lean PlusType}}`の型は`{{#example_out Examples/Classes.lean PlusType}}`です。なぜなら、これは型の引数（`α`）を取り、`Plus`の操作が`α`でオーバーロードされることを記述した新しい型を結果とします。
 
-
-To overload `plus` for a particular type, write an instance:
+特定の型の`plus`をオーバーロードするためにインスタンスを書きます：
 ```lean
 {{#example_decl Examples/Classes.lean PlusNat}}
 ```
-The colon after `instance` indicates that `Plus Nat` is indeed a type.
-Each method of class `Plus` should be assigned a value using `:=`.
-In this case, there is only one method: `plus`.
+`instance`の後のコロンは、`Plus Nat`が確かに型であることを示しています。
+クラス`Plus`の各メソッドは`:=`を使用して値を割り当てる必要があります。
+この場合、メソッドは`plus`のみです。
 
-By default, type class methods are defined in a namespace with the same name as the type class.
-It can be convenient to `open` the namespace so that users don't need to type the name of the class first.
-Parentheses in an `open` command indicate that only the indicated names from the namespace are to be made accessible:
+デフォルトでは、型クラスメソッドは型クラスと同じ名前の名前空間で定義されます。
+ユーザーが最初にクラス名を入力する必要がないように、名前空間を`open`することが便利な場合があります。
+`open`コマンドの括弧は、名前空間からアクセス可能にする指定された名前のみを示しています：
 ```lean
 {{#example_decl Examples/Classes.lean openPlus}}
 
@@ -89,53 +89,53 @@ Parentheses in an `open` command indicate that only the indicated names from the
 {{#example_out Examples/Classes.lean plusNatFiveThreeAgain}}
 ```
 
-Defining an addition function for `Pos` and an instance of `Plus Pos` allows `plus` to be used to add both `Pos` and `Nat` values:
+`Pos`の加算関数と`Pos`の`Plus`のインスタンスを定義すると、`plus`を使用して`Pos`と`Nat`の値の両方を加算することができるようになります：
 ```lean
 {{#example_decl Examples/Classes.lean PlusPos}}
 ```
 
-Because there is not yet an instance of `Plus Float`, attempting to add two floating-point numbers with `plus` fails with a familiar message:
+まだ`Plus Float`のインスタンスがないため、`plus`を使用して2つの浮動小数点数を加算しようとすると、おなじみのメッセージで失敗します：
 ```lean
 {{#example_in Examples/Classes.lean plusFloatFail}}
 ```
 ```output error
 {{#example_out Examples/Classes.lean plusFloatFail}}
 ```
-These errors mean that Lean was unable to find an instance for a given type class.
+これらのエラーは、Leanが特定の型クラスのインスタンスを見つけることができなかったことを意味します。
 
-## Overloaded Addition
+## オーバーロードされた加算
 
-Lean's built-in addition operator is syntactic sugar for a type class called `HAdd`, which flexibly allows the arguments to addition to have different types.
-`HAdd` is short for _heterogeneous addition_.
-For example, an `HAdd` instance can be written to allow a `Nat` to be added to a `Float`, resulting in a new `Float`.
-When a programmer writes `{{#example_eval Examples/Classes.lean plusDesugar 0}}`, it is interpreted as meaning `{{#example_eval Examples/Classes.lean plusDesugar 1}}`.
+Leanの組み込みの加算演算子は、`HAdd`という型クラスのための構文糖衣であり、その型クラスは加算の引数が異なる型であっても柔軟に対応することができます。
+`HAdd`は _異種加算_ を略したものです。
+例えば、`Nat`を`Float`に加算することができる`HAdd`のインスタンスを書くことができ、これにより新しい`Float`が生まれます。
+プログラマーが`{{#example_eval Examples/Classes.lean plusDesugar 0}}`と書いた場合、それは`{{#example_eval Examples/Classes.lean plusDesugar 1}}`と解釈されます。
 
-While an understanding of the full generality of `HAdd` relies on features that are discussed in [another section in this chapter](out-params.md), there is a simpler type class called `Add` that does not allow the types of the arguments to be mixed.
-The Lean libraries are set up so that an instance of `Add` will be found when searching for an instance of `HAdd` in which both arguments have the same type.
+`HAdd`の完全な一般性を理解するには[この章の別のセクション](out-params.md)で議論される機能が必要ですが、引数の型を混在させないよりシンプルな型クラス`Add`があります。
+Leanのライブラリは、両引数の型が同じである`HAdd`のインスタンスを探す際に、`Add`のインスタンスが見つかるようにセットアップされています。
 
-Defining an instance of `Add Pos` allows `Pos` values to use ordinary addition syntax:
+`Add Pos`のインスタンスを定義することで、`Pos`の値で通常の加算構文を使用できるようになります：
 ```lean
 {{#example_decl Examples/Classes.lean AddPos}}
 
 {{#example_decl Examples/Classes.lean betterFourteen}}
 ```
 
-## Conversion to Strings
+## 文字列への変換
 
-Another useful built-in class is called `ToString`.
-Instances of `ToString` provide a standard way of converting values from a given type into strings.
-For example, a `ToString` instance is used when a value occurs in an interpolated string, and it determines how the `IO.println` function used at the [beginning of the description of `IO`](../hello-world/running-a-program.html#running-a-program) will display a value.
+別の役立つ組み込みクラスは`ToString`と呼ばれています。
+`ToString`のインスタンスは、与えられた型の値を文字列に変換する標準的な方法を提供します。
+例えば、`ToString`インスタンスは、値が補間文字列に出現した場合に使用され、[説明の`IO`](../hello-world/running-a-program.html#running-a-program)の最初で使用された`IO.println`関数が値をどのように表示するかを決定します。
 
-For example, one way to convert a `Pos` into a `String` is to reveal its inner structure.
-The function `posToString` takes a `Bool` that determines whether to parenthesize uses of `Pos.succ`, which should be `true` in the initial call to the function and `false` in all recursive calls.
+例えば、`Pos`を`String`に変換する一つの方法は、その内部構造を明らかにすることです。
+関数`posToString`は、`Pos.succ`の使用を括弧で囲むかどうかを決定する`Bool`を取りますが、これは初回の関数呼び出しでは`true`に、すべての再帰的呼び出しでは`false`にすべきです。
 ```lean
 {{#example_decl Examples/Classes.lean posToStringStructure}}
 ```
-Using this function for a `ToString` instance:
+この関数を`ToString`インスタンスに使用すると：
 ```lean
 {{#example_decl Examples/Classes.lean UglyToStringPos}}
 ```
-results in informative, yet overwhelming, output:
+その結果、情報豊富ながらも圧倒的な出力になります：
 ```lean
 {{#example_in Examples/Classes.lean sevenLong}}
 ```
@@ -143,8 +143,8 @@ results in informative, yet overwhelming, output:
 {{#example_out Examples/Classes.lean sevenLong}}
 ```
 
-On the other hand, every positive number has a corresponding `Nat`.
-Converting it to a `Nat` and then using the `ToString Nat` instance (that is, the overloading of `toString` for `Nat`) is a quick way to generate much shorter output:
+一方で、すべての正の数には対応する`Nat`があります。
+それを`Nat`に変換してから`ToString Nat`インスタンス（つまり、`Nat`に対する`toString`のオーバーロード）を使用することは、はるかに短い出力をすばやく生成する手段です：
 ```lean
 {{#example_decl Examples/Classes.lean posToNat}}
 
@@ -155,20 +155,20 @@ Converting it to a `Nat` and then using the `ToString Nat` instance (that is, th
 ```output info
 {{#example_out Examples/Classes.lean sevenShort}}
 ```
-When more than one instance is defined, the most recent takes precedence.
-Additionally, if a type has a `ToString` instance, then it can be used to display the result of `#eval` even if the type in question was not defined with `deriving Repr`, so `{{#example_in Examples/Classes.lean sevenEvalStr}}` outputs `{{#example_out Examples/Classes.lean sevenEvalStr}}`.
+インスタンスが複数定義されている場合、最も新しいものが優先されます。
+さらに、型に`ToString`インスタンスがある場合、型が`deriving Repr`で定義されていなかったとしても、`#eval`の結果を表示するために使用できるため、`{{#example_in Examples/Classes.lean sevenEvalStr}}`の出力は`{{#example_out Examples/Classes.lean sevenEvalStr}}`になります。
 
-## Overloaded Multiplication
+## オーバーロードされた乗算
 
-For multiplication, there is a type class called `HMul` that allows mixed argument types, just like `HAdd`.
-Just as `{{#example_eval Examples/Classes.lean plusDesugar 0}}` is interpreted as `{{#example_eval Examples/Classes.lean plusDesugar 1}}`, `{{#example_eval Examples/Classes.lean timesDesugar 0}}` is interpreted as `{{#example_eval Examples/Classes.lean timesDesugar 1}}`.
-For the common case of multiplication of two arguments with the same type, a `Mul` instance suffices.
+乗算については、`HAdd`のように引数の型が混合されることを許容する型クラス`HMul`があります。
+`{{#example_eval Examples/Classes.lean plusDesugar 0}}`が`{{#example_eval Examples/Classes.lean plusDesugar 1}}`と解釈されるのと同様に、`{{#example_eval Examples/Classes.lean timesDesugar 0}}`は`{{#example_eval Examples/Classes.lean timesDesugar 1}}`と解釈されます。
+引数の型が同じである乗算の一般的なケースでは、`Mul`インスタンスが十分です。
 
-An instance of `Mul` allows ordinary multiplication syntax to be used with `Pos`:
+`Pos`に対して`Mul`のインスタンスを持つことは、通常の乗算構文を`Pos`で使用するためにあります：
 ```lean
 {{#example_decl Examples/Classes.lean PosMul}}
 ```
-With this instance, multiplication works as expected:
+このインスタンスを持つことで、乗算が予想通りに機能します：
 ```lean
 {{#example_in Examples/Classes.lean muls}}
 ```
@@ -176,37 +176,37 @@ With this instance, multiplication works as expected:
 {{#example_out Examples/Classes.lean muls}}
 ```
 
-## Literal Numbers
+## リテラル数字
 
-It is quite inconvenient to write out a sequence of constructors for positive numbers.
-One way to work around the problem would be to provide a function to convert a `Nat` into a `Pos`.
-However, this approach has downsides.
-First off, because `Pos` cannot represent `0`, the resulting function would either convert a `Nat` to a bigger number, or it would return `Option Pos`.
-Neither is particularly convenient for users.
-Secondly, the need to call the function explicitly would make programs that use positive numbers much less convenient to write than programs that use `Nat`.
-Having a trade-off between precise types and convenient APIs means that the precise types become less useful.
+正の数値のコンストラクタの列を書き出すことはかなり不便です。
+この問題を解決する方法の一つは、`Nat`を`Pos`に変換する関数を提供することです。
+ただし、このアプローチには欠点があります。
+まず、`Pos`は`0`を表すことができないため、結果の関数は`Nat`を大きな数値に変換するか、あるいは`Option Pos`を返すことになります。
+どちらもユーザーにとって特に便利ではありません。
+第二に、関数を明示的に呼び出す必要があるため、正の数値を使用するプログラムを`Nat`を使用するプログラムよりも書くことがはるかに不便になります。
+正確な型と便利なAPIの間にトレードオフがあると、正確な型はあまり有用ではなくなります。
 
-In Lean, natural number literals are interpreted using a type class called `OfNat`:
+Leanでは、自然数のリテラルは`OfNat`という型クラスを使用して解釈されます：
 ```lean
 {{#example_decl Examples/Classes.lean OfNat}}
 ```
-This type class takes two arguments: `α` is the type for which a natural number is overloaded, and the unnamed `Nat` argument is the actual literal number that was encountered in the program.
-The method `ofNat` is then used as the value of the numeric literal.
-Because the class contains the `Nat` argument, it becomes possible to define only instances for those values where the number makes sense.
+この型クラスには2つの引数があります：`α`は自然数がオーバーロードされている型であり、名前のない`Nat`引数はプログラムで遭遇した実際のリテラル数値です。
+その後、メソッド`ofNat`は数値リテラルの値として使用されます。
+クラスに`Nat`引数が含まれているため、数値が意味をなす値にのみインスタンスを定義することが可能になります。
 
-`OfNat` demonstrates that the arguments to type classes do not need to be types.
-Because types in Lean are first-class participants in the language that can be passed as arguments to functions and given definitions with `def` and `abbrev`, there is no barrier that prevents non-type arguments in positions where a less-flexible language could not permit them.
-This flexibility allows overloaded operations to be provided for particular values as well as particular types.
+`OfNat`は、型クラスの引数が型である必要はないことを示しています。
+Leanの型は言語の中で第一級の参加者であり、関数への引数として渡したり、`def`や`abbrev`で定義を与えたりすることができるので、より柔軟性の低い言語で許可できない位置で非型引数を防ぐための障壁はありません。
+この柔軟性により、特定の型だけでなく特定の値に対するオーバーロード操作を提供することが可能になります。
 
-For example, a sum type that represents natural numbers less than four can be defined as follows:
+例えば、4未満の自然数を表現する和型は次のように定義できます：
 ```lean
 {{#example_decl Examples/Classes.lean LT4}}
 ```
-While it would not make sense to allow _any_ literal number to be used for this type, numbers less than four clearly make sense:
+任意のリテラル数値をこの型に対して使うことは意味がありませんが、4未満の数なら明らかに理にかなっています：
 ```lean
 {{#example_decl Examples/Classes.lean LT4ofNat}}
 ```
-With these instances, the following examples work:
+これらのインスタンスを使用すれば、下記の例が機能します：
 ```lean
 {{#example_in Examples/Classes.lean LT4three}}
 ```
@@ -219,7 +219,7 @@ With these instances, the following examples work:
 ```output info
 {{#example_out Examples/Classes.lean LT4zero}}
 ```
-On the other hand, out-of-bounds literals are still not allowed:
+しかし、範囲外のリテラルはまだ許可されません：
 ```lean
 {{#example_in Examples/Classes.lean LT4four}}
 ```
@@ -227,15 +227,15 @@ On the other hand, out-of-bounds literals are still not allowed:
 {{#example_out Examples/Classes.lean LT4four}}
 ```
 
-For `Pos`, the `OfNat` instance should work for _any_ `Nat` other than `Nat.zero`.
-Another way to phrase this is to say that for all natural numbers `n`, the instance should work for `n + 1`.
-Just as names like `α` automatically become implicit arguments to functions that Lean fills out on its own, instances can take automatic implicit arguments.
-In this instance, the argument `n` stands for any `Nat`, and the instance is defined for a `Nat` that's one greater:
+`Pos`に対しては、`OfNat`インスタンスは`Nat.zero`を除く任意の`Nat`で機能するべきです。
+別の言い方をすれば、自然数`n`に対して、インスタンスは`n + 1`で動作するべきです。
+名前のように`α`が自動的に関数の暗黙の引数となり、Leanが自動的に埋めてくれるように、インスタンスも自動的な暗黙の引数を受け取ることができます。
+このインスタンスでは、引数`n`はどんな`Nat`も表し、インスタンスはそれより1大きい`Nat`に対して定義されています：
 ```lean
 {{#example_decl Examples/Classes.lean OfNatPos}}
 ```
-Because `n` stands for a `Nat` that's one less than what the user wrote, the helper function `natPlusOne` returns a `Pos` that's one greater than its argument.
-This makes it possible to use natural number literals for positive numbers, but not for zero:
+ユーザーが書いた数字より1少ない`Nat`を表しているので、ヘルパー関数`natPlusOne`はその引数より1大きい`Pos`を返します。
+これにより自然数リテラルを正の数に使用できるようになりますが、ゼロには使用できません：
 ```lean
 {{#example_decl Examples/Classes.lean eight}}
 
@@ -245,25 +245,25 @@ This makes it possible to use natural number literals for positive numbers, but 
 {{#example_out Examples/Classes.lean zeroBad}}
 ```
 
-## Exercises
+## 練習問題
 
-### Another Representation
+### 別の表現法
 
-An alternative way to represent a positive number is as the successor of some `Nat`.
-Replace the definition of `Pos` with a structure whose constructor is named `succ` that contains a `Nat`:
+正数をある`Nat`の後継として表現するという代替方法があります。
+`Pos`の定義を置き換えて、`Nat`を含む名前`succ`のコンストラクタを持つ構造体にします：
 ```lean
 {{#example_decl Examples/Classes.lean AltPos}}
 ```
-Define instances of `Add`, `Mul`, `ToString`, and `OfNat` that allow this version of `Pos` to be used conveniently.
+このバージョンの`Pos`が便利に使えるように`Add`、`Mul`、`ToString`、および`OfNat`のインスタンスを定義してください。
 
-### Even Numbers
+### 偶数
 
-Define a datatype that represents only even numbers. Define instances of `Add`, `Mul`, and `ToString` that allow it to be used conveniently.
-`OfNat` requires a feature that is introduced in [the next section](polymorphism.md).
+偶数のみを表すデータ型を定義してください。それを便利に使えるように`Add`、`Mul`、および`ToString`のインスタンスを定義してください。
+`OfNat`は[次のセクション](polymorphism.md)で紹介される機能を必要とします。
 
-### HTTP Requests
+### HTTPリクエスト
 
-An HTTP request begins with an identification of a HTTP method, such as `GET` or `POST`, along with a URI and an HTTP version.
-Define an inductive type that represents an interesting subset of the HTTP methods, and a structure that represents HTTP responses.
-Responses should have a `ToString` instance that makes it possible to debug them.
-Use a type class to associate different `IO` actions with each HTTP method, and write a test harness as an `IO` action that calls each method and prints the result.
+HTTPリクエストは、`GET`や`POST`などのHTTPメソッドの識別から始まり、URIとHTTPバージョンを添えています。
+HTTPメソッドの面白いサブセットを表す帰納的型と、HTTPレスポンスを表す構造体を定義してください。
+レスポンスはデバッグ可能にするため`ToString`インスタンスを持っているべきです。
+それぞれのHTTPメソッドに異なる`IO`アクションを関連付けるための型クラスを使用し、各メソッドを呼び出して結果を印刷するテストハーネスとしての`IO`アクションを記述してください。

@@ -1,127 +1,124 @@
-# Arrays and Indexing
+# 配列とインデックス
 
-The [Interlude](../props-proofs-indexing.md) describes how to use indexing notation in order to look up entries in a list by their position.
-This syntax is also governed by a type class, and it can be used for a variety of different types.
+[間奏曲](../props-proofs-indexing.md)では、リスト内のエントリをその位置で検索するためにインデックス表記法を使用する方法について説明しています。
+この構文は型クラスによっても制御されており、さまざまな型に対して使用することができます。
 
-## Arrays
-For instance, Lean arrays are much more efficient than linked lists for most purposes.
-In Lean, the type `Array α` is a dynamically-sized array holding values of type `α`, much like a Java `ArrayList`, a C++ `std::vector`, or a Rust `Vec`.
-Unlike `List`, which has a pointer indirection on each use of the `cons` constructor, arrays occupy a contiguous region of memory, which is much better for processor caches.
-Also, looking up a value in an array takes constant time, while lookup in a linked list takes time proportional to the index being accessed.
+## 配列
+例えば、Leanの配列はほとんどの目的に対して連結リストよりもずっと効率的です。
+Leanでは、`Array α`型は型`α`の値を動的にサイズ変更して保持する配列で、Javaの`ArrayList`、C++の`std::vector`、Rustの`Vec`に似ています。
+`List`は`cons`コンストラクタを使用するたびにポインタの間接参照があるのに対して、配列は連続したメモリ領域を占有し、これはプロセッサキャッシュにとってはるかに良いです。
+また、配列の中の値を検索するための時間は一定ですが、連結リスト内での検索時間はアクセスされるインデックスに比例します。
 
-In pure functional languages like Lean, it is not possible to mutate a given position in a data structure.
-Instead, a copy is made that has the desired modifications.
-When using an array, the Lean compiler and runtime contain an optimization that can allow modifications to be implemented as mutations behind the scenes when there is only a single unique reference to an array.
+純粋関数型言語のLeanでは、データ構造の特定の位置を変更することはできません。
+その代わりに、望んだ変更を含むコピーが作成されます。
+配列を使用するとき、Leanコンパイラとランタイムには、配列への唯一無二の参照しかない場合に、変更を内部でミューテーションとして実装する最適化が含まれています。
 
-Arrays are written similarly to lists, but with a leading `#`:
+配列はリストに似ていますが、先頭に`#`が付けられています：
 ```lean
 {{#example_decl Examples/Classes.lean northernTrees}}
 ```
-The number of values in an array can be found using `Array.size`.
-For instance, `{{#example_in Examples/Classes.lean northernTreesSize}}` evaluates to `{{#example_out Examples/Classes.lean northernTreesSize}}`.
-For indices that are smaller than an array's size, indexing notation can be used to find the corresponding value, just as with lists.
-That is, `{{#example_in Examples/Classes.lean northernTreesTwo}}` evaluates to `{{#example_out Examples/Classes.lean northernTreesTwo}}`.
-Similarly, the compiler requires a proof that an index is in bounds, and attempting to look up a value outside the bounds of the array results in a compile-time error, just as with lists.
-For instance, `{{#example_in Examples/Classes.lean northernTreesEight}}` results in:
+配列の値の数は`Array.size`を使用して見つけることができます。
+例えば、`{{#example_in Examples/Classes.lean northernTreesSize}}`は`{{#example_out Examples/Classes.lean northernTreesSize}}`と評価されます。
+配列のサイズよりも小さいインデックスについては、リストと同じようにインデックス記法を使用して対応する値を見つけることができます。
+つまり、`{{#example_in Examples/Classes.lean northernTreesTwo}}`は`{{#example_out Examples/Classes.lean northernTreesTwo}}`と評価されます。
+同様に、コンパイラはインデックスが範囲内であることを証明する必要があり、配列の範囲外の値を検索しようとすると、リストと同じくコンパイル時エラーが発生します。
+例えば、`{{#example_in Examples/Classes.lean northernTreesEight}}`は以下の結果になります：
 ```output error
 {{#example_out Examples/Classes.lean northernTreesEight}}
 ```
 
-## Non-Empty Lists
+## 空でないリスト
 
-A datatype that represents non-empty lists can be defined as a structure with a field for the head of the list and a field for the tail, which is an ordinary, potentially empty list:
+空でないリストを表すデータ型は、リストの先頭のためのフィールドと、通常は空かもしれないリストのためのフィールドを持つ構造として定義することができます：
 ```lean
 {{#example_decl Examples/Classes.lean NonEmptyList}}
 ```
-For example, the non-empty list `idahoSpiders` (which contains some spider species native to the US state of Idaho) consists of `{{#example_out Examples/Classes.lean firstSpider}}` followed by four other spiders, for a total of five spiders:
+例えば、空でないリスト`idahoSpiders`（アメリカ合衆国アイダホ州に生息するいくつかのクモの種を含む）は、`{{#example_out Examples/Classes.lean firstSpider}}`に4匹の他のクモが続き、合計で5匹のクモから構成されています：
 ```lean
 {{#example_decl Examples/Classes.lean idahoSpiders}}
 ```
 
-Looking up the value at a specific index in this list with a recursive function should consider three possibilities:
- 1. The index is `0`, in which case the head of the list should be returned.
- 2. The index is `n + 1` and the tail is empty, in which case the index is out of bounds.
- 3. The index is `n + 1` and the tail is non-empty, in which case the function can be called recursively on the tail and `n`.
+このリストで特定のインデックスの値を再帰的な関数で検索するときは、以下の3つの可能性を考慮する必要があります：
+ 1. インデックスが`0`の場合、リストの先頭を返すべきです。
+ 2. インデックスが`n + 1`で尾が空の場合、インデックスは範囲外です。
+ 3. インデックスが`n + 1`で尾が空ではない場合、関数は尾と`n`に対して再帰的に呼び出すことができます。
 
-For example, a lookup function that returns an `Option` can be written as follows:
+例えば、`Option`を返すルックアップ関数は次のように記述することができます：
 ```lean
 {{#example_decl Examples/Classes.lean NEListGetHuh}}
 ```
-Each case in the pattern match corresponds to one of the possibilities above.
-The recursive call to `get?` does not require a `NonEmptyList` namespace qualifier because the body of the definition is implicitly in the definition's namespace.
-Another way to write this function uses `get?` for lists when the index is greater than zero:
+パターンマッチの各ケースは、上記の可能性に対応します。
+`get?`への再帰呼び出しは定義のネームスペース内で暗黙的に行われるため、`NonEmptyList`のネームスペース修飾子は必要ありません。
+この関数を書く別の方法は、インデックスがゼロよりも大きいとき`get?`をリストに対して使うことです：
 ```lean
 {{#example_decl Examples/Classes.lean NEListGetHuhList}}
 ```
 
-If the list contains one entry, then only `0` is a valid index.
-If it contains two entries, then both `0` and `1` are valid indices.
-If it contains three entries, then `0`, `1`, and `2` are valid indices.
-In other words, the valid indices into a non-empty list are natural numbers that are strictly less than the length of the list, which are less than or equal to the length of the tail.
+リストが1つのエントリを含んでいる場合、有効なインデックスは`0`のみです。
+リストが2つのエントリを含んでいる場合、`0`と`1`の両方が有効なインデックスです。
+リストが3つのエントリを含んでいる場合`, `0`, `1`, `2`の全てが有効なインデックスです。
+言い換えれば、空でないリストへの有効なインデックスは、リストの長さより厳密に小さい自然数であり、尾の長さ以下です。
 
-The definition of what it means for an index to be in bounds should be written as an `abbrev` because the tactics used to find evidence that indices are acceptable are able to solve inequalities of numbers, but they don't know anything about the name `NonEmptyList.inBounds`:
+インデックスが範囲内であるという定義は、戦術が許容可能なインデックスの証拠を見つけるために数値の不等式を解決できるが、`NonEmptyList.inBounds`という名前については何も知らないので、`abbrev`として記述されるべきです：
 ```lean
 {{#example_decl Examples/Classes.lean inBoundsNEList}}
 ```
-This function returns a proposition that might be true or false.
-For instance, `2` is in bounds for `idahoSpiders`, while `5` is not:
+この関数は真または偽であるかもしれない命題を返します。
+例えば、`2`は`idahoSpiders`で範囲内ですが、`5`は範囲外です：
 ```leantac
 {{#example_decl Examples/Classes.lean spiderBoundsChecks}}
 ```
-The logical negation operator has a very low precedence, which means that `¬idahoSpiders.inBounds 5` is equivalent to `¬(idahoSpiders.inBounds 5)`.
+論理否定演算子の優先順位が非常に低いため、`¬idahoSpiders.inBounds 5`は`¬(idahoSpiders.inBounds 5)`と同等です。
 
-
-This fact can be used to write a lookup function that requires evidence that the index is valid, and thus need not return `Option`, by delegating to the version for lists that checks the evidence at compile time:
+この事実は、インデックスが有効であるという証拠が必要であり、そのために`Option`を返す必要がないルックアップ関数を書くために使用できます。これは標準ライブラリ関数がコンパイル時に証拠をチェックするために委任できるバージョンです：
 ```lean
 {{#example_decl Examples/Classes.lean NEListGet}}
 ```
-It is, of course, possible to write this function to use the evidence directly, rather than delegating to a standard library function that happens to be able to use the same evidence.
-This requires techniques for working with proofs and propositions that are described later in this book.
+もちろん、この関数を書くためには、同じ証拠を使用できる標準ライブラリ関数に委任するのではなく、証拠を直接使用するという手法が必要です。
+これには、本書の後の部分で説明される証明や命題を扱うための技術が必要です。
 
+## インデックス表記のオーバーロード
 
-## Overloading Indexing
+コレクション型のインデックス表記は、`GetElem`型クラスのインスタンスを定義することによってオーバーロードすることができます。
+柔軟性のため、`GetElem`は4つのパラメータを持っています：
+ * コレクションの型
+ * インデックスの型
+ * コレクションから取り出される要素の型
+ * インデックスが範囲内であるとする証拠を決定する関数
 
-Indexing notation for a collection type can be overloaded by defining an instance of the `GetElem` type class.
-For the sake of flexiblity, `GetElem` has four parameters:
- * The type of the collection
- * The type of the index
- * The type of elements that are extracted from the collection
- * A function that determines what counts as evidence that the index is in bounds
-
-The element type and the evidence function are both output parameters.
-`GetElem` has a single method, `getElem`, which takes a collection value, an index value, and evidence that the index is in bounds as arguments, and returns an element:
+要素の型と証拠関数は両方とも出力パラメータです。
+`GetElem`には単一のメソッド`getElem`があり、コレクション値、インデックス値、インデックスが範囲内であるという証拠を引数として取り、要素を返します：
 ```lean
 {{#example_decl Examples/Classes.lean GetElem}}
 ```
  
-In the case of `NonEmptyList α`, these parameters are:
- * The collection is `NonEmptyList α`
- * Indices have type `Nat`
- * The type of elements is `α`
- * An index is in bounds if it is less than or equal to the length of the tail
+`NonEmptyList α`の場合、これらのパラメータは以下のとおりです：
+ * コレクションは`NonEmptyList α`
+ * インデックスは`Nat`型
+ * 要素の型は`α`
+ * インデックスが範囲内である場合、それは尾の長さ以下である
 
-In fact, the `GetElem` instance can delegate directly to `NonEmptyList.get`:
+実際、`GetElem`のインスタンスは直接`NonEmptyList.get`に委任できます：
 ```lean
 {{#example_decl Examples/Classes.lean GetElemNEList}}
 ```
-With this instance, `NonEmptyList` becomes just as convenient to use as `List`.
-Evaluating `{{#example_in Examples/Classes.lean firstSpider}}` yields `{{#example_out Examples/Classes.lean firstSpider}}`, while `{{#example_in Examples/Classes.lean tenthSpider}}` leads to the compile-time error:
+このインスタンスがあると`NonEmptyList`は`List`と同じくらい便利になります。
+`{{#example_in Examples/Classes.lean firstSpider}}`を評価すると、`{{#example_out Examples/Classes.lean firstSpider}}`が得られ、`{{#example_in Examples/Classes.lean tenthSpider}}`はコンパイル時のエラーにつながります：
 ```output error
 {{#example_out Examples/Classes.lean tenthSpider}}
 ```
 
-Because both the collection type and the index type are input parameters to the `GetElem` type class, new types can be used to index into existing collections.
-The positive number type `Pos` is a perfectly reasonable index into a `List`, with the caveat that it cannot point at the first entry.
-The follow instance of `GetElem` allows `Pos` to be used just as conveniently as `Nat` to find a list entry:
+`GetElem`型クラスのコレクション型およびインデックス型は入力パラメータであるため、新しい型は既存のコレクションにインデックスを付けるために使用することができます。
+正数型`Pos`は、リストにインデックスを付けるのに完全に合理的ですが、最初のエントリを指すことはできません。
+以下の`GetElem`インスタンスにより、`Pos`は`Nat`と同じように、リストエントリを見つけるのに便利に使用できます：
 ```lean
 {{#example_decl Examples/Classes.lean ListPosElem}}
 ```
 
-Indexing can also make sense for non-numeric indices.
-For example, `Bool` can be used to select between the fields in a point, with `false` corresponding to `x` and `true` corresponding to `y`:
+インデックスが非数値の場合でも、インデックス表記は意味を持ち得ます。
+例えば、`Bool`はポイントのフィールドでの選択に使用され、`false`は`x`に、`true`は`y`に対応します：
 ```lean
 {{#example_decl Examples/Classes.lean PPointBoolGetElem}}
 ```
-In this case, both Booleans are valid indices.
-Because every possible `Bool` is in bounds, the evidence is simply the true proposition `True`.
-
+この場合、すべての`Bool`は有効なインデックスです。
+すべての可能な`Bool`が範囲内であるため、証拠は単に真の命題`True`です。

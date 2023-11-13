@@ -1,17 +1,19 @@
-# Standard Classes
+以下は、ご指定の`.md`ファイルを日本語に翻訳した内容です。
 
-This section presents a variety of operators and functions that can be overloaded using type classes in Lean.
-Each operator or function corresponds to a method of a type class.
-Unlike C++, infix operators in Lean are defined as abbreviations for named functions; this means that overloading them for new types is not done using the operator itself, but rather using the underlying name (such as `HAdd.hAdd`).
+# 標準クラス
 
-## Arithmetic
+このセクションでは、Leanでタイプクラスを使用してオーバーロードできる多様な演算子や関数を紹介します。
+各演算子や関数は型クラスのメソッドに対応しています。
+C++とは異なり、Leanの中置演算子は名前付き関数の略称として定義されており、これは新しい型のオーバーロードが演算子自体ではなく、`HAdd.hAdd`のような基本名を用いて行われることを意味しています。
 
-Most arithmetic operators are available in a heterogeneous form, where the arguments may have different type and an output parameter decides the type of the resulting expression.
-For each heterogeneous operator, there is a corresponding homogeneous version that can found by removing the letter `h`, so that `HAdd.hAdd` becomes `Add.add`.
-The following arithmetic operators are overloaded:
+## 算術
 
-| Expression | Desugaring | Class Name |
-|------------|------------|------------|
+ほとんどの算術演算子は、異なるタイプの引数を取り、結果の式のタイプを決める出力パラメータを持つ異種形式で利用可能です。
+各々の異種演算子には、対応する同種バージョンがありますが、これは `h` を抜いて `HAdd.hAdd` が `Add.add` になることにより見つけることができます。
+以下の算術演算子がオーバーロードされています：
+
+| 演算式 | 展開 | クラス名 |
+|--------|------|----------|
 | `{{#example_in Examples/Classes.lean plusDesugar}}` | `{{#example_out Examples/Classes.lean plusDesugar}}` | `HAdd` |
 | `{{#example_in Examples/Classes.lean minusDesugar}}` | `{{#example_out Examples/Classes.lean minusDesugar}}` | `HSub` |
 | `{{#example_in Examples/Classes.lean timesDesugar}}` | `{{#example_out Examples/Classes.lean timesDesugar}}` | `HMul` |
@@ -21,281 +23,163 @@ The following arithmetic operators are overloaded:
 | `{{#example_in Examples/Classes.lean negDesugar}}` | `{{#example_out Examples/Classes.lean negDesugar}}` | `Neg` |
 
 
-## Bitwise Operators
+## ビット単位の演算子
 
-Lean contains a number of standard bitwise operators that are overloaded using type classes.
-There are instances for fixed-width types such as `{{#example_in Examples/Classes.lean UInt8}}`, `{{#example_in Examples/Classes.lean UInt16}}`, `{{#example_in Examples/Classes.lean UInt32}}`, `{{#example_in Examples/Classes.lean UInt64}}`, and `{{#example_in Examples/Classes.lean USize}}`.
-The latter is the size of words on the current platform, typically 32 or 64 bits.
-The following bitwise operators are overloaded:
+Leanには標準のビット単位の演算子がいくつかあり、型クラスを使ってオーバーロードされています。
+`{{#example_in Examples/Classes.lean UInt8}}`、 `{{#example_in Examples/Classes.lean UInt16}}`、 `{{#example_in Examples/Classes.lean UInt32}}`、 `{{#example_in Examples/Classes.lean UInt64}}`、そして `{{#example_in Examples/Classes.lean USize}}` などの固定幅の型に対するインスタンスがあります。
+後者は現在のプラットフォーム上のワードサイズで、通常は32ビットまたは64ビットです。
+以下のビット単位の演算子がオーバーロードされています：
 
-| Expression | Desugaring | Class Name |
-|------------|------------|------------|
+| 演算式 | 展開 | クラス名 |
+|--------|------|----------|
 | `{{#example_in Examples/Classes.lean bAndDesugar}}` | `{{#example_out Examples/Classes.lean bAndDesugar}}` | `HAnd` |
-| <code class="hljs">x &#x7c;&#x7c;&#x7c; y </code> | `{{#example_out Examples/Classes.lean bOrDesugar}}` | `HOr` |
+| <code class="hljs">x ||| y </code> | `{{#example_out Examples/Classes.lean bOrDesugar}}` | `HOr` |
 | `{{#example_in Examples/Classes.lean bXorDesugar}}` | `{{#example_out Examples/Classes.lean bXorDesugar}}` | `HXor` |
 | `{{#example_in Examples/Classes.lean complementDesugar}}` | `{{#example_out Examples/Classes.lean complementDesugar}}` | `Complement` |
 | `{{#example_in Examples/Classes.lean shrDesugar}}` | `{{#example_out Examples/Classes.lean shrDesugar}}` | `HShiftRight` |
 | `{{#example_in Examples/Classes.lean shlDesugar}}` | `{{#example_out Examples/Classes.lean shlDesugar}}` | `HShiftLeft` |
 
-Because the names `And` and `Or` are already taken as the names of logical connectives, the homogeneous versions of `HAnd` and `HOr` are called `AndOp` and `OrOp` rather than `And` and `Or`.
+`And` や `Or` という名前は論理接続詞の名前として既に使用されているため、`HAnd` や `HOr` の同種のバージョンは `And` や `Or` ではなく `AndOp` や `OrOp` と呼ばれます。
 
-## Equality and Ordering
+## 等価性と順序評価
 
-Testing equality of two values typically uses the `BEq` class, which is short for "Boolean equality".
-Due to Lean's use as a theorem prover, there are really two kinds of equality operators in Lean:
- * _Boolean equality_ is the same kind of equality that is found in other programming languages. It is a function that takes two values and returns a `Bool`. Boolean equality is written with two equals signs, just as in Python and C#. Because Lean is a pure functional language, there's no separate notions of reference vs value equality—pointers cannot be observed directly.
- * _Propositional equality_ is the mathematical statement that two things are equal. Propositional equality is not a function; rather, it is a mathematical statement that admits proof. It is written with a single equals sign. A statement of propositional equality is like a type that classifies evidence of this equality.
- 
-Both notions of equality are important, and used for different purposes.
-Boolean equality is useful in programs, when a decision needs to be made about whether two values are equal.
-For example, `{{#example_in Examples/Classes.lean boolEqTrue}}` evaluates to `{{#example_out Examples/Classes.lean boolEqTrue}}`, and `{{#example_in Examples/Classes.lean boolEqFalse}}` evaluates to `{{#example_out Examples/Classes.lean boolEqFalse}}`.
-Some values, such as functions, cannot be checked for equality.
-For example, `{{#example_in Examples/Classes.lean functionEq}}` yields the error:
+2つの値の等価性をテストするには通常 `BEq` クラスが使用されます。これは「Boolean equality（ブール等価性）」の略です。
+Leanが定理証明者としての使用を考慮すると、Leanには実際には2種類の等価演算子があります：
+ * _ブール等価性_ は他のプログラミング言語で見られる等価性と同じです。これは2つの値を取って `Bool` を返す関数です。ブール等価性はPythonやC#と同様に二重等号で記述されます。Leanは純粋な関数言語なので、参照と値の等価性は別々にはならず、ポインタは直接観測されることはありません。
+ * _命題の等価性_ は、二つのものが等しいという数学的な声明です。命題の等価性は関数ではなく、証明を認める数学的な声明です。それは一体の等号で書かれています。命題の等価性はこの等価性の証拠を分類する型のようなものです。
+
+両方の等価性の概念は重要であり、異なる目的で使用されます。
+プログラム内では、二つの値が等しいかどうかを判断する必要がある場合にブール等価性が役立ちます。
+たとえば、`{{#example_in Examples/Classes.lean boolEqTrue}}` は `{{#example_out Examples/Classes.lean boolEqTrue}}` と評価され、`{{#example_in Examples/Classes.lean boolEqFalse}}` は `{{#example_out Examples/Classes.lean boolEqFalse}}` と評価されます。
+関数など一部の値は、等価性をチェックできません。
+たとえば、`{{#example_in Examples/Classes.lean functionEq}}` は以下のエラーを発生させます：
 ```output error
 {{#example_out Examples/Classes.lean functionEq}}
 ```
-As this message indicates, `==` is overloaded using a type class.
-The expression `{{#example_in Examples/Classes.lean beqDesugar}}` is actually shorthand for `{{#example_out Examples/Classes.lean beqDesugar}}`.
+このメッセージが示すように、`==` は型クラスを使用してオーバーロードされています。
+式 `{{#example_in Examples/Classes.lean beqDesugar}}` は実際に `{{#example_out Examples/Classes.lean beqDesugar}}` の略です。
 
-Propositional equality is a mathematical statement rather than an invocation of a program.
-Because propositions are like types that describe evidence for some statement, propositional equality has more in common with types like `String` and `Nat → List Int` than it does with Boolean equality.
-This means that it can't automatically be checked.
-However, the equality of any two expressions can be stated in Lean, so long as they have the same type.
-The statement `{{#example_in Examples/Classes.lean functionEqProp}}` is a perfectly reasonable statement.
-From the perspective of mathematics, two functions are equal if they map equal inputs to equal outputs, so this statement is even true, though it requires a two-line proof to convince Lean of this fact.
+命題の等価性はプログラムの呼び出しではなく、数学的な声明です。
+命題はある声明の証拠を記述する型のようなものなので、命題の等価性は `String` や `Nat → List Int` のような型とブール等価性よりも共通点が多いです。
+これは自動的にチェックすることは不可能ということを意味します。
+しかし、任意のふたつの式の等価性は、それらが同じ型を持っていればLeanで宣言することができます。
+命題 `{{#example_in Examples/Classes.lean functionEqProp}}` は十全に妥当な声明です。
+数学の視点からすると、ふたつの関数が等しいのは、等しい入力を等しい出力に写像する場合ですので、この声明は事実に基づいていますが、Leanを説得するためには二行の証明が必要です。
 
-Generally speaking, when using Lean as a programming language, it's easiest to stick to Boolean functions rather than propositions.
-However, as the names `true` and `false` for `Bool`'s constructors suggest, this difference is sometimes blurred.
-Some propositions are _decidable_, which means that they can be checked just like a Boolean function.
-The function that checks whether the proposition is true or false is called a _decision procedure_, and it returns _evidence_ of the truth or falsity of the proposition.
-Some examples of decidable propositions include equality and inequality of natural numbers, equality of strings, and "ands" and "ors" of propositions that are themselves decidable.
+一般的に、Leanをプログラミング言語として使用する場合、命題よりむしろブール関数を使用する方が簡単です。
+しかし、`Bool` のコンストラクターで `true` と `false` という名前が示すように、この違いは時々あいまいになります。
+いくつかの命題は _可決定_ です。つまり、それらはブール関数のようにチェックすることができます。
+命題が真または偽であるかどうかをチェックする関数は _決定プロセデュア_ と呼ばれ、その命題の真実性または虚偽性の _証拠_ を返します。
+可決定の命題の例には、自然数の等価性・不等価性、文字列の等価性、それ自体が可決定である命題の "ands" と "ors" が含まれます。
 
-In Lean, `if` works with decidable propositions.
-For example, `2 < 4` is a proposition:
+Leanでは、`if` は可決定の命題と共に動作します。
+たとえば、`2 < 4` は命題です：
 ```lean
 {{#example_in Examples/Classes.lean twoLessFour}}
 ```
 ```output info
 {{#example_out Examples/Classes.lean twoLessFour}}
 ```
-Nonetheless, it is perfectly acceptable to write it as the condition in an `if`.
-For example, `{{#example_in Examples/Classes.lean ifProp}}` has type `Nat` and evaluates to `{{#example_out Examples/Classes.lean ifProp}}`.
+それにもかかわらず、`if` の条件としてそれを記述するのは完全に許容されます。
+たとえば、`{{#example_in Examples/Classes.lean ifProp}}` は `Nat` 型を持ち、`{{#example_out Examples/Classes.lean ifProp}}` と評価されます。
 
 
-Not all propositions are decidable.
-If they were, then computers would be able to prove any true proposition just by running the decision procedure, and mathematicians would be out of a job.
-More specifically, decidable propositions have an instance of the `Decidable` type class which has a method that is the decision procedure.
-Trying to use a proposition that isn't decidable as if it were a `Bool` results in a failure to find the `Decidable` instance.
-For example, `{{#example_in Examples/Classes.lean funEqDec}}` results in:
+すべての命題が可決定であるわけではありません。
+もしそうであれば、コンピュータは真の命題を決定プロセデュアを実行することによって証明できるでしょう、そして数学者は仕事を失うでしょう。
+より具体的に言うと、可決定の命題は決定プロセデュアであるメソッドを持つ `Decidable` 型クラスのインスタンスを持っています。
+`Bool` であるかのように可決定でない命題を使用しようとすると、`Decidable` インスタンスを見つけることができない結果となります。
+例えば、`{{#example_in Examples/Classes.lean funEqDec}}` は以下を引き起こします：
 ```output error
 {{#example_out Examples/Classes.lean funEqDec}}
 ```
 
-The following propositions, that are usually decidable, are overloaded with type classes:
+以下の通常は可決定の命題は型クラスを使ってオーバーロードされています：
 
-| Expression | Desugaring | Class Name |
-|------------|------------|------------|
+| 演算式 | 展開 | クラス名 |
+|--------|------|----------|
 | `{{#example_in Examples/Classes.lean ltDesugar}}` | `{{#example_out Examples/Classes.lean ltDesugar}}` | `LT` |
 | `{{#example_in Examples/Classes.lean leDesugar}}` | `{{#example_out Examples/Classes.lean leDesugar}}` | `LE` |
 | `{{#example_in Examples/Classes.lean gtDesugar}}` | `{{#example_out Examples/Classes.lean gtDesugar}}` | `LT` |
 | `{{#example_in Examples/Classes.lean geDesugar}}` | `{{#example_out Examples/Classes.lean geDesugar}}` | `LE` |
 
-Because defining new propositions hasn't yet been demonstrated, it may be difficult to define new instances of `LT` and `LE`.
+`LT` や `LE`の新しいインスタンスを定義する方法がまだ示されていないため、新しいインスタンスを定義するのが困難かもしれません。
 
-Additionally, comparing values using `<`, `==`, and `>` can be inefficient.
-Checking first whether one value is less than another, and then whether they are equal, can require two traversals over large data structures.
-To solve this problem, Java and C# have standard `compareTo` and `CompareTo` methods (respectively) that can be overridden by a class in order to implement all three operations at the same time.
-These methods return a negative integer if the receiver is less than the argument, zero if they are equal, and a positive integer if the receiver is greater than the argument.
-Rather than overload the meaning of integers, Lean has a built-in inductive type that describes these three possibilities:
+さらに、`<`、`==`、`>` を使って値を比較することは非効率的です。
+他の値よりも一つの値が小さいかどうかをチェックし、それから等しいかどうかをチェックすることは、大きなデータ構造にまたがって二度の走査を必要とすることもあります。
+この問題を解決するために、JavaとC#では、一度に3つの操作すべてを実装するためにクラスによってオーバーライド可能な標準の `compareTo` および `CompareTo` メソッドがあります。
+これらのメソッドは、受信側が引数よりも小さい場合には負の整数を、等しい場合にはゼロを、受信側が引数よりも大きい場合には正の整数を返します。
+整数の意味をオーバーロードするのではなく、Leanにはこれら3つの可能性を記述する組み込みの帰納型があります：
 ```lean
 {{#example_decl Examples/Classes.lean Ordering}}
 ```
-The `Ord` type class can be overloaded to produce these comparisons.
-For `Pos`, an implementation can be:
+`Ord` 型クラスはこれらの比較のためにオーバーロードすることができます。
+`Pos`に対する実装は以下のようになります：
 ```lean
 {{#example_decl Examples/Classes.lean OrdPos}}
 ```
-In situations where `compareTo` would be the right approach in Java, use `Ord.compare` in Lean.
+Javaで `compareTo` が正しいアプローチであるような状況では、Leanで `Ord.compare` を使用します。
 
-## Hashing
+## ハッシュ化
 
-Java and C# have `hashCode` and `GetHashCode` methods, respectively, that compute a hash of a value for use in data structures such as hash tables.
-The Lean equivalent is a type class called `Hashable`:
+JavaとC#にはそれぞれ `hashCode` と `GetHashCode` メソッドがあり、これはハッシュテーブルなどのデータ構造で使用される値のハッシュを計算します。
+Leanの対応する機能は `Hashable` と呼ばれる型クラスです：
 ```lean
 {{#example_decl Examples/Classes.lean Hashable}}
 ```
-If two values are considered equal according to a `BEq` instance for their type, then they should have the same hashes.
-In other words, if `x == y` then `hash x == hash y`.
-If `x ≠ y`, then `hash x` won't necessarily differ from `hash y` (after all, there are infinitely more `Nat` values than there are `UInt64` values), but data structures built on hashing will have better performance if unequal values are likely to have unequal hashes.
-This is the same expectation as in Java and C#.
+2つの値がそのタイプのための `BEq` インスタンスに従って等しいと考えられる場合、それらは同じハッシュを持つべきです。
+言い換えれば、`x == y` であれば、`hash x == hash y` であるべきです。
+`x ≠ y` の場合、`hash x` が `hash y` と異なる必要は必ずしもありません（結局のところ、`Nat` の値は `UInt64` の値よりも無限に多いですが）、しかし異なる値が異なるハッシュを持つ可能性が高い場合、ハッシュに基づくデータ構造のパフォーマンスは向上します。
+これは Java と C# と同じ期待です。
 
-The standard library contains a function `{{#example_in Examples/Classes.lean mixHash}}` with type `{{#example_out Examples/Classes.lean mixHash}}` that can be used to combine hashes for different fields for a constructor.
-A reasonable hash function for an inductive datatype can be written by assigning a unique number to each constructor, and then mixing that number with the hashes of each field.
-For example, a `Hashable` instance for `Pos` can be written:
+標準ライブラリには構成子の異なるフィールドのためにハッシュを組み合わせるために使用できる `{{#example_in Examples/Classes.lean mixHash}}` という関数が含まれています。
+帰納データ型のための合理的なハッシュ関数は、各構成子にユニークな番号を割り当て、その番号を各フィールドのハッシュと混ぜることによって書かれます。
+たとえば、`Pos` の`Hashable` インスタンスは以下のように書くことができます：
+
 ```lean
 {{#example_decl Examples/Classes.lean HashablePos}}
 ```
-`Hashable` instances for polymorphic types can use recursive instance search.
-Hashing a `NonEmptyList α` is only possible when `α` can be hashed:
+
+多相型の `Hashable` インスタンスは再帰的インスタンス検索を使用しています。
+`α` をハッシュ可能なときに限り、`NonEmptyList α` をハッシュ化することが可能です：
+
 ```lean
 {{#example_decl Examples/Classes.lean HashableNonEmptyList}}
 ```
-Binary trees use both recursion and recursive instance search in the implementations of `BEq` and `Hashable`:
+
+二分木は `BEq` と `Hashable` の実装において再帰と再帰的インスタンス検索の両方を使用します：
+
 ```lean
 {{#example_decl Examples/Classes.lean TreeHash}}
 ```
 
+## 標準クラスの導出
 
-## Deriving Standard Classes
+`BEq` や `Hashable` のようなクラスのインスタンスは、手作業で実装するにはしばしば面倒です。
+Leanには _インスタンス導出_ と呼ばれる機能があり、多くの型クラスのためにコンパイラが自動的に適切な動作をするインスタンスを構築することを可能にします。
+実際に、「構造に関するセクション」(../getting-to-know/structures.md) で `Point` の定義における `deriving Repr` のフレーズはインスタンス導出の一例です。
 
-Instance of classes like `BEq` and `Hashable` are often quite tedious to implement by hand.
-Lean includes a feature called _instance deriving_ that allows the compiler to automatically construct well-behaved instances of many type classes.
-In fact, the `deriving Repr` phrase in the definition of `Point` in the [section on structures](../getting-to-know/structures.md) is an example of instance deriving.
+インスタンスは２つの方法で導出できます。
+最初の方法は構造体や帰納型を定義する際に使用できます。
+この場合、型宣言の最後に `deriving` を追加し、導出されるべきクラスの名前を続けます。
+既に定義された型の場合、スタンドアロンの `deriving` コマンドを使用できます。
+`deriving instance C1, C2, ... for T` と書くことで、事後に型 `T` に対して `C1, C2, ...` のインスタンスを導出します。
 
-Instances can be derived in two ways.
-The first can be used when defining a structure or inductive type.
-In this case, add `deriving` to the end of the type declaration followed by the names of the classes for which instances should be derived.
-For a type that is already defined, a standalone `deriving` command can be used.
-Write `deriving instance C1, C2, ... for T` to derive instances of `C1, C2, ...` for the type `T` after the fact.
+`BEq` および `Hashable` のインスタンスは、`Pos` と `NonEmptyList` のために非常に少ないコード量で導出することができます：
 
-`BEq` and `Hashable` instances can be derived for `Pos` and `NonEmptyList` using a very small amount of code:
 ```lean
 {{#example_decl Examples/Classes.lean BEqHashableDerive}}
 ```
 
-Instances can be derived for at least the following classes:
+少なくとも以下のクラスについてはインスタンスを導出できます：
  * `Inhabited`
  * `BEq`
  * `Repr`
  * `Hashable`
  * `Ord`
 
-In some cases, however, the derived `Ord` instance may not produce precisely the ordering desired in an application.
-When this is the case, it's fine to write an `Ord` instance by hand.
-The collection of classes for which instances can be derived can be extended by advanced users of Lean.
+しかし、場合によっては導出された `Ord` インスタンスがアプリケーションで求められる正確な順序を生成しないことがあります。
+そのような場合は、手作業で `Ord` インスタンスを書くことが適切です。
+Leanの上級ユーザーによってインスタンスを導出できるクラスの集合を拡張することが可能です。
 
-Aside from the clear advantages in programmer productivity and code readability, deriving instances also makes code easier to maintain, because the instances are updated as the definitions of types evolve.
-Changesets involving updates to datatypes are easier to read without line after line of formulaic modifications to equality tests and hash computation.
-
-## Appending
-
-Many datatypes have some sort of append operator.
-In Lean, appending two values is overloaded with the type class `HAppend`, which is a heterogeneous operation like that used for arithmetic operations:
-```lean
-{{#example_decl Examples/Classes.lean HAppend}}
-```
-The syntax `{{#example_in Examples/Classes.lean desugarHAppend}}` desugars to `{{#example_out Examples/Classes.lean desugarHAppend}}`.
-For homogeneous cases, it's enough to implement an instance of `Append`, which follows the usual pattern:
-```lean
-{{#example_decl Examples/Classes.lean AppendNEList}}
-```
-
-After defining the above instance,
-```lean
-{{#example_in Examples/Classes.lean appendSpiders}}
-```
-has the following output:
-```output info
-{{#example_out Examples/Classes.lean appendSpiders}}
-```
-
-Similarly, a definition of `HAppend` allows non-empty lists to be appended to ordinary lists:
-```lean
-{{#example_decl Examples/Classes.lean AppendNEListList}}
-```
-With this instance available,
-```lean
-{{#example_in Examples/Classes.lean appendSpidersList}}
-```
-results in
-```output info
-{{#example_out Examples/Classes.lean appendSpidersList}}
-```
-
-## Functors
-
-A polymorphic type is a _functor_ if it has an overload for a function named `map` that transforms every element contained in it by a function.
-While most languages use this terminology, C#'s equivalent to `map` is called `System.Linq.Enumerable.Select`.
-For example, mapping a function over a list constructs a new list in which each entry from the starting list has been replaced by the result of the function on that entry.
-Mapping a function `f` over an `Option` leaves `none` untouched, and replaces `some x` with `some (f x)`.
-
-Here are some examples of functors and how their `Functor` instances overload `map`:
- * `{{#example_in Examples/Classes.lean mapList}}` evaluates to `{{#example_out Examples/Classes.lean mapList}}`
- * `{{#example_in Examples/Classes.lean mapOption}}` evaluates to `{{#example_out Examples/Classes.lean mapOption}}`
- * `{{#example_in Examples/Classes.lean mapListList}}` evaluates to `{{#example_out Examples/Classes.lean mapListList}}`
-
-Because `Functor.map` is a bit of a long name for this common operation, Lean also provides an infix operator for mapping a function, namely `<$>`.
-The prior examples can be rewritten as follows:
- * `{{#example_in Examples/Classes.lean mapInfixList}}` evaluates to `{{#example_out Examples/Classes.lean mapInfixList}}`
- * `{{#example_in Examples/Classes.lean mapInfixOption}}` evaluates to `{{#example_out Examples/Classes.lean mapInfixOption}}`
- * `{{#example_in Examples/Classes.lean mapInfixListList}}` evaluates to `{{#example_out Examples/Classes.lean mapInfixListList}}`
-
-An instance of `Functor` for `NonEmptyList` requires specifying the `map` function.
-```lean
-{{#example_decl Examples/Classes.lean FunctorNonEmptyList}}
-```
-Here, `map` uses the `Functor` instance for `List` to map the function over the tail.
-This instance is defined for `NonEmptyList` rather than for `NonEmptyList α` because the argument type `α` plays no role in resolving the type class.
-A `NonEmptyList` can have a function mapped over it _no matter what the type of entries is_.
-If `α` were a parameter to the class, then it would be possible to make versions of `Functor` that only worked for `NonEmptyList Nat`, but part of being a functor is that `map` works for any entry type.
-
-Here is an instance of `Functor` for `PPoint`:
-```lean
-{{#example_decl Examples/Classes.lean FunctorPPoint}}
-```
-In this case, `f` has been applied to both `x` and `y`.
-
-Even when the type contained in a functor is itself a functor, mapping a function only goes down one layer.
-That is, when using `map` on a `NonEmptyList (PPoint Nat)`, the function being mapped should take `PPoint Nat` as its argument rather than `Nat`.
-
-The definition of the `Functor` class uses one more language feature that has not yet been discussed: default method definitions.
-Normally, a class will specify some minimal set of overloadable operations that make sense together, and then use polymorphic functions with instance implicit arguments that build on the overloaded operations to provide a larger library of features.
-For example, the function `concat` can concatenate any non-empty list whose entries are appendable:
-```lean
-{{#example_decl Examples/Classes.lean concat}}
-```
-However, for some classes, there are operations that can be more efficiently implemented with knowledge of the internals of a datatype.
-
-In these cases, a default method definition can be provided.
-A default method definition provides a default implementation of a method in terms of the other methods.
-However, instance implementors may choose to override this default with something more efficient.
-Default method definitions contain `:=` in a `class` definition.
-
-In the case of `Functor`, some types have a more efficient way of implementing `map` when the function being mapped ignores its argument.
-Functions that ignore their arguments are called _constant functions_ because they always return the same value.
-Here is the definition of `Functor`, in which `mapConst` has a default implementation:
-```lean
-{{#example_decl Examples/Classes.lean FunctorDef}}
-```
-
-Just as a `Hashable` instance that doesn't respect `BEq` is buggy, a `Functor` instance that moves around the data as it maps the function is also buggy.
-For example, a buggy `Functor` instance for `List` might throw away its argument and always return the empty list, or it might reverse the list.
-A bad instance for `PPoint` might place `f x` in both the `x` and the `y` fields.
-Specifically, `Functor` instances should follow two rules:
- 1. Mapping the identity function should result in the original argument.
- 2. Mapping two composed functions should have the same effect as composing their mapping.
-
-More formally, the first rule says that `id <$> x` equals `x`.
-The second rule says that `map (fun y => f (g y)) x` equals `map f (map g x)`.
-The composition `{{#example_out Examples/Classes.lean compDef}}` can also be written `{{#example_in Examples/Classes.lean compDef}}`.
-These rules prevent implementations of `map` that move the data around or delete some of it.
-
-## Messages You May Meet
-
-Lean is not able to derive instances for all classes.
-For example, the code
-```lean
-{{#example_in Examples/Classes.lean derivingNotFound}}
-```
-results in the following error:
-```output error
-{{#example_out Examples/Classes.lean derivingNotFound}}
-```
-Invoking `deriving instance` causes Lean to consult an internal table of code generators for type class instances.
-If the code generator is found, then it is invoked on the provided type to create the instance.
-This message, however, means that no code generator was found for `ToString`.
-
-## Exercises
-
- * Write an instance of `HAppend (List α) (NonEmptyList α) (NonEmptyList α)` and test it.
- * Implement a `Functor` instance for the binary tree datatype.
+プログラマの生産性やコードの可読性に明白な利点がある一方で、インスタンスを導出することはコードの保守管理を容易にします。なぜなら、型の定義が進化するにつれてインスタンスが更新されるからです。
+データ型の更新に関する変更セットは、等式テストとハッシュ計算への行ごとの決まりきった変更がなければ、読むのが簡単です。

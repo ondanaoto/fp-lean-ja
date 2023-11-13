@@ -1,36 +1,37 @@
-# Coercions
+```markdown
+# 強制変換 (Coercions)
 
-In mathematics, it is common to use the same symbol to stand for different aspects of some object in different contexts.
-For example, if a ring is referred to in a context where a set is expected, then it is understood that the ring's underlying set is what's intended.
-In programming languages, it is common to have rules to automatically translate values of one type into values of another type.
-For instance, Java allows a `byte` to be automatically promoted to an `int`, and Kotlin allows a non-nullable type to be used in a context that expects a nullable version of the type.
+数学では、異なる文脈において同じ記号が、ある対象の異なる側面を表すために使用されることが一般的です。
+例えば、環が集合が期待される文脈で参照される場合、それは環の根底にある集合が意図されていると理解されます。
+プログラミング言語では、一つの型の値を別の型の値に自動的に変換するための規則を持つことが一般的です。
+例えば、Javaでは `byte` 型から `int` 型への自動昇格が許され、Kotlinでは null でない型が null を許容する型の文脈で使用されることを許します。
 
-In Lean, both purposes are served by a mechanism called _coercions_.
-When Lean encounters an expression of one type in a context that expects a different type, it will attempt to coerce the expression before reporting a type error.
-Unlike Java, C, and Kotlin, the coercions are extensible by defining instances of type classes.
+Leanでは、これらの目的は _強制変換 (coercions)_ と呼ばれるメカニズムによって充足されます。
+Leanは、ある型の式が別の型が期待される文脈で見出された場合、型エラーを報告する前に式を強制変換しようとします。
+JavaやC、Kotlinとは異なり、強制変換は型クラスのインスタンスを定義することで拡張可能です。
 
-## Positive Numbers
+## 正の数 (Positive Numbers)
 
-For example, every positive number corresponds to a natural number.
-The function `Pos.toNat` that was defined earlier converts a `Pos` to the corresponding `Nat`:
+例えば、すべての正の数には自然数が対応します。
+以前定義された関数 `Pos.toNat` は、`Pos` を対応する `Nat` に変換します：
 ```lean
 {{#example_decl Examples/Classes.lean posToNat}}
 ```
-The function `List.drop`, with type `{{#example_out Examples/Classes.lean drop}}`, removes a prefix of a list.
-Applying `List.drop` to a `Pos`, however, leads to a type error:
+型 `{{#example_out Examples/Classes.lean drop}}` の関数 `List.drop` は、リストのプレフィックスを削除します。
+しかし、`List.drop` を `Pos` に適用すると型エラーが生じます：
 ```lean
 {{#example_in Examples/Classes.lean dropPos}}
 ```
 ```output error
 {{#example_out Examples/Classes.lean dropPos}}
 ```
-Because the author of `List.drop` did not make it a method of a type class, it can't be overridden by defining a new instance.
+`List.drop` の著者はそれを型クラスのメソッドにしなかったため、新しいインスタンスを定義することで上書きすることはできません。
 
-The type class `Coe` describes overloaded ways of coercing from one type to another:
+型クラス `Coe` は、一つの型から別の型への強制変換の方法を多重に記述します：
 ```lean
 {{#example_decl Examples/Classes.lean Coe}}
 ```
-An instance of `Coe Pos Nat` is enough to allow the prior code to work:
+`Coe Pos Nat` のインスタンスがあれば、先ほどのコードが動作するのに十分です：
 ```lean
 {{#example_decl Examples/Classes.lean CoePosNat}}
 
@@ -39,7 +40,7 @@ An instance of `Coe Pos Nat` is enough to allow the prior code to work:
 ```output info
 {{#example_out Examples/Classes.lean dropPosCoe}}
 ```
-Using `#check` shows the result of the instance search that was used behind the scenes:
+`#check` を使用すると、舞台裏で使用されたインスタンス検索の結果が表示されます：
 ```lean
 {{#example_in Examples/Classes.lean checkDropPosCoe}}
 ```
@@ -47,47 +48,42 @@ Using `#check` shows the result of the instance search that was used behind the 
 {{#example_out Examples/Classes.lean checkDropPosCoe}}
 ```
 
-## Chaining Coercions
+## 連鎖強制変換 (Chaining Coercions)
 
-When searching for coercions, Lean will attempt to assemble a coercion out of a chain of smaller coercions.
-For example, there is already a coercion from `Nat` to `Int`.
-Because of that instance, combined with the `Coe Pos Nat` instance, the following code is accepted:
+強制変換を検索する際、Leanは小さな強制変換の連鎖から強制変換を組み立てようとします。
+例えば、すでに `Nat` から `Int` への強制変換が存在します。
+そのインスタンスと `Coe Pos Nat` インスタンスを組み合わせることで、以下のコードが承認されます：
 ```lean
 {{#example_decl Examples/Classes.lean posInt}}
 ```
-This definition uses two coercions: from `Pos` to `Nat`, and then from `Nat` to `Int`.
+この定義は、`Pos` から `Nat` へ、そして `Nat` から `Int` への二つの強制変換を使用しています。
 
-The Lean compiler does not get stuck in the presence of circular coercions.
-For example, even if two types `A` and `B` can be coerced to one another, their mutual coercions can be used to find a path:
-```lean
-{{#example_decl Examples/Classes.lean CoercionCycle}}
-```
-Remember: the double parentheses `()` is short for the constructor `Unit.unit`.
-After deriving a `Repr B` instance,
+左括弧の両側 `()` は `Unit.unit` のコンストラクタの略です。
+`Repr B` インスタンスを導出した後、
 ```lean
 {{#example_in Examples/Classes.lean coercedToBEval}}
 ```
-results in:
+の結果は次のようになります：
 ```output info
 {{#example_out Examples/Classes.lean coercedToBEval}}
 ```
 
-The `Option` type can be used similarly to nullable types in C# and Kotlin: the `none` constructor represents the absence of a value.
-The Lean standard library defines a coercion from any type `α` to `Option α` that wraps the value in `some`.
-This allows option types to be used in a manner even more similar to nullable types, because `some` can be omitted.
-For instance, the function `List.getLast?` that finds the last entry in a list can be written without a `some` around the return value `x`:
+`Option` 型は、C#やKotlinのnull許容型と同様に使用できます：`none` コンストラクタは値の不在を表します。
+Lean標準ライブラリでは、任意の型 `α` から `Option α` への強制変換を定義しており、その値を `some` でラッピングします。
+これにより、`Option` 型はnull許容型と同じように使用できるようになりますが、`some` を省略することができます。
+例えば、リストの最後のエントリを見つける関数 `List.getLast?` は、返り値 `x` の周りに `some` を付けずに書くことができます：
 ```lean
 {{#example_decl Examples/Classes.lean lastHuh}}
 ```
-Instance search finds the coercion, and inserts a call to `coe`, which wraps the argument in `some`.
-These coercions can be chained, so that nested uses of `Option` don't require nested `some` constructors:
+インスタンス検索は強制変換を見つけ、引数を `some` でラッピングする `coe` の呼び出しを挿入します。
+これらの強制変換は連鎖することができるため、`Option` のネストされた使用ではネストされた `some` コンストラクタが必要になることはありません：
 ```lean
 {{#example_decl Examples/Classes.lean perhapsPerhapsPerhaps}}
 ```
 
-Coercions are only activated automatically when Lean encounters a mismatch between an inferred type and a type that is imposed from the rest of the program.
-In cases with other errors, coercions are not activated.
-For example, if the error is that an instance is missing, coercions will not be used:
+強制変換は、プログラムの残りの部分から課せられた型と推論された型の間に不一致が生じたときにのみ自動的にアクティブになります。
+他のエラーがある場合には、強制変換はアクティブになりません。
+例えば、エラーがインスタンスが不足していることである場合、強制変換は使用されません：
 ```lean
 {{#example_in Examples/Classes.lean ofNatBeforeCoe}}
 ```
@@ -95,116 +91,115 @@ For example, if the error is that an instance is missing, coercions will not be 
 {{#example_out Examples/Classes.lean ofNatBeforeCoe}}
 ```
 
-This can be worked around by manually indicating the desired type to be used for `OfNat`:
+これは、`OfNat` のために使用したい型を手動で示すことで回避できます：
 ```lean
 {{#example_decl Examples/Classes.lean perhapsPerhapsPerhapsNat}}
 ```
-Additionally, coercions can be manually inserted using an up arrow:
+さらに、強制変換は上矢印を使用することで手動で挿入することができます：
 ```lean
 {{#example_decl Examples/Classes.lean perhapsPerhapsPerhapsNatUp}}
 ```
-In some cases, this can be used to ensure that Lean finds the right instances.
-It can also make the programmer's intentions more clear.
+場合によっては、これを使用することでLeanが正しいインスタンスを見つけることを保証できます。
+また、プログラマの意図をより明確にすることもできます。
 
+## 非空リストと依存性のある強制変換 (Non-Empty Lists and Dependent Coercions)
 
-## Non-Empty Lists and Dependent Coercions
-
-An instance of `Coe α β` makes sense when the type `β` has a value that can represent each value from the type `α`.
-Coercing from `Nat` to `Int` makes sense, because the type `Int` contains all the natural numbers.
-Similarly, a coercion from non-empty lists to ordinary lists makes sense because the `List` type can represent every non-empty list:
+`Coe α β` のインスタンスは、型 `β` が型 `α` からのすべての値を表すことができる値を持っているときに意味をなします。
+`Nat` から `Int` への強制変換は理にかなっています。なぜなら型 `Int` はすべての自然数を含んでいるからです。
+同様に、非空リストから通常のリストへの強制変換は理にかなっています。なぜなら `List` 型はすべての非空リストを表すことができるからです：
 ```lean
 {{#example_decl Examples/Classes.lean CoeNEList}}
 ```
-This allows non-empty lists to be used with the entire `List` API.
+これにより、非空リストは `List` API全体で使用できます。
 
-On the other hand, it is impossible to write an instance of `Coe (List α) (NonEmptyList α)`, because there's no non-empty list that can represent the empty list.
-This limitation can be worked around by using another version of coercions, which are called _dependent coercions_.
-Dependent coercions can be used when the ability to coerce from one type to another depends on which particular value is being coerced.
-Just as the `OfNat` type class takes the particular `Nat` being overloaded as a parameter, dependent coercion takes the value being coerced as a parameter:
+一方で、`List α` から `NonEmptyList α` への `Coe` のインスタンスを書くことは不可能です。なぜなら、空リストを表す非空リストはないからです。
+この制限は、_依存性のある強制変換 (dependent coercions)_ と呼ばれる別のバージョンの強制変換を使用することで回避できます。
+依存性のある強制変換は、一つの型から別の型への強制変換が、強制される特定の値に依存するときに使用できます。`OfNat`型クラスがオーバーロードされる具体的な`Nat`をパラメータとして取るのと同じように、依存性のある強制変換は、それをパラメータとして取ります：
 ```lean
 {{#example_decl Examples/Classes.lean CoeDep}}
 ```
-This is a chance to select only certain values, either by imposing further type class constraints on the value or by writing certain constructors directly.
-For example, any `List` that is not actually empty can be coerced to a `NonEmptyList`:
+これは、特定の値を選択するチャンスです。型クラスの制約を値にさらに課すか、特定のコンストラクタを直接記述するかしてです。
+例えば、実際には空でない `List` を `NonEmptyList` に強制変換することができます：
 ```lean
 {{#example_decl Examples/Classes.lean CoeDepListNEList}}
 ```
 
-## Coercing to Types
+## 型への強制変換 (Coercing to Types)
 
-In mathematics, it is common to have a concept that consists of a set equipped with additional structure.
-For example, a monoid is some set _S_, an element _s_ of _S_, and an associative binary operator on _S_, such that _s_ is neutral on the left and right of the operator.
-_S_ is referred to as the "carrier set" of the monoid.
-The natural numbers with zero and addition form a monoid, because addition is associative and adding zero to any number is the identity.
-Similarly, the natural numbers with one and multiplication also form a monoid.
-Monoids are also widely used in functional programming: lists, the empty list, and the append operator form a monoid, as do strings, the empty string, and string append:
+数学では、集合と追加の構造を備えた概念を持つのが一般的です。
+例えば、モノイドは集合 _S_ 、_S_ の要素 _s_ 、および _S_ 上の結合的な二項演算子からなります。ここで、_s_ は演算子の左右で中立です。
+_S_ はモノイドの「担体集合 (carrier set)」として参照されます。
+0と加算を伴う自然数はモノイドを形成します。なぜなら加算は結合的で、任意の数に0を加えると恒等になるからです。
+同様に、1と乗算を伴う自然数もモノイドを形成します。
+モノイドは関数型プログラミングでも広く使用されています。リスト、空リスト、および追加演算子はモノイドを形成し、文字列、空文字列、および文字列追加も同様です：
 ```lean
 {{#example_decl Examples/Classes.lean Monoid}}
 ```
-Given a monoid, it is possible to write the `foldMap` function that, in a single pass, transforms the entries in a list into a monoid's carrier set and then combines them using the monoid's operator.
-Because monoids have a neutral element, there is a natural result to return when the list is empty, and because the operator is associative, clients of the function don't have to care whether the recursive function combines elements from left to right or from right to left.
+モノイドが与えられると、リストのエントリをモノイドの担体集合に変換し、次にモノイドの演算子を使用してそれらを組み合わせる `foldMap` 関数を記述することができます。
+モノイドは中立元を持っているので、リストが空の場合には自然な結果が返されます。そして演算子が結合的であるため、関数のクライアントは、再帰関数が左から右、あるいは右から左に要素を組み合わせるかどうかを気にする必要がありません。
 ```lean
 {{#example_decl Examples/Classes.lean firstFoldMap}}
 ```
 
-Even though a monoid consists of three separate pieces of information, it is common to just refer to the monoid's name in order to refer to its set.
-Instead of saying "Let A be a monoid and let _x_ and _y_ be elements of its carrier set", it is common to say "Let _A_ be a monoid and let _x_ and _y_ be elements of _A_".
-This practice can be encoded in Lean by defining a new kind of coercion, from the monoid to its carrier set.
+モノイドは3つの異なる情報から成るものですが、モノイドの名前だけを使ってその集合を参照するのが一般的です。
+「Aをモノイドとし、_x_ と _y_ をその担体集合の要素とする」の代わりに、「_A_ をモノイドとし、_x_ と _y_ を _A_ の要素とする」という言い方が一般的です。
+この慣習をLeanでエンコードするには、モノイドからその担体集合への新しい種類の強制変換を定義します。
 
-The `CoeSort` class is just like the `Coe` class, with the exception that the target of the coercion must be a _sort_, namely `Type` or `Prop`.
-The term _sort_ in Lean refers to these types that classify other types—`Type` classifies types that themselves classify data, and `Prop` classifies propositions that themselves classify evidence of their truth.
-Just as `Coe` is checked when a type mismatch occurs, `CoeSort` is used when something other than a sort is provided in a context where a sort would be expected.
+`CoeSort`クラスは`Coe`クラスと似ていますが、強制変換の対象が _sort_ （すなわち、`Type` または `Prop`）であるという例外があります。
+Leanにおける用語_sort_は、これらデータを分類する型—`Type`はデータを分類する型を分類する型で、`Prop`はその真実の証拠を分類する命題を分類する型。
+`Coe`が型の不一致が発生したときにチェックされるのと同様に、ソート以外の何かがソートを期待する文脈で提供されるときに`CoeSort`が使用されます。
 
-The coercion from a monoid into its carrier set extracts the carrier:
+モノイドからその担体集合への強制変換は担体を抽出します：
 ```lean
 {{#example_decl Examples/Classes.lean CoeMonoid}}
 ```
-With this coercion, the type signatures become less bureaucratic:
+この強制変換を使用すると、型シグネチャが負担の少ないものになります：
 ```lean
 {{#example_decl Examples/Classes.lean foldMap}}
 ```
 
-Another useful example of `CoeSort` is used to bridge the gap between `Bool` and `Prop`.
-As discussed in [the section on ordering and equality](standard-classes.md#equality-and-ordering), Lean's `if` expression expects the condition to be a decidable proposition rather than a `Bool`.
-Programs typically need to be able to branch based on Boolean values, however.
-Rather than have two kinds of `if` expression, the Lean standard library defines a coercion from `Bool` to the proposition that the `Bool` in question is equal to `true`:
+`CoeSort`のもう一つの有用な例は、`Bool`と`Prop`の間の隙間を埋めるために使用されます。
+[等価性と順序についての章](standard-classes.md#equality-and-ordering)で議論したように、Leanの `if` 文は条件が `Bool` ではなく判定可能な命題であることを期待しています。
+しかし、プログラムは通常、ブール値に基づいて分岐する必要があります。
+それに対し、Lean標準ライブラリは `Bool` から問題の `Bool` が `true` に等しいという命題への強制変換を定義しています：
 ```lean
 {{#example_decl Examples/Classes.lean CoeBoolProp}}
 ```
-In this case, the sort in question is `Prop` rather than `Type`.
+この場合、疑問に思われるソートは `Prop` ではなく `Type` です。
 
-## Coercing to Functions
+## 関数への強制変換 (Coercing to Functions)
 
-Many datatypes that occur regularly in programming consist of a function along with some extra information about it.
-For example, a function might be accompanied by a name to show in logs or by some configuration data.
-Additionally, putting a type in a field of a structure, similarly to the `Monoid` example, can make sense in contexts where there is more than one way to implement an operation and more manual control is needed than type classes would allow.
-For example, the specific details of values emitted by a JSON serializer may be important because another application expects a particular format.
-Sometimes, the function itself may be derivable from just the configuration data.
+プログラミングで定期的に出現する多くのデータ型は、その関数についていくつかの追加情報とともに構成されます。
+例えば、名前はログに表示するためのものやいくつかの設定データが関数に伴って提供されることがあります。
+さらに、`Monoid` の例のように、構造のフィールドに型を置くことは、操作の実装方法が複数あり、型クラスを使用するよりも手動での制御が必要な文脈で意味を成す場合があります。
+例えば、JSONシリアライザによって発行される値の特定の詳細が重要であるかもしれません。これは、別のアプリケーションが特定の形式を期待しているためです。
+場合によっては、構成データ自体から関数を導出できることもあります。
 
-A type class called `CoeFun` can transform values from non-function types to function types.
-`CoeFun` has two parameters: the first is the type whose values should be transformed into functions, and the second is an output parameter that determines exactly which function type is being targeted.
+非関数型の値を関数型へと変換する型クラスとして `CoeFun` があります。
+`CoeFun` には二つのパラメータがあります：一つ目は関数に変換されるべき型で、二つ目はどの関数型をターゲットにするかを決定する出力パラメータです。
 ```lean
 {{#example_decl Examples/Classes.lean CoeFun}}
 ```
-The second parameter is itself a function that computes a type.
-In Lean, types are first-class and can be passed to functions or returned from them, just like anything else.
+二つ目のパラメータ自体は型を計算する関数です。
+Leanでは、型は第一級の市民であり、他のどんなものと同じように関数に渡されたり、関数から返されたりします。
 
-For example, a function that adds a constant amount to its argument can be represented as a wrapper around the amount to add, rather than by defining an actual function:
+例えば、その引数に定数を加える関数は、加える量を含むラッパーとして表現できます。
+そして、実際の関数を定義するのではなく、どれだけ加えるかに関するラッパーとして以下のようになります：
 ```lean
 {{#example_decl Examples/Classes.lean Adder}}
 ```
-A function that adds five to its argument has a `5` in the `howMuch` field:
+その引数に5を加える関数は、`howMuch` フィールドに `5` を持っています：
 ```lean
 {{#example_decl Examples/Classes.lean add5}}
 ```
-This `Adder` type is not a function, and applying it to an argument results in an error:
+この `Adder` 型は、関数ではなく、その引数に適用するとエラーが発生します。
 ```lean
 {{#example_in Examples/Classes.lean add5notfun}}
 ```
 ```output error
 {{#example_out Examples/Classes.lean add5notfun}}
 ```
-Defining a `CoeFun` instance causes Lean to transform the adder into a function with type `Nat → Nat`:
+`CoeFun` インスタンスを定義することで、Leanはadderを `Nat → Nat` 型の関数へと変換します：
 ```lean
 {{#example_decl Examples/Classes.lean CoeFunAdder}}
 
@@ -213,122 +208,26 @@ Defining a `CoeFun` instance causes Lean to transform the adder into a function 
 ```output info
 {{#example_out Examples/Classes.lean add53}}
 ```
-Because all `Adder`s should be transformed into `Nat → Nat` functions, the argument to `CoeFun`'s second parameter was ignored.
+すべての `Adder` が `Nat → Nat` 関数に変換されるべきであるため、「CoeFun」の二つ目のパラメータへの引数は無視されました。
 
-When the value itself is needed to determine the right function type, then `CoeFun`'s second parameter is no longer ignored.
-For example, given the following representation of JSON values:
+値自体が正しい関数型を特定するために必要な場合、`CoeFun` の二つ目のパラメータはもはや無視されません。
+例えば、以下のJSON値の表現を考えます：
 ```lean
 {{#example_decl Examples/Classes.lean JSON}}
 ```
-a JSON serializer is a structure that tracks the type it knows how to serialize along with the serialization code itself:
+JSONシリアライザは、シリアライズ可能な型を追跡し、そのシリアライズ自体のコードを含む構造体です：
 ```lean
 {{#example_decl Examples/Classes.lean Serializer}}
 ```
-A serializer for strings need only wrap the provided string in the `JSON.string` constructor:
+文字列のシリアライザは、提供された文字列を `JSON.string` コンストラクタに包む必要しかないです：
 ```lean
 {{#example_decl Examples/Classes.lean StrSer}}
 ```
-Viewing JSON serializers as functions that serialize their argument requires extracting the inner type of serializable data:
+JSONシリアライザを、引数をシリアライズする関数として見るためには、シリアライズ可能なデータの内部型を抽出する必要があります：
 ```lean
 {{#example_decl Examples/Classes.lean CoeFunSer}}
 ```
-Given this instance, a serializer can be applied directly to an argument:
+このインスタンスがあれば、シリアライザを直接引数に適用することができます：
 ```lean
 {{#example_decl Examples/Classes.lean buildResponse}}
 ```
-The serializer can be passed directly to `buildResponse`:
-```lean
-{{#example_in Examples/Classes.lean buildResponseOut}}
-```
-```output info
-{{#example_out Examples/Classes.lean buildResponseOut}}
-```
-
-### Aside: JSON as a String
-
-It can be a bit difficult to understand JSON when encoded as Lean objects.
-To help make sure that the serialized response was what was expected, it can be convenient to write a simple converter from `JSON` to `String`.
-The first step is to simplify the display of numbers.
-`JSON` doesn't distinguish between integers and floating point numbers, and the type `Float` is used to represent both.
-In Lean, `Float.toString` includes a number of trailing zeros:
-```lean
-{{#example_in Examples/Classes.lean fiveZeros}}
-```
-```output info
-{{#example_out Examples/Classes.lean fiveZeros}}
-```
-The solution is to write a little function that cleans up the presentation by dropping all trailing zeros, followed by a trailing decimal point:
-```lean
-{{#example_decl Examples/Classes.lean dropDecimals}}
-```
-With this definition, `{{#example_in Examples/Classes.lean dropDecimalExample}}` yields `{{#example_out Examples/Classes.lean dropDecimalExample}}`, and `{{#example_in Examples/Classes.lean dropDecimalExample2}}` yields `{{#example_out Examples/Classes.lean dropDecimalExample2}}`.
-
-The next step is to define a helper function to append a list of strings with a separator in between them:
-```lean
-{{#example_decl Examples/Classes.lean Stringseparate}}
-```
-This function is useful to account for comma-separated elements in JSON arrays and objects.
-`{{#example_in Examples/Classes.lean sep2ex}}` yields `{{#example_out Examples/Classes.lean sep2ex}}`, `{{#example_in Examples/Classes.lean sep1ex}}` yields `{{#example_out Examples/Classes.lean sep1ex}}`, and `{{#example_in Examples/Classes.lean sep0ex}}` yields `{{#example_out Examples/Classes.lean sep0ex}}`.
-
-Finally, a string escaping procedure is needed for JSON strings, so that the Lean string containing `"Hello!"` can be output as `"\"Hello!\""`.
-Fortunately, the Lean compiler contains an internal function for escaping JSON strings already, called `Lean.Json.escape`.
-To access this function, add `import Lean` to the beginning of your file.
-
-The function that emits a string from a `JSON` value is declared `partial` because Lean cannot see that it terminates.
-This is because recursive calls to `asString` occur in functions that are being applied by `List.map`, and this pattern of recursion is complicated enough that Lean cannot see that the recursive calls are actually being performed on smaller values.
-In an application that just needs to produce JSON strings and doesn't need to mathematically reason about the process, having the function be `partial` is not likely to cause problems.
-```lean
-{{#example_decl Examples/Classes.lean JSONasString}}
-```
-With this definition, the output of serialization is easier to read:
-```lean
-{{#example_in Examples/Classes.lean buildResponseStr}}
-```
-```output info
-{{#example_out Examples/Classes.lean buildResponseStr}}
-```
-
-
-## Messages You May Meet
-
-Natural number literals are overloaded with the `OfNat` type class.
-Because coercions fire in cases where types don't match, rather than in cases of missing instances, a missing `OfNat` instance for a type does not cause a coercion from `Nat` to be applied:
-```lean
-{{#example_in Examples/Classes.lean ofNatBeforeCoe}}
-```
-```output error
-{{#example_out Examples/Classes.lean ofNatBeforeCoe}}
-```
-
-## Design Considerations
-
-Coercions are a powerful tool that should be used responsibly.
-On the one hand, they can allow an API to naturally follow the everyday rules of the domain being modeled.
-This can be the difference between a bureaucratic mess of manual conversion functions and a clear program.
-As Abelson and Sussman wrote in the preface to _Structure and Interpretation of Computer Programs_ (MIT Press, 1996),
-
-> Programs must be written for people to read, and only incidentally for machines to execute.
-
-Coercions, used wisely, are a valuable means of achieving readable code that can serve as the basis for communication with domain experts.
-APIs that rely heavily on coercions have a number of important limitations, however.
-Think carefully about these limitations before using coercions in your own libraries.
-
-First off, coercions are only applied in contexts where enough type information is available for Lean to know all of the types involved, because there are no output parameters in the coercion type classes. This means that a return type annotation on a function can be the difference between a type error and a successfully applied coercion.
-For example, the coercion from non-empty lists to lists makes the following program work:
-```lean
-{{#example_decl Examples/Classes.lean lastSpiderA}}
-```
-On the other hand, if the type annotation is omitted, then the result type is unknown, so Lean is unable to find the coercion:
-```lean
-{{#example_in Examples/Classes.lean lastSpiderB}}
-```
-```output error
-{{#example_out Examples/Classes.lean lastSpiderB}}
-```
-More generally, when a coercion is not applied for some reason, the user receives the original type error, which can make it difficult to debug chains of coercions.
-
-Finally, coercions are not applied in the context of field accessor notation.
-This means that there is still an important difference between expressions that need to be coerced and those that don't, and this difference is visible to users of your API.
-
-
-
