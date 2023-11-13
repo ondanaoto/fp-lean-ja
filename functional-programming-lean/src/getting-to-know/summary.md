@@ -1,77 +1,75 @@
-# Summary
+```markdown
+# 要旨
 
-## Evaluating Expressions
+## 式の評価
 
-In Lean, computation occurs when expressions are evaluated.
-This follows the usual rules of mathematical expressions: sub-expressions are replaced by their values following the usual order of operations, until the entire expression has become a value.
-When evaluating an `if` or a `match`, the expressions in the branches are not evaluated until the value of the condition or the match subject has been found.
+Leanでは、式を評価すると計算が行われます。
+これは通常の数学的な式のルールに従い、サブ式が値に置き換えられ、操作の通常の順序に従って、式全体が値になるまで進む過程です。
+`if` や `match` を評価する場合、分岐内の式は条件またはマッチ対象の値が得られるまで評価されません。
 
-Once they have been given a value, variables never change.
-Similarly to mathematics but unlike most programming languages, Lean variables are simply placeholders for values, rather than addresses to which new values can be written.
-Variables' values may come from global definitions with `def`, local definitions with `let`, as named arguments to functions, or from pattern matching.
+変数に一度値が与えられると、それは決して変わることはありません。
+数学のように（しかし多くのプログラミング言語とは異なり）、Leanの変数は単に値のプレースホルダーであり、新しい値を書き込むアドレスではありません。
+変数の値は、`def` を使ったグローバル定義、`let` を使ったローカル定義、関数への名前付き引数、またはパターンマッチングから得ることができます。
 
-## Functions
+## 関数
 
-Functions in Lean are first-class values, meaning that they can be passed as arguments to other functions, saved in variables, and used like any other value.
-Every Lean function takes exactly one argument.
-To encode a function that takes more than one argument, Lean uses a technique called currying, where providing the first argument returns a function that expects the remaining arguments.
-To encode a function that takes no arguments, Lean uses the `Unit` type, which is the least informative possible argument.
+Leanの関数は第一級の値であり、つまり他の関数への引数として渡されたり、変数に保存したり、他のどんな値と同じように使用することができます。
+Leanの関数は正確にひとつの引数を取ります。
+複数の引数を取る関数をエンコードするために、Leanはカリー化と呼ばれる技術を使用し、最初の引数を提供することで残りの引数を期待する関数を返します。
+引数を取らない関数をエンコードするために、Leanは`Unit`型を使用します。これは最も情報量の少ない可能な引数です。
 
-There are three primary ways of creating functions:
-1. Anonymous functions are written using `fun`.
-   For instance, a function that swaps the fields of a `Point` can be written `{{#example_in Examples/Intro.lean swapLambda}}`
-2. Very simple anonymous functions are written by placing one or more centered dots `·` inside of parentheses.
-   Each centered dot becomes an argument to the function, and the parentheses delimit its body.
-   For instance, a function that subtracts one from its argument can be written as `{{#example_in Examples/Intro.lean subOneDots}}` instead of as `{{#example_out Examples/Intro.lean subOneDots}}`.
-3. Functions can be defined using `def` or `let` by adding an argument list or by using pattern-matching notation.
+関数を作成する主な3つの方法は次のとおりです：
+1. 匿名関数は `fun` を使用して書かれます。
+   例えば、`Point` のフィールドを交換する関数は `{{#example_in Examples/Intro.lean swapLambda}}` として書かれることができます。
+2. 非常に単純な匿名関数は、一つまたは複数の中点 `·` を括弧内に置いて書かれます。
+   各中点は関数への引数となり、括弧はその本体を区切ります。
+   例えば、引数から1を引く関数は、`{{#example_out Examples/Intro.lean subOneDots}}` ではなく `{{#example_in Examples/Intro.lean subOneDots}}` として書かれるかもしれません。
+3. `def` や `let` を使用して、引数リストを追加したり、パターンマッチング記法を使用することで関数を定義することができます。
 
-## Types
+## 型
 
-Lean checks that every expression has a type.
-Types, such as `Int`, `Point`, `{α : Type} → Nat → α → List α`, and `Option (String ⊕ (Nat × String))`, describe the values that may eventually be found for an expression.
-Like other languages, types in Lean can express lightweight specifications for programs that are checked by the Lean compiler, obviating the need for certain classes of unit test.
-Unlike most languages, Lean's types can also express arbitrary mathematics, unifying the worlds of programming and theorem proving.
-While using Lean for proving theorems is mostly out of scope for this book, _[Theorem Proving in Lean 4](https://leanprover.github.io/theorem_proving_in_lean4/)_ contains more information on this topic.
+Leanは、すべての式が型を持っていることを確認します。
+`Int`、`Point`、`{α : Type} → Nat → α → List α`、`Option (String ⊕ (Nat × String))` などの型は、式に最終的に見つかる可能性のある値を記述します。
+他の言語のように、Leanの型はプログラムに対して軽量の仕様を表し、これによってLeanコンパイラーによってチェックされ、特定のクラスのユニットテストの必要性がなくなります。
+しかしほとんどの言語とは異なり、Leanの型では任意の数学を表現することもでき、プログラミングと定理証明の世界を統一します。
+本書では主にLeanを使用して定理を証明することは範囲外ですが、_[Theorem Proving in Lean 4](https://leanprover.github.io/theorem_proving_in_lean4/)_ にはこのトピックに関する詳細情報が含まれています。
 
-Some expressions can be given multiple types.
-For instance, `3` can be an `Int` or a `Nat`.
-In Lean, this should be understood as two separate expressions, one with type `Nat` and one with type `Int`, that happen to be written in the same way, rather than as two different types for the same thing.
+ある式には複数の型が与えられることがあります。
+例えば、`3` は `Int` または `Nat` になり得ます。
+Leanでは、これを同じ方法で書かれた `Nat` 型と `Int` 型の2つの別々の式として理解すべきであり、別々の型である同一のものとは考えないほうが良いです。
 
-Lean is sometimes able to determine types automatically, but types must often be provided by the user.
-This is because Lean's type system is so expressive.
-Even when Lean can find a type, it may not find the desired type—`3` could be intended to be used as an `Int`, but Lean will give it the type `Nat` if there are no further constraints.
-In general, it is a good idea to write most types explicitly, only letting Lean fill out the very obvious types.
-This improves Lean's error messages and helps make programmer intent more clear.
+Leanは時々自動的に型を決定することができますが、しばしばユーザーによって型を提供される必要があります。
+これはLeanの型システムが非常に表現力豊かであるからです。
+Leanが型を見つけることができたとしても、望ましい型を見つけるとは限りません。`3`が`Int`として使われることを意図していても、それ以上の制約がなければLeanは`Nat`の型を与えます。
+一般に、非常に明白な型を除き、ほとんどの型を明示的に書くことが賢明です。
+これによりLeanのエラーメッセージが改善され、プログラマーの意図がより明確になります。
 
-Some functions or datatypes take types as arguments.
-They are called _polymorphic_.
-Polymorphism allows programs such as one that calculates the length of a list without caring what type the entries in the list have.
-Because types are first class in Lean, polymorphism does not require any special syntax, so types are passed just like other arguments.
-Giving an argument a name in a function type allows later types to mention that argument, and the type of applying that function to an argument is found by replacing the argument's name with the argument's value.
+いくつかの関数やデータ型は型を引数として取ります。
+これらは _多相的_ であると呼ばれます。
+多相性は、リストの種類に関係なくリストの長さを計算するなどのプログラムを可能にします。
+型はLeanでは第一級であるので、多相性は特別な構文を必要とせず、他の引数と同様に渡されます。
+関数型に引数に名前を付けると、後の型がその引数を参照することができるようになり、その関数に引数を適用した型は、引数の名前を引数の値に置き換えることによって見つかります。
 
-## Structures and Inductive Types
+## 構造体と帰納型
 
-Brand new datatypes can be introduced to Lean using the `structure` or `inductive` features.
-These new types are not considered to be equivalent to any other type, even if their definitions are otherwise identical.
-Datatypes have _constructors_ that explain the ways in which their values can be constructed, and each constructor takes some number of arguments.
-Constructors in Lean are not the same as constructors in object-oriented languages: Lean's constructors are inert holders of data, rather than active code that initializes an allocated object.
+新しいデータ型は、`structure` や `inductive` 機能を使用してLeanに導入することができます。
+これらの新しい型は、定義が他と同一であったとしても、他のいかなる型とも等価だとは考えられません。
+データ型には、その値を構築する方法を説明する _コンストラクタ_ があり、各コンストラクタはいくつかの引数を取ります。
+Leanのコンストラクタはオブジェクト指向言語のコンストラクタと同じではありません：Leanのコンストラクタはデータの不活性な保持者であり、割り当てられたオブジェクトを初期化するアクティブなコードではありません。
 
-Typically, `structure` is used to introduce a product type (that is, a type with just one constructor that takes any number of arguments), while `inductive` is used to introduce a sum type (that is, a type with many distinct constructors).
-Datatypes defined with `structure` are provided with one accessor function for each of the constructor's arguments.
-Both structures and inductive datatypes may be consumed with pattern matching, which exposes the values stored inside of constructors using a subset of the syntax used to call said constructors.
-Pattern matching means that knowing how to create a value implies knowing how to consume it.
+典型的には、`structure` は積型（つまり、任意の数の引数を取るただ1つのコンストラクタを持つ型）を導入するために使用され、`inductive` は和型（つまり、多くの異なるコンストラクタを持つ型）を導入するために使用されます。
+`structure` で定義されたデータ型は、コンストラクタの各引数に対して一つのアクセサ関数が提供されます。
+構造体および帰納型データ型は、それらのコンストラクタに保持される値を露出するパターンマッチングを使用して消費することができ、パターンマッチングはそのコンストラクタを呼び出すために使用された構文の一部を使用します。
+パターンマッチングは、値を作成する方法を知っていれば、それを消費する方法を知ることを意味します。
 
+## 再帰
 
-## Recursion
+定義が再帰的であるとは、定義されている名前がその定義自体で使用されるときを指します。
+Leanはプログラミング言語に加えて対話型定理証明器であるため、再帰的な定義にはある制限が課されます。
+Leanの論理的な側面では、循環的な定義は論理的な矛盾につながる可能性があります。
 
-A definition is recursive when the name being defined is used in the definition itself.
-Because Lean is an interactive theorem prover in addition to being a programming language, there are certain restrictions placed on recursive definitions.
-In Lean's logical side, circular definitions could lead to logical inconsistency.
+再帰的な定義がLeanの論理的側面を損なうことがないように、Leanは、それがどのような引数で呼び出されても、すべての再帰的な関数が終了することを証明できなければなりません。
+実践的には、これは再帰的な呼び出しがすべて入力の構造的に小さい部分に対して行われることを意味し、これにより常に基底ケースに向かって進行することが保証されるか、またはユーザーが関数が絶えず終了することを証明する他の何らかの証拠を提供しなければなりません。
+同様に、帰納型は、型 _から_ 関数を引数として取るコンストラクタを持つことが許可されていません。なぜなら、これにより非終了する関数をエンコードすることができるからです。
 
-In order to ensure that recursive definitions do not undermine the logical side of Lean, Lean must be able to prove that all recursive functions terminate, no matter what arguments they are called with.
-In practice, this means either that recursive calls are all performed on a structurally-smaller piece of the input, which ensures that there is always progress towards a base case, or that users must provide some other evidence that the function always terminates.
-Similarly, recursive inductive types are not allowed to have a constructor that takes a function _from_ the type as an argument, because this would make it possible to encode non-terminating functions.
-
-
-
-
+```

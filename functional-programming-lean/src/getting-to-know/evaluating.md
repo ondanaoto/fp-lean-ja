@@ -1,135 +1,140 @@
-# Evaluating Expressions
+以下は、指定された `.md` ファイルを日本語に翻訳したものです。
 
-The most important thing to understand as a programmer learning Lean
-is how evaluation works. Evaluation is the process of finding the
-value of an expression, just as one does in arithmetic. For instance,
-the value of 15 - 6 is 9 and the value of 2 × (3 + 1) is 8.
-To find the value of the latter expression, 3 + 1 is first replaced by 4, yielding 2 × 4, which itself can be reduced to 8.
-Sometimes, mathematical expressions contain variables: the value of _x_ + 1 cannot be computed until we know what the value of _x_ is.
-In Lean, programs are first and foremost expressions, and the primary way to think about computation is as evaluating expressions to find their values.
+---
 
-Most programming languages are _imperative_, where a program consists
-of a series of statements that should be carried out in order to find
-the program's result. Programs have access to mutable memory, so the
-value referred to by a variable can change over time. In addition to mutable state, programs may have other side
-effects, such as deleting files, making outgoing network connections,
-throwing or catching exceptions, and reading data from a
-database. "Side effects" is essentially a catch-all term for
-describing things that may happen in a program that don't follow the
-model of evaluating mathematical expressions.
+# 式の評価
 
-In Lean, however, programs work the same way as mathematical
-expressions. Once given a value, variables cannot be reassigned. Evaluating an expression cannot have side effects. If two
-expressions have the same value, then replacing one with the other
-will not cause the program to compute a different result. This does
-not mean that Lean cannot be used to write `Hello, world!` to the
-console, but performing I/O is not a core part of the experience of
-using Lean in the same way. Thus, this chapter focuses on how to
-evaluate expressions interactively with Lean, while the next chapter
-describes how to write, compile, and run the `Hello, world!` program.
+プログラマーとしてLeanを学ぶ際に理解すべき最も重要なことは、
+評価とはどのように機能するかです。評価は、算数のように、
+式の値を見つけるプロセスです。例えば、
+15 - 6の値は9であり、2 × (3 + 1)の値は8です。
+後者の式の値を見つけるためには、まず3 + 1が4に置き換えられ、
+次に2 × 4が求められ、最終的に8に還元されます。
+時には、数学的な式に変数が含まれることもあります：_x_ + 1の値は、
+_x_の値がわかるまで計算することはできません。
+Leanでは、プログラムはまず何よりも式であり、
+計算について考える主要な方法はその式を評価してその値を見つけることです。
 
-To ask Lean to evaluate an expression, write `#eval` before it in your
-editor, which will then report the result back. Typically, the result
-is found by putting the cursor or mouse pointer over `#eval`. For
-instance,
+ほとんどのプログラミング言語は_命令型_であり、プログラムは
+プログラムの結果を見つけるために実行されるべき
+一連の文で構成されています。プログラムは変更可能なメモリに
+アクセスできるため、変数によって参照される値は
+時間と共に変わることがあります。変更可能な状態に加えて、
+プログラムはファイルの削除、外部ネットワークへの接続、
+例外のスローまたはキャッチ、データベースからのデータ読み取りなど、
+他の副作用を持つこともあります。"副作用"とは、実質的に、
+数学的な式の評価モデルに従わないプログラムで
+発生することがあるものを説明するための総称です。
+
+しかし、Leanでは、プログラムは数学的な式のように機能します。
+変数に値が与えられると、それは再割り当てされることはありません。
+式の評価は副作用を持ちえません。もし二つの式が同じ値を持てば、
+それらを入れ替えてもプログラムは異なる結果を計算することはありません。
+これはLeanを使って`Hello, world!`をコンソールに出力することが
+できないという意味ではありませんが、
+I/Oを実行することはLeanを使用する際の
+核となる部分ではありません。したがって、
+この章はLeanと対話的に式を評価する方法に焦点を置いていますが、
+次の章では`Hello, world!`プログラムを書き、
+コンパイルし、そして実行する方法について説明します。
+
+Leanに式を評価させるには、エディターで式の前に`#eval`を書きます。
+すると、結果が報告されます。一般的に、結果はカーソルやマウスポインタを
+`#eval`の上に置くことで見つかります。例えば、
 
 ```lean
 #eval {{#example_in Examples/Intro.lean three}}
 ```
-yields the value `{{#example_out Examples/Intro.lean three}}`.
+は値 `{{#example_out Examples/Intro.lean three}}` を出力します。
 
-Lean obeys the ordinary rules of precedence and associativity for
-arithmetic operators. That is,
+Leanは、算数演算子の通常の優先順位と結合規則に従います。つまり、
 
 ```lean
 {{#example_in Examples/Intro.lean orderOfOperations}}
 ```
-yields the value `{{#example_out Examples/Intro.lean orderOfOperations}}` rather than
-`{{#example_out Examples/Intro.lean orderOfOperationsWrong}}`.
+は値 `{{#example_out Examples/Intro.lean orderOfOperations}}` を出力し、
+`{{#example_out Examples/Intro.lean orderOfOperationsWrong}}` ではありません。
 
 
-While both ordinary mathematical notation and the majority of
-programming languages use parentheses (e.g. `f(x)`) to apply a function to its
-arguments, Lean simply writes the function next to its
-arguments (e.g. `f x`). Function application is one of the most common operations,
-so it pays to keep it concise. Rather than writing
-```lean
-#eval String.append("Hello, ", "Lean!")
-```
-to compute `{{#example_out Examples/Intro.lean stringAppendHello}}`,
-one would instead write
+通常の数学の記法とほとんどのプログラミング言語では、
+関数をその引数に適用するために括弧を使用します（例えば、`f(x)`）が、
+Leanでは単に関数をその引数の隣に書きます（例えば、`f x`）。
+関数の適用は最も一般的な操作の一つなので、それを簡潔に保つことが重要です。
+`String.append("Hello, ", "Lean!")`と書いて
+`{{#example_out Examples/Intro.lean stringAppendHello}}`を計算するのではなく、
+代わりに次のように書きます。
 ``` Lean
 {{#example_in Examples/Intro.lean stringAppendHello}}
 ```
-where the function's two arguments are simply written next to
-it with spaces.
+関数の二つの引数は、単にスペースで隣に書かれています。
 
-Just as the order-of-operations rules for arithmetic demand
-parentheses in the expression `(1 + 2) * 5`, parentheses are also
-necessary when a function's argument is to be computed via another
-function call. For instance, parentheses are required in
+算数の演算子の順序の規則では、式`(1 + 2) * 5`で括弧が必要であるように、
+関数の引数が他の関数呼び出しによって計算されるべきときは括弧も同様に必要です。
+例えば、
 ``` Lean
 {{#example_in Examples/Intro.lean stringAppendNested}}
 ```
-because otherwise the second `String.append` would be interpreted as
-an argument to the first, rather than as a function being passed
-`"oak "` and `"tree"` as arguments. The value of the inner `String.append`
-call must be found first, after which it can be appended to `"great "`,
-yielding the final value `{{#example_out Examples/Intro.lean stringAppendNested}}`.
+括弧が必要なのは、そうでないと第二の`String.append`が、
+最初のものの引数として解釈されるのではなく、
+`"oak "`と`"tree"`を引数として渡される関数になるためです。
+内側の`String.append`呼び出しの値を最初に見つけた後、
+それを`"great "`に追加することができ、最終的な値
+`{{#example_out Examples/Intro.lean stringAppendNested}}`が得られます。
 
-Imperative languages often have two kinds of conditional: a
-conditional _statement_ that determines which instructions to carry
-out based on a Boolean value, and a conditional _expression_ that
-determines which of two expressions to evaluate based on a Boolean
-value. For instance, in C and C++, the conditional statement is
-written using `if` and `else`, while the conditional expression is
-written with a ternary operator `?` and `:`. In Python, the
-conditional statement begins with `if`, while the conditional
-expression puts `if` in the middle.
-Because Lean is an expression-oriented functional language, there are no conditional statements, only conditional expressions.
-They are written using `if`, `then`, and `else`. For
-instance,
+命令型言語にはしばしば、条件に基づいてどの命令を実行するか決定する
+条件文と、どちらの式を評価するかをブール値に基づいて決定する
+条件式の2種類の条件があります。例えば、CおよびC++では、
+条件文は`if`と`else`を使って書かれ、条件式は
+三項演算子`?`と`:`を使って書かれます。Pythonでは、
+条件文は`if`で始められますが、条件式では`if`が
+中間に置かれます。
+Leanは式指向の関数型言語なので、条件文は存在せず、
+条件式のみが存在します。それらは`if`、`then`、`else`を使って書かれます。
+例えば、
 ``` Lean
 {{#example_eval Examples/Intro.lean stringAppend 0}}
 ```
-evaluates to
+は
 ``` Lean
 {{#example_eval Examples/Intro.lean stringAppend 1}}
 ```
-which evaluates to
+に評価され、それは
 ```lean
 {{#example_eval Examples/Intro.lean stringAppend 2}}
 ```
-which finally evaluates to `{{#example_eval Examples/Intro.lean stringAppend 3}}`.
+に評価され、最終的には`{{#example_eval Examples/Intro.lean stringAppend 3}}`に評価されます。
 
-For the sake of brevity, a series of evaluation steps like this will sometimes be written with arrows between them:
+簡潔にするために、このような一連の評価ステップは時には矢印で書かれることがあります：
 ```lean
 {{#example_eval Examples/Intro.lean stringAppend}}
 ```
 
-## Messages You May Meet
+## 遭遇する可能性のあるメッセージ
 
-Asking Lean to evaluate a function application that is missing an argument will lead to an error message.
-In particular, the example
+引数が足りない関数の適用をLeanに評価させると、エラーメッセージが出ます。
+特に、例
 ```lean
 {{#example_in Examples/Intro.lean stringAppendReprFunction}}
 ```
-yields a quite long error message:
+はかなり長いエラーメッセージを出力します：
 ```output error
 {{#example_out Examples/Intro.lean stringAppendReprFunction}}
 ```
 
-This message occurs because Lean functions that are applied to only some of their arguments return new functions that are waiting for the rest of the arguments.
-Lean cannot display functions to users, and thus returns an error when asked to do so.
+このメッセージは、引数の一部だけに適用されたLean関数が、
+残りの引数を待機している新しい関数を返すために発生します。
+Leanは関数をユーザーに表示することはできず、そのため表示を求められたときにエラーを返します。
 
 
-## Exercises
+## 練習問題
 
-What are the values of the following expressions? Work them out by hand,
-then enter them into Lean to check your work.
+以下の式の値は何でしょうか？手作業で計算し、
+その後Leanに入力して作業を確認してください。
 
  * `42 + 19`
  * `String.append "A" (String.append "B" "C")`
  * `String.append (String.append "A" "B") "C"`
  * `if 3 == 3 then 5 else 7`
  * `if 3 == 4 then "equal" else "not equal"`
+
+---

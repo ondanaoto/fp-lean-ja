@@ -1,60 +1,60 @@
-# Datatypes and Patterns
+# データ型とパターン
 
-Structures enable multiple independent pieces of data to be combined into a coherent whole that is represented by a brand new type.
-Types such as structures that group together a collection of values are called _product types_.
-Many domain concepts, however, can't be naturally represented as structures.
-For instance, an application might need to track user permissions, where some users are document owners, some may edit documents, and others may only read them.
-A calculator has a number of binary operators, such as addition, subtraction, and multiplication.
-Structures do not provide an easy way to encode multiple choices.
+構造体は、複数の独立したデータピースを組み合わせて、新しい型によって代表される一貫性のある全体を形成することを可能にします。
+値のコレクションをまとめてグループ化するような構造体のような型は、_積型（product types）_と呼ばれます。
+しかし、多くのドメイン概念は構造体として自然に表現することができません。
+たとえば、アプリケーションがユーザー権限を追跡する必要があり、ユーザーにはドキュメントの所有者、ドキュメントの編集者、そしてドキュメントの読み取りのみが可能な者といった区別があります。
+計算機は、加算、減算、乗算などの複数の二項演算子を持っています。
+構造体では、複数の選択肢をエンコードする簡単な方法はありません。
 
-Similarly, while a structure is an excellent way to keep track of a fixed set of fields, many applications require data that may contain an arbitrary number of elements.
-Most classic data structures, such as trees and lists, have a recursive structure, where the tail of a list is itself a list, or where the left and right branches of a binary tree are themselves binary trees.
-In the aforementioned calculator, the structure of expressions themselves is recursive.
-The summands in an addition expression may themselves be multiplication expressions, for instance.
+同様に、構造体は固定のフィールドセットを追跡する優れた方法ですが、多くのアプリケーションでは任意の数の要素を含むデータが必要です。
+木やリストのような最も古典的なデータ構造の多くは再帰的な構造を持っており、リストの尾はそれ自体がリストであり、二分木の左右の枝がそれ自体が二分木です。
+先述の計算機では、式自体の構造が再帰的です。
+加算式の加数がそれ自体が乗算式であることがあります。
 
-Datatypes that allow choices are called _sum types_ and datatypes that can include instances of themselves are called _recursive datatypes_.
-Recursive sum types are called _inductive datatypes_, because mathematical induction may be used to prove statements about them.
-When programming, inductive datatypes are consumed through pattern matching and recursive functions.
+選択肢を許すデータ型は、_和型（sum types）_と呼ばれ、自分自身のインスタンスを含むことができるデータ型は_再帰データ型（recursive datatypes）_と呼ばれます。
+再帰型の和型は_帰納データ型（inductive datatypes）_と呼ばれ、それに関するステートメントを証明するために数学的帰納法を使用することができます。
+プログラミングするときは、帰納データ型はパターンマッチングと再帰関数を通じて処理されます。
 
-Many of the built-in types are actually inductive datatypes in the standard library.
-For instance, `Bool` is an inductive datatype:
+標準ライブラリの組み込み型の多くは実際には帰納データ型です。
+例えば、`Bool`は帰納データ型です：
 ```lean
 {{#example_decl Examples/Intro.lean Bool}}
 ```
-This definition has two main parts.
-The first line provides the name of the new type (`Bool`), while the remaining lines each describe a constructor.
-As with constructors of structures, constructors of inductive datatypes are mere inert receivers of and containers for other data, rather than places to insert arbitrary initialization and validation code.
-Unlike structures, inductive datatypes may have multiple constructors.
-Here, there are two constructors, `true` and `false`, and neither takes any arguments.
-Just as a structure declaration places its names in a namespace named after the declared type, an inductive datatype places the names of its constructors in a namespace.
-In the Lean standard library, `true` and `false` are re-exported from this namespace so that they can be written alone, rather than as `Bool.true` and `Bool.false`, respectively.
+この定義には2つの主要な部分があります。
+最初の行は新しい型の名前を提供し（`Bool`）、残りの行はそれぞれ構築子を記述しています。
+構造体の構築子と同じように、帰納データ型の構築子も他のデータを受け取り、保持するだけの単なる受動的な場所であり、任意の初期化や検証コードを挿入する場所ではありません。
+構造体とは異なり、帰納データ型には複数の構築子があります。
+ここでは、`true`と`false`の2つの構築子があり、どちらも引数を取りません。
+構造体宣言がその名前を宣言した型の後に名前付けられた名前空間に配置するように、帰納データ型はその構築子の名前を名前空間に配置します。
+Lean標準ライブラリでは、`true`と`false`はこの名前空間から再エクスポートされるため、`Bool.true`と`Bool.false`としてではなく、単独で書くことができます。
 
-From a data modeling perspective, inductive datatypes are used in many of the same contexts where a sealed abstract class might be used in other languages.
-In languages like C# or Java, one might write a similar definition of `Bool`:
+データモデリングの観点から、帰納データ型は、他の言語ではシールされた抽象クラスが使用される多くの同じ文脈で使用されます。
+C#やJavaなどの言語では、`Bool`の類似の定義を次のように書くかもしれません：
 ```C#
 abstract class Bool {}
 class True : Bool {}
 class False : Bool {}
 ```
-However, the specifics of these representations are fairly different. In particular, each non-abstract class creates both a new type and new ways of allocating data. In the object-oriented example, `True` and `False` are both types that are more specific than `Bool`, while the Lean definition introduces only the new type `Bool`.
+ただし、これらの表現の詳細はかなり異なります。特に、非抽象クラスは新しいタイプとデータの新しい割り当て方法の両方を作ります。オブジェクト指向の例では、`True`と`False`は`Bool`よりも具体的な型でありますが、Leanの定義では新しい型`Bool`のみが導入されます。
 
-The type `Nat` of non-negative integers is an inductive datatype:
+非負整数の型`Nat`は帰納データ型です：
 ```lean
 {{#example_decl Examples/Intro.lean Nat}}
 ```
-Here, `zero` represents 0, while `succ` represents the successor of some other number.
-The `Nat` mentioned in `succ`'s declaration is the very type `Nat` that is in the process of being defined.
-_Successor_ means "one greater than", so the successor of five is six and the successor of 32,185 is 32,186.
-Using this definition, `{{#example_eval Examples/Intro.lean four 1}}` is represented as `{{#example_eval Examples/Intro.lean four 0}}`.
-This definition is almost like the definition of `Bool` with slightly different names.
-The only real difference is that `succ` is followed by `(n : Nat)`, which specifies that the constructor `succ` takes an argument of type `Nat` which happens to be named `n`.
-The names `zero` and `succ` are in a namespace named after their type, so they must be referred to as `Nat.zero` and `Nat.succ`, respectively.
+ここでは、`zero`は0を表し、`succ`は他のいくつかの数の後継を表します。
+`succ`の宣言で言及されている`Nat`は、ちょうど定義中にある同じ型`Nat`です。
+_後継者_とは「それよりも1大きい」という意味であり、5の後継者は6、32,185の後継者は32,186です。
+この定義を使うと、`{{#example_eval Examples/Intro.lean four 1}}`は`{{#example_eval Examples/Intro.lean four 0}}`として表されます。
+この定義は`Bool`の定義に似ていますが、名前が少し違います。
+唯一の本当の違いは、`succ`の後に`(n : Nat)`が続き、これは構築子`succ`が型`Nat`の引数を取り、その引数は偶然`n`という名前であることを指定します。
+名前`zero`と`succ`はそれらの型にちなんで名付けられた名前空間にあり、それゆえにそれぞれ`Nat.zero`と`Nat.succ`として参照されなければなりません。
 
-Argument names, such as `n`, may occur in Lean's error messages and in feedback provided when writing mathematical proofs.
-Lean also has an optional syntax for providing arguments by name.
-Generally, however, the choice of argument name is less important than the choice of a structure field name, as it does not form as large a part of the API.
+引数名、例えば`n`は、Leanのエラーメッセージや数学的証明を書く際に提供されるフィードバックに表示されます。
+Leanには名前によって引数を提供するオプショナルな構文もあります。
+一般的には、引数名の選択は構造体のフィールド名の選択ほど重要ではなく、APIの大部分を形成しないためです。
 
-In C# or Java, `Nat` could be defined as follows:
+C#やJavaでは、`Nat`は次のように定義できます：
 ```C#
 abstract class Nat {}
 class Zero : Nat {}
@@ -65,56 +65,39 @@ class Succ : Nat {
   }
 }
 ```
-Just as in the `Bool` example above, this defines more types than the Lean equivalent.
-Additionally, this example highlights how Lean datatype constructors are much more like subclasses of an abstract class than they are like constructors in C# or Java, as the constructor shown here contains initialization code to be executed.
+上で述べた`Bool`の例と同様に、これはLeanの同等物よりも多くの型を定義します。
+さらに、この例は、Leanのデータ型構築子がC#やJavaのコンストラクタとは異なり、抽象クラスのサブクラスに非常に似ていることを強調しています。というのも、ここで示されているコンストラクタには実行される初期化コードが含まれているからです。
 
-Sum types are also similar to using a string tag to encode discriminated unions in TypeScript.
-In TypeScript, `Nat` could be defined as follows:
-```typescript
-interface Zero {
-    tag: "zero";
-}
+# パターンマッチング
 
-interface Succ {
-    tag: "succ";
-    predecessor: Nat;
-}
+多くの言語では、これらの種類のデータは、最初にインスタンスオブ演算子を使用してどのサブクラスを受け取ったかをチェックし、その後、与えられたサブクラスで使用可能なフィールドの値を読み取ることによって消費されます。
+インスタンスオブチェックはどのコードを実行するかを決定し、このコードに必要なデータが利用可能であることを保証し、フィールド自体はデータを提供します。
+Leanでは、これらの両方の目的は_パターンマッチング_によって同時に提供されます。
 
-type Nat = Zero | Succ;
-```
-Just like C# and Java, this encoding ends up with more types than in Lean, because `Zero` and `Succ` are each a type on their own.
-It also illustrates that Lean constructors correspond to objects in JavaScript or TypeScript that include a tag that identifies the contents.
-
-## Pattern Matching
-
-In many languages, these kinds of data are consumed by first using an instance-of operator to check which subclass has been received and then reading the values of the fields that are available in the given subclass.
-The instance-of check determines which code to run, ensuring that the data needed by this code is available, while the fields themselves provide the data.
-In Lean, both of these purposes are simultaneously served by _pattern matching_.
-
-An example of a function that uses pattern matching is `isZero`, which is a function that returns `true` when its argument is `Nat.zero`, or false otherwise.
+パターンマッチングを使用する関数の例は、その引数が`Nat.zero`の場合に`true`を返す`isZero`関数です。
 ```lean
 {{#example_decl Examples/Intro.lean isZero}}
 ```
-The `match` expression is provided the function's argument `n` for destructuring.
-If `n` was constructed by `Nat.zero`, then the first branch of the pattern match is taken, and the result is `true`.
-If `n` was constructed by `Nat.succ`, then the second branch is taken, and the result is `false`.
+`match`式は関数の引数`n`を分解するために与えられます。
+もし`n`が`Nat.zero`によって構築された場合、パターンマッチの最初の分岐が取られ、結果は`true`です。
+もし`n`が`Nat.succ`によって構築された場合、2番目の分岐が取られ、結果は`false`です。
 
-Step-by-step, evaluation of `{{#example_eval Examples/Intro.lean isZeroZeroSteps 0}}` proceeds as follows:
+例えば、`{{#example_eval Examples/Intro.lean isZeroZeroSteps 0}}`の評価は次のように進行します：
 ```lean
 {{#example_eval Examples/Intro.lean isZeroZeroSteps}}
 ```
 
-Evaluation of `{{#example_eval Examples/Intro.lean isZeroFiveSteps 0}}` proceeds similarly:
+`{{#example_eval Examples/Intro.lean isZeroFiveSteps 0}}`の評価も同様に進行します：
 ```lean
 {{#example_eval Examples/Intro.lean isZeroFiveSteps}}
 ```
 
-The `k` in the second branch of the pattern in `isZero` is not decorative.
-It makes the `Nat` that is the argument to `succ` visible, with the provided name.
-That smaller number can then be used to compute the final result of the expression.
+`isZero`のパターンの2番目の分岐における`k`は装飾的なものではありません。
+これにより、`succ`への引数の`Nat`が見えるようになり、提供された名前を使って指定できます。
+そのより小さな数を使用して、式の最終結果を計算することができます。
 
-Just as the successor of some number \\( n \\) is one greater than \\( n \\) (that is, \\( n + 1\\)), the predecessor of a number is one less than it.
-If `pred` is a function that finds the predecessor of a `Nat`, then it should be the case that the following examples find the expected result:
+例えば、ある数 \\( n \\) の後継者が \\( n \\) よりも1大きい（\\( n + 1\\)）のと同じように、数の前者はそれよりも1小さいです。
+もし`pred`が`Nat`の前者を見つける関数であるならば、以下の例が期待される結果を見つけることになるでしょう：
 ```lean
 {{#example_in Examples/Intro.lean predFive}}
 ```
@@ -127,8 +110,8 @@ If `pred` is a function that finds the predecessor of a `Nat`, then it should be
 ```output info
 {{#example_out Examples/Intro.lean predBig}}
 ```
-Because `Nat` cannot represent negative numbers, `0` is a bit of a conundrum.
-Usually, when working with `Nat`, operators that would ordinarily produce a negative number are redefined to produce `0` itself:
+`Nat`は負の数を表すことができないため、`0`は少し問題です。
+通常、`Nat`を使用する際には、通常負の数を生じさせるような演算子は、`0`自体を生成するように再定義されます：
 ```lean
 {{#example_in Examples/Intro.lean predZero}}
 ```
@@ -136,93 +119,82 @@ Usually, when working with `Nat`, operators that would ordinarily produce a nega
 {{#example_out Examples/Intro.lean predZero}}
 ```
 
-To find the predecessor of a `Nat`, the first step is to check which constructor was used to create it.
-If it was `Nat.zero`, then the result is `Nat.zero`.
-If it was `Nat.succ`, then the name `k` is used to refer to the `Nat` underneath it.
-And this `Nat` is the desired predecessor, so the result of the `Nat.succ` branch is `k`.
+`Nat`の前者を見つけるためには、最初にそれを作成するためにどの構築子が使用されたかをチェックする必要があります。
+もし`Nat.zero`であれば、結果は`Nat.zero`です。
+もし`Nat.succ`であれば、`k`という名前を使用してその下の`Nat`を参照します。
+そして、この`Nat`が望ましい前者なので、`Nat.succ`の分岐の結果は`k`です。
 ```lean
 {{#example_decl Examples/Intro.lean pred}}
 ```
-Applying this function to `5` yields the following steps:
+この関数を`5`に適用すると、以下のステップが得られます：
 ```lean
 {{#example_eval Examples/Intro.lean predFiveSteps}}
 ```
 
-Pattern matching can be used with structures as well as with sum types.
-For instance, a function that extracts the third dimension from a `Point3D` can be written as follows:
+構造体と和型の両方でパターンマッチングが使用されます。
+例えば、`Point3D`から3番目の次元を抽出する関数は次のように書かれます：
 ```lean
 {{#example_decl Examples/Intro.lean depth}}
 ```
-In this case, it would have been much simpler to just use the `z` accessor, but structure patterns are occasionally the simplest way to write a function.
+この場合、単に`z`アクセサーを使う方がはるかに簡単でしたが、構造パターンは時々関数を書く一番簡単な方法です。
 
-## Recursive Functions
+## 再帰関数
 
-Definitions that refer to the name being defined are called _recursive definitions_.
-Inductive datatypes are allowed to be recursive; indeed, `Nat` is an example of such a datatype because `succ` demands another `Nat`.
-Recursive datatypes can represent arbitrarily large data, limited only by technical factors like available memory.
-Just as it would be impossible to write down one constructor for each natural number in the datatype definition, it is also impossible to write down a pattern match case for each possibility.
+定義されている名前を参照する定義は_再帰定義_と呼ばれます。
+帰納データ型は再帰的であることが許され、実際に`Nat`は`succ`が別の`Nat`を要求するためそのようなデータ型の例です。
+再帰データ型は技術的な要因（利用可能なメモリなど）によってのみ制限される任意に大きなデータを表すことができます。
+データ型定義内で各自然数のための構造体を書き留めることは不可能であるように、また、各可能性のためのパターンマッチケースを書き留めることも不可能です。
 
-Recursive datatypes are nicely complemented by recursive functions.
-A simple recursive function over `Nat` checks whether its argument is even.
-In this case, `zero` is even.
-Non-recursive branches of the code like this one are called _base cases_.
-The successor of an odd number is even, and the successor of an even number is odd.
-This means that a number built with `succ` is even if and only if its argument is not even.
+再帰データ型は再帰関数によってうまく補完されます。
+`Nat`上の単純な再帰関数はその引数が偶数かどうかをチェックします。
+この場合、`zero`は偶数です。
+このような非再帰ブランチのコードは_ベースケース_と呼ばれます。
+奇数の後継者は偶数であり、偶数の後継者は奇数です。
+これは、`succ`で構築された数が、その引数が偶数でない場合にのみ偶数であることを意味します。
 ```lean
 {{#example_decl Examples/Intro.lean even}}
 ```
 
-This pattern of thought is typical for writing recursive functions on `Nat`.
-First, identify what to do for `zero`.
-Then, determine how to transform a result for an arbitrary `Nat` into a result for its successor, and apply this transformation to the result of the recursive call.
-This pattern is called _structural recursion_.
+これは、`Nat`上の再帰関数を書くための典型的な思考パターンです。
+最初に`zero`に対して何をするかを特定します。
+次に、任意の`Nat`に対する結果をその後継者に対する結果に変換する方法を決定し、この変換を再帰呼び出しの結果に適用します。
+このパターンは_構造的再帰_と呼ばれます。
 
-Unlike many languages, Lean ensures by default that every recursive function will eventually reach a base case.
-From a programming perspective, this rules out accidental infinite loops.
-But this feature is especially important when proving theorems, where infinite loops cause major difficulties.
-A consequence of this is that Lean will not accept a version of `even` that attempts to invoke itself recursively on the original number:
+多くの言語とは異なり、Leanはデフォルトで、すべての再帰関数が最終的にベースケースに到達することを保証します。
+プログラミングの観点から、これにより偶発的な無限ループが除外されます。
+しかし、特に定理を証明する際には、この機能は特に重要であり、無限ループは大きな困難を引き起こします。
+その結果として、Leanは元の数に対して自身を再帰的に呼び出そうとする`even`のバージョンを受け付けません。
 
 ```lean
 {{#example_in Examples/Intro.lean evenLoops}}
 ```
-The important part of the error message is that Lean could not determine that the recursive function always reaches a base case (because it doesn't).
+エラーメッセージの重要な部分は、Leanが再帰関数が常にベースケースに到達することを判定できなかったということです（なぜなら、実際には到達しないからです）。
 ```output error
 {{#example_out Examples/Intro.lean evenLoops}}
 ```
 
-Even though addition takes two arguments, only one of them needs to be inspected.
-To add zero to a number \\( n \\), just return \\( n \\).
-To add the successor of \\( k \\) to \\( n \\), take the successor of the result of adding \\( k \\) to \\( n \\).
+足し算は二つの引数を取りますが、調べる必要があるのはそのうちの一つだけです。数\\(n\\)にゼロを足すときは、単に\\(n\\)を返します。\\(k\\)の後継者に\\(n\\)を足すときは、\\(k\\)に\\(n\\)を足した結果の後継者を取ります。
 ```lean
 {{#example_decl Examples/Intro.lean plus}}
 ```
-In the definition of `plus`, the name `k'` is chosen to indicate that it is connected to, but not identical with, the argument `k`.
-For instance, walking through the evaluation of `{{#example_eval Examples/Intro.lean plusThreeTwo 0}}` yields the following steps:
+`plus`の定義で、`k'`という名前が選ばれているのは、それが引数`k`と関連してはいるものの、同一ではないことを示すためです。例えば、`{{#example_eval Examples/Intro.lean plusThreeTwo 0}}`の評価を追っていくと、以下のステップになります：
 ```lean
 {{#example_eval Examples/Intro.lean plusThreeTwo}}
 ```
 
-One way to think about addition is that \\( n + k \\) applies `Nat.succ` \\( k \\) times to \\( n \\).
-Similarly, multiplication \\( n × k \\) adds \\( n \\) to itself \\( k \\) times and subtraction \\( n - k \\) takes \\( n \\)'s predecessor \\( k \\) times.
+足し算とは、\\(n + k\\)が\\(n\\)に対して`Nat.succ`を\\(k\\)回適用することと考えることもできます。同様に、かけ算\\(n × k\\)は\\(n\\)を自分自身に\\(k\\)回足し、引き算\\(n - k\\)は\\(n\\)の前任者を\\(k\\)回取ることです。
 ```lean
 {{#example_decl Examples/Intro.lean times}}
 
 {{#example_decl Examples/Intro.lean minus}}
 ```
 
-Not every function can be easily written using structural recursion.
-The understanding of addition as iterated `Nat.succ`, multiplication as iterated addition, and subtraction as iterated predecessor suggests an implementation of division as iterated subtraction.
-In this case, if the numerator is less than the divisor, the result is zero.
-Otherwise, the result is the successor of dividing the numerator minus the divisor by the divisor.
+すべての関数を構造的再帰を使って簡単に書くことができるわけではありません。 足し算を`Nat.succ`の繰り返し、かけ算を足し算の繰り返し、引き算を前任者の繰り返しとする理解から、割り算を引き算の繰り返しとして実装することを思いつくかもしれません。この場合、分子が除数より小さい場合、結果はゼロです。それ以外の場合は、結果は分子から除数を引いたものを除数で割った結果の後継者になります。
 ```lean
 {{#example_in Examples/Intro.lean div}}
 ```
-As long as the second argument is not `0`, this program terminates, as it always makes progress towards the base case.
-However, it is not structurally recursive, because it doesn't follow the pattern of finding a result for zero and transforming a result for a smaller `Nat` into a result for its successor.
-In particular, the recursive invocation of the function is applied to the result of another function call, rather than to an input constructor's argument.
-Thus, Lean rejects it with the following message:
+二番目の引数が`0`でない限り、このプログラムは終了します。なぜなら常にベースケースに進むための進捗を作っているからです。しかし、それは構造的再帰ではありません。なぜなら、ゼロのための結果を見つけ、任意の`Nat`の結果をその後継者の結果に変換するというパターンに従っていないからです。 特に、関数の再帰的呼び出しが入力コンストラクタの引数に対してではなく別の関数呼び出しの結果に適用されるためです。したがって、Leanは次のメッセージを出してそれを拒否します：
 ```output error
 {{#example_out Examples/Intro.lean div}}
 ```
-This message means that `div` requires a manual proof of termination.
-This topic is explored in [the final chapter](../programs-proofs/inequalities.md#division-as-iterated-subtraction).
+このメッセージは、`div`が手動での終了証明を必要とすることを意味しています。このトピックは[最終章](../programs-proofs/inequalities.md#division-as-iterated-subtraction)で詳しく探究されています。

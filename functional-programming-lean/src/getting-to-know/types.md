@@ -1,79 +1,64 @@
-# Types
+# 型
 
-Types classify programs based on the values that they can
-compute. Types serve a number of roles in a program:
+型はプログラムを、計算することのできる値に基づいて分類します。型はプログラムの中で多くの役割を果たします：
 
- 1. They allow the compiler to make decisions about the in-memory
-    representation of a value.
+ 1. 値がメモリ内でどのように表現されるかについてコンパイラが決定を下すのを可能にします。
 
- 2. They help programmers to communicate their intent to others,
-    serving as a lightweight specification for the inputs and outputs
-    of a function that the compiler can ensure the program adheres to.
+ 2. プログラマが他者に自分の意図を伝える助けとなり、関数の入出力に関する軽量な仕様として機能し、プログラムがそれに従うことをコンパイラが保証できます。
 
- 3. They prevent various potential mistakes, such as adding a number
-    to a string, and thus reduce the number of tests that are
-    necessary for a program.
+ 3. 数値を文字列に加算するなどの様々な潜在的なミスを防ぎ、プログラムに必要なテストの数を減らします。
 
- 4. They help the Lean compiler automate the production of auxiliary code that can save boilerplate.
+ 4. Leanコンパイラが補助コードの生成を自動化するのを助け、ボイラープレートを削減することができます。
 
-Lean's type system is unusually expressive.
-Types can encode strong specifications like "this sorting function returns a permutation of its input" and flexible specifications like "this function has different return types, depending on the value of its argument".
-The type system can even be used as a full-blown logic for proving mathematical theorems.
-This cutting-edge expressive power doesn't obviate the need for simpler types, however, and understanding these simpler types is a prerequisite for using the more advanced features.
+Leanの型システムは異常なほど表現力が高いです。
+型は「このソート関数はその入力の順列を返す」のような強い仕様や、「この関数は引数の値に応じて異なる戻り値を持つ」のような柔軟な仕様をエンコードすることができます。
+型システムは、数学定理を証明するための完全な論理としても使うことができます。
+この最先端の表現力は、簡素な型の必要性をなくすものではありませんが、より高度な特徴を使うための前提としてこれらの簡素な型を理解することが必要です。
 
-Every program in Lean must have a type. In particular, every
-expression must have a type before it can be evaluated. In the
-examples so far, Lean has been able to discover a type on its own, but
-it is sometimes necessary to provide one. This is done using the colon
-operator:
+Lean内の全てのプログラムは型を持たなければなりません。特に、評価が行われる前には全ての式が型を持っていなければなりません。ここまでの例では、Lean自身が型を発見することができましたが、時には明示的に型を指定する必要があります。これはコロン演算子を用いて行われます：
 
 ```lean
 #eval {{#example_in Examples/Intro.lean onePlusTwoType}}
 ```
 
-Here, `Nat` is the type of _natural numbers_, which are arbitrary-precision unsigned integers.
-In Lean, `Nat` is the default type for non-negative integer literals.
-This default type is not always the best choice.
-In C, unsigned integers underflow to the largest representable numbers when subtraction would otherwise yield a result less than zero.
-`Nat`, however, can represent arbitrarily-large unsigned numbers, so there is no largest number to underflow to.
-Thus, subtraction on `Nat` returns `0` when the answer would have otherwise been negative.
-For instance,
+ここでの `Nat` は _自然数_ の型であり、任意精度の符号なし整数です。
+Leanでは、`Nat` が非負の整数リテラルのデフォルトの型です。
+このデフォルトの型が常に最適な選択であるとは限りません。
+例えばC言語では、符号なし整数の減算で結果がゼロ未満になる場合、最大表現可能数に対するアンダーフローによって減算されます。
+しかし、`Nat` は任意に大きな符号なし数を表現できるため、アンダーフローする最大の数が存在しません。
+そのため、`Nat` 上の減算は、答えがそうでなければ負になる場合には `0` を返します。
+例えば、
 
 ```lean
 #eval {{#example_in Examples/Intro.lean oneMinusTwo}}
 ```
 
-evaluates to `{{#example_out Examples/Intro.lean oneMinusTwo}}` rather
-than `-1`. To use a type that can represent the negative integers,
-provide it directly:
+は `-1` ではなく `{{#example_out Examples/Intro.lean oneMinusTwo}}` と評価されます。負の整数を表すことができる型を使うには直接指定します：
 
 ```lean
 #eval {{#example_in Examples/Intro.lean oneMinusTwoInt}}
 ```
 
-With this type, the result is `{{#example_out Examples/Intro.lean oneMinusTwoInt}}`, as expected.
+この型を使うと、結果は期待通り `{{#example_out Examples/Intro.lean oneMinusTwoInt}}` になります。
 
-To check the type of an expression without evaluating it, use `#check`
-instead of `#eval`. For instance:
+式の型を評価せずに確認するには、`#eval` の代わりに `#check` を使います。例えば：
 
 ```lean
 {{#example_in Examples/Intro.lean oneMinusTwoIntType}}
 ```
 
-reports `{{#example_out Examples/Intro.lean oneMinusTwoIntType}}` without actually performing the subtraction.
+は実際に減算を行わずに `{{#example_out Examples/Intro.lean oneMinusTwoIntType}}` を報告します。
 
-When a program can't be given a type, an error is returned from both
-`#check` and `#eval`. For instance:
+プログラムに型を与えることができない場合、`#check` および `#eval` からエラーが返されます。例えば：
 
 ```lean
 {{#example_in Examples/Intro.lean stringAppendList}}
 ```
 
-outputs
+は以下の出力をします
 
 ```output error
 {{#example_out Examples/Intro.lean stringAppendList}}
 ```
 
-because the second argument to ``String.append`` is expected to be a
-string, but a list of strings was provided instead.
+``String.append`` の第二引数は文字列が期待されるのに対し、文字列のリストが提供されたためです。

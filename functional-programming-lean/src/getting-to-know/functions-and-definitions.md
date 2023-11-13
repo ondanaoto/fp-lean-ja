@@ -1,149 +1,146 @@
-# Functions and Definitions
+# 関数と定義
 
-In Lean, definitions are introduced using the `def` keyword. For instance, to define the name `{{#example_in Examples/Intro.lean helloNameVal}}` to refer to the string `{{#example_out Examples/Intro.lean helloNameVal}}`, write:
+Leanでは、`def`キーワードを使用して定義を導入します。例えば、文字列 `{{#example_out Examples/Intro.lean helloNameVal}}` を参照する名前 `{{#example_in Examples/Intro.lean helloNameVal}}` を定義するには、以下のように書きます：
 
 ```lean
 {{#example_decl Examples/Intro.lean hello}}
 ```
 
-In Lean, new names are defined using the colon-equal operator`:=`
-rather than `=`. This is because `=` is used to describe equalities
-between existing expressions, and using two different operators helps
-prevent confusion.
+Leanでは、新しい名前を定義するときは等号`=`ではなくコロンイコール演算子`:=`を使用します。これは`=`が既存の式間の等式を表すのに使われ、二つの異なる演算子を使用することで混乱を防ぐためです。
 
-In the definition of `{{#example_in Examples/Intro.lean helloNameVal}}`, the expression `{{#example_out Examples/Intro.lean helloNameVal}}` is simple enough that Lean is able to determine the definition's type automatically.
-However, most definitions are not so simple, so it will usually be necessary to add a type.
-This is done using a colon after the name being defined.
+`{{#example_in Examples/Intro.lean helloNameVal}}`の定義では、式 `{{#example_out Examples/Intro.lean helloNameVal}}` が十分に単純なので、Leanは自動的に定義のタイプを決定できます。
+しかし、ほとんどの定義はこれほど単純ではないので、通常はタイプを追加する必要があります。
+これは、定義されている名前の後にコロンを使用することで行われます。
 
 ```lean
 {{#example_decl Examples/Intro.lean lean}}
 ```
 
-Now that the names have been defined, they can be used, so
+名前が定義されたら、以下のように使用することができます。
 ``` Lean
 {{#example_in Examples/Intro.lean helloLean}}
 ```
-outputs
+出力としては、
 ``` Lean info
 {{#example_out Examples/Intro.lean helloLean}}
 ```
-In Lean, defined names may only be used after their definitions.
+Leanでは、定義された名前はその定義の後にのみ使用することができます。
 
-In many languages, definitions of functions use a different syntax than definitions of other values.
-For instance, Python function definitions begin with the `def` keyword, while other definitions are defined with an equals sign.
-In Lean, functions are defined using the same `def` keyword as other values.
-Nonetheless, definitions such as `hello` introduce names that refer _directly_ to their values, rather than to zero-argument functions that return equivalent results each time they are called.
+多くの言語では、関数の定義は他の値の定義とは異なる構文を使用します。
+たとえば、Pythonの関数定義は`def`キーワードで始まりますが、他の定義は等号で定義されます。
+Leanでは、関数は他の値と同様に`def`キーワードを使用して定義されます。
+それでも、`hello`のような定義は、それぞれ呼び出されるたびに同じ結果を返すゼロ引数関数を参照するのではなく、_直接_ その値を参照する名前を導入します。
 
-## Defining Functions
+## 関数の定義
 
-There are a variety of ways to define functions in Lean. The simplest is to place the function's arguments before the definition's type, separated by spaces. For instance, a function that adds one to its argument can be written:
+Leanで関数を定義する方法は様々です。最も単純な方法は、関数の引数を定義のタイプの前にスペースで区切って配置することです。例えば、引数に1を加える関数は以下のように書かれます：
 
 ```lean
 {{#example_decl Examples/Intro.lean add1}}
 ```
 
-Testing this function with `#eval` gives `{{#example_out Examples/Intro.lean add1_7}}`, as expected:
+この関数を`#eval`でテストすると、期待通りの `{{#example_out Examples/Intro.lean add1_7}}` を得ます：
 ```lean
 {{#example_in Examples/Intro.lean add1_7}}
 ```
 
 
-Just as functions are applied to multiple arguments by writing spaces between each argument, functions that accept multiple arguments are defined with spaces between the arguments' names and types. The function `maximum`, whose result is equal to the greatest of its two arguments, takes two `Nat` arguments `n` and `k` and returns a `Nat`.
+関数が複数の引数に適用される場合には、各引数の間にスペースを配置するように、複数の引数を受け取る関数は、引数の名前とタイプの間にスペースを配置して定義されます。関数 `maximum`は、2つの`Nat`引数`n`と`k`を取り、最も大きい方の引数と等しい結果を返します。
 
 ```lean
 {{#example_decl Examples/Intro.lean maximum}}
 ```
 
-When a defined function like `maximum` has been provided with its arguments, the result is determined by first replacing the argument names with the provided values in the body, and then evaluating the resulting body. For example:
+`maximum`のような定義された関数に引数が与えられると、結果はまず引数名を提供された値で本体内で置き換え、次に結果の本体を評価することによって決定されます。例えば：
 ```lean
 {{#example_eval Examples/Intro.lean maximum_eval}}
 ```
 
-Expressions that evaluate to natural numbers, integers, and strings have types that say this (`Nat`, `Int`, and `String`, respectively).
-This is also true of functions.
-A function that accepts a `Nat` and returns a `Bool` has type `Nat → Bool`, and a function that accepts two `Nat`s and returns a `Nat` has type `Nat → Nat → Nat`.
+自然数、整数、および文字列に評価される式には、これを言うタイプがあります（それぞれ`Nat`、`Int`、および`String`）。
+これは関数にも当てはまります。
+`Nat`を受け取り`Bool`を返す関数は`Nat → Bool`型を持ち、二つの`Nat`を受け取り`Nat`を返す関数は`Nat → Nat → Nat`型を持ちます。
 
-As a special case, Lean returns a function's signature when its name is used directly with `#check`.
-Entering `{{#example_in Examples/Intro.lean add1sig}}` yields `{{#example_out Examples/Intro.lean add1sig}}`.
-However, Lean can be "tricked" into showing the function's type by writing the function's name in parentheses, which causes the function to be treated as an ordinary expression, so `{{#example_in Examples/Intro.lean add1type}}` yields `{{#example_out Examples/Intro.lean add1type}}` and `{{#example_in Examples/Intro.lean maximumType}}` yields `{{#example_out Examples/Intro.lean maximumType}}`.
-This arrow can also be written with an ASCII alternative arrow `->`, so the preceding function types can be written `{{#example_out Examples/Intro.lean add1typeASCII}}` and `{{#example_out Examples/Intro.lean maximumTypeASCII}}`, respectively.
+特別なケースとして、Leanは関数の名前が直接`#check`と共に使用されたときに、その関数のシグネチャを返します。
+`{{#example_in Examples/Intro.lean add1sig}}` を入力すると `{{#example_out Examples/Intro.lean add1sig}}` を得ます。
+しかし、関数の名前を括弧で囲むことでLeanを「だます」ことができ、通常の式として処理されるため、`{{#example_in Examples/Intro.lean add1type}}` を入力すると `{{#example_out Examples/Intro.lean add1type}}` となり、`{{#example_in Examples/Intro.lean maximumType}}` を入力すると `{{#example_out Examples/Intro.lean maximumType}}` を得ます。
+この矢印はASCII代替矢印 `->` としても書かれることができるので、上記の関数タイプはそれぞれ `{{#example_out Examples/Intro.lean add1typeASCII}}` および `{{#example_out Examples/Intro.lean maximumTypeASCII}}` として書かれます。
 
-Behind the scenes, all functions actually expect precisely one argument.
-Functions like `maximum` that seem to take more than one argument are in fact functions that take one argument and then return a new function.
-This new function takes the next argument, and the process continues until no more arguments are expected.
-This can be seen by providing one argument to a multiple-argument function: `{{#example_in Examples/Intro.lean maximum3Type}}` yields `{{#example_out Examples/Intro.lean maximum3Type}}` and `{{#example_in Examples/Intro.lean stringAppendHelloType}}` yields `{{#example_out Examples/Intro.lean stringAppendHelloType}}`.
-Using a function that returns a function to implement multiple-argument functions is called _currying_ after the mathematician Haskell Curry.
-Function arrows associate to the right, which means that `Nat → Nat → Nat` should be parenthesized `Nat → (Nat → Nat)`.
+内部的には、すべての関数は実際には正確に1つの引数を期待しています。
+`maximum`のように複数の引数を取るように見える関数は、実際には1つの引数を取り、その後新しい関数を返す関数です。
+この新しい関数は次の引数を取り、それ以上の引数が期待されなくなるまでプロセスが続きます。
+これは、`{{#example_in Examples/Intro.lean maximum3Type}}` を提供すると `{{#example_out Examples/Intro.lean maximum3Type}}` を得、`{{#example_in Examples/Intro.lean stringAppendHelloType}}` を提供すると `{{#example_out Examples/Intro.lean stringAppendHelloType}}` を得ることによって見ることができます。
+複数の引数を持つ関数を実装するために関数を返す関数を使用することは、数学者ハスケル・カリーに因んで _カリー化_ と呼ばれます。
+関数の矢印は右に結合するため、`Nat → Nat → Nat` は`Nat → (Nat → Nat)`と括弧で囲むべきです。
 
-### Exercises
+### 練習問題
 
- * Define the function `joinStringsWith` with type `String -> String -> String -> String` that creates a new string by placing its first argument between its second and third arguments. `{{#example_eval Examples/Intro.lean joinStringsWithEx 0}}` should evaluate to `{{#example_eval Examples/Intro.lean joinStringsWithEx 1}}`.
- * What is the type of `joinStringsWith ": "`? Check your answer with Lean.
- * Define a function `volume` with type `Nat → Nat → Nat → Nat` that computes the volume of a rectangular prism with the given height, width, and depth.
+ * `String -> String -> String -> String`型の関数`joinStringsWith`を定義して、最初の引数を2番目と3番目の引数の間に配置して新しい文字列を作成します。`{{#example_eval Examples/Intro.lean joinStringsWithEx 0}}`は`{{#example_eval Examples/Intro.lean joinStringsWithEx 1}}`と同じ結果になるはずです。
+ * `joinStringsWith ": "`のタイプは何ですか？Leanで答えを確認してください。
+ * 与えられた高さ、幅、奥行きで直方体の体積を計算する、`Nat → Nat → Nat → Nat`型の関数`volume`を定義します。
 
-## Defining Types
+## 型の定義
 
-Most typed programming languages have some means of defining aliases for types, such as C's `typedef`.
-In Lean, however, types are a first-class part of the language - they are expressions like any other.
-This means that definitions can refer to types just as well as they can refer to other values.
+ほとんどの型付きプログラミング言語には、Cの`typedef`のように型に別名を定義する手段があります。
+しかし、Leanでは、型は言語のファーストクラスに属しています - それらは他のどのような式と同じです。
+これは、定義が他の値だけでなく型を参照することもできることを意味します。
 
-For instance, if ``String`` is too much to type, a shorter abbreviation ``Str`` can be defined:
+例えば、もし``String``とタイピングするのが面倒であれば、より短い略称``Str``を定義することができます：
 ```lean
 {{#example_decl Examples/Intro.lean StringTypeDef}}
 ```
-It is then possible to use ``Str`` as a definition's type instead of ``String``:
+それから、``Str``を``String``の代わりに定義のタイプとして使用することが可能になります：
 ```lean
 {{#example_decl Examples/Intro.lean aStr}}
 ```
 
-The reason this works is that types follow the same rules as the rest of Lean.
-Types are expressions, and in an expression, a defined name can be replaced with its definition.
-Because ``Str`` has been defined to mean ``String``, the definition of ``aStr`` makes sense.
+これが機能する理由は、型がLeanの残りの部分と同じ規則に従うためです。
+型は式であり、式では、定義済みの名前はその定義と置き換えることができます。
+``Str``が``String``を意味するように定義されているため、``aStr``の定義は理にかなっています。
 
-### Messages You May Meet
+### 出会うかもしれないメッセージ
 
-Experimenting with using definitions for types is made more complicated by the way that Lean supports overloaded integer literals.
-If ``Nat`` is too short, a longer name ``NaturalNumber`` can be defined:
+型のための定義を使用することで実験することは、Leanが整数リテラルのオーバーロードをサポートする方法によってより複雑になります。
+もし``Nat``が短すぎる場合、より長い名前``NaturalNumber``が定義されることができます：
 ```lean
 {{#example_decl Examples/Intro.lean NaturalNumberTypeDef}}
 ```
-However, using ``NaturalNumber`` as a definition's type instead of ``Nat`` does not have the expected effect.
-In particular, the definition:
+しかし、``Nat``の代わりに``NaturalNumber``を定義のタイプとして使用すると、期待された効果はありません。
+特に、定義：
 ```lean
 {{#example_in Examples/Intro.lean thirtyEight}}
 ```
-results in the following error:
+は以下のエラーを生じます：
 ```output error
 {{#example_out Examples/Intro.lean thirtyEight}}
 ```
 
-This error occurs because Lean allows number literals to be _overloaded_.
-When it makes sense to do so, natural number literals can be used for new types, just as if those types were built in to the system.
-This is part of Lean's mission of making it convenient to represent mathematics, and different branches of mathematics use number notation for very different purposes.
-The specific feature that allows this overloading does not replace all defined names with their definitions before looking for overloading, which is what leads to the error message above.
+このエラーは、Leanが数値リテラルを_オーバーロード_することを許可しているために発生します。
+意味があるとき、自然数リテラルは新しいタイプについても使用することができます。まるでそれらのタイプがシステムに組み込まれているかのようです。
+これは数学を表現する上で便利にするLeanのミッションの一部であり、異なる分野の数学は非常に異なる目的で数値表記を使用します。
+このオーバーロードを可能にする特定の機能は、オーバーロードを探す前にすべての定義済みの名前をその定義に置き換えるわけではありません。これが上記のエラーメッセージにつながります。
 
-One way to work around this limitation is by providing the type `Nat` on the right-hand side of the definition, causing `Nat`'s overloading rules to be used for `38`:
+この制限を回避する方法の1つは、定義の右側に`Nat`のタイプを提供し、`Nat`のオーバーロードルールを`38`に使用させることです：
 ```lean
 {{#example_decl Examples/Intro.lean thirtyEightFixed}}
 ```
-The definition is still type-correct because `{{#example_eval Examples/Intro.lean NaturalNumberDef 0}}` is the same type as `{{#example_eval Examples/Intro.lean NaturalNumberDef 1}}`—by definition!
+定義はまだタイプが正しいです。なぜなら`{{#example_eval Examples/Intro.lean NaturalNumberDef 0}}`は`{{#example_eval Examples/Intro.lean NaturalNumberDef 1}}`と同じタイプです—定義によって！
 
-Another solution is to define an overloading for `NaturalNumber` that works equivalently to the one for `Nat`.
-This requires more advanced features of Lean, however.
+また、`Nat`に対して行われるのと同等に機能する`NaturalNumber`のオーバーロードを定義するという解決策もあります。
+ただし、これにはLeanのより進んだ機能が必要になります。
 
-Finally, defining the new name for `Nat` using `abbrev` instead of `def` allows overloading resolution to replace the defined name with its definition.
-Definitions written using `abbrev` are always unfolded.
-For instance,
+最後に、`def`の代わりに`abbrev`を使用して`Nat`のための新しい名前を定義すると、オーバーロード解決中に定義済みの名前をその定義に置き換えることができます。
+`abbrev`を使用して書かれた定義は常に展開されます。
+例えば、
 ```lean
 {{#example_decl Examples/Intro.lean NTypeDef}}
 ```
-and
+および
 ```lean
 {{#example_decl Examples/Intro.lean thirtyNine}}
 ```
-are accepted without issue.
+は問題なく受け入れられます。
 
-Behind the scenes, some definitions are internally marked as being unfoldable during overload resolution, while others are not.
-Definitions that are to be unfolded are called _reducible_.
-Control over reducibility is essential to allow Lean to scale: fully unfolding all definitions can result in very large types that are slow for a machine to process and difficult for users to understand.
-Definitions produced with `abbrev` are marked as reducible.
+内部的には、一部の定義はオーバーロード解決中に展開可能として内部的にマークされているものがあり、他はそうではありません。
+展開されるべき定義は_還元可能_と呼ばれます。
+還元可能性に対する制御は、Leanがスケールすることを可能にするために不可欠です：全ての定義を完全に展開すると、マシンが処理するのに時間がかかる非常に大きなタイプが生じ、ユーザーが理解するのが難しくなります。
+`abbrev`で生成された定義は還元可能としてマークされます。
