@@ -1,45 +1,45 @@
-# Summary
+# 概要
 
-## Encoding Side Effects
+## 副作用のエンコーディング
 
-Lean is a pure functional language.
-This means that it does not include side effects such as mutable variables, logging, or exceptions.
-However, most side effects can be _encoded_ using a combination of functions and inductive types or structures.
-For example, mutable state can be encoded as a function from an initial state to a pair of a final state and a result, and exceptions can be encoded as an inductive type with constructors for successful termination and errors.
+Leanは純粋な関数型言語です。
+これは、変更可能な変数、ログ出力、例外などの副作用を含まないことを意味します。
+しかしながら、ほとんどの副作用は、関数と帰納型または構造体を組み合わせて_エンコード_することができます。
+例えば、変更可能な状態は初期状態から最終状態と結果のペアへの関数としてエンコードされ、例外は成功した終了とエラーのためのコンストラクタを持つ帰納型としてエンコードできます。
 
-Each set of encoded effects is a type.
-As a result, if a program uses these encoded effects, then this is apparent in its type.
-Functional programming does not mean that programs can't use effects, it simply requires that they be *honest* about which effects they use.
-A Lean type signature describes not only the types of arguments that a function expects and the type of result that it returns, but also which effects it may use.
+エンコードされた副作用のそれぞれの集合は型です。
+その結果、プログラムがこれらのエンコードされた副作用を使用する場合、これはその型に明らかになります。
+関数型プログラミングとは、プログラムが副作用を使用できないという意味ではなく、単に使用する副作用について*正直である*ことが求められます。
+Leanの型シグネチャは、関数が期待する引数の型と返す結果の型だけでなく、使用する可能性のある副作用も記述します。
 
-## The Monad Type Class
+## モナド型クラス
 
-It's possible to write purely functional programs in languages that allow effects anywhere.
-For example, `2 + 3` is a valid Python program that has no effects at all.
-Similarly, combining programs that have effects requires a way to state the order in which the effects must occur.
-It matters whether an exception is thrown before or after modifying a variable, after all.
+どこでも副作用を許容する言語で、純粋な関数型プログラムを書くことは可能です。
+たとえば、`2 + 3`は全く副作用のない有効なPythonプログラムです。
+同様に、副作用を持つプログラムを組み合わせる場合、副作用が発生する順序を指定する方法が必要です。
+結局のところ、変数を変更する前後で例外が投げられるかどうかは重要です。
 
-The type class `Monad` captures these two important properties.
-It has two methods: `pure` represents programs that have no effects, and `bind` sequences effectful programs.
-The contract for `Monad` instances ensures that `bind` and `pure` actually capture pure computation and sequencing.
+型クラス`Monad`は、これら二つの重要な特性を捉えます。
+それには二つのメソッドがあります：`pure`は副作用のないプログラムを表し、`bind`は副作用を持つプログラムを順序づけます。
+`Monad`のインスタンスに対する契約は、`bind`と`pure`が純粋な計算と順序づけを実際に捉えることを保証します。
 
-## `do`-Notation for Monads
+## モナド用の`do`表記
 
-Rather than being limited to `IO`, `do`-notation works for any monad.
-It allows programs that use monads to be written in a style that is reminiscent of statement-oriented languages, with statements sequenced after one another.
-Additionally, `do`-notation enables a number of additional convenient shorthands, such as nested actions.
-A program written with `do` is translated to applications of `>>=` behind the scenes.
+`do`表記は`IO`に限定されることなく、どんなモナドに対しても動作します。
+これにより、モナドを使用するプログラムは、一連のステートメントの後に他のステートメントが続く、文指向言語を思わせるスタイルで書くことができます。
+さらに、`do`表記は、入れ子になったアクションなどの多くの便利な省略形を可能にします。
+`do`で書かれたプログラムは、裏で`>>=`の適用に変換されます。
 
-## Custom Monads
+## カスタムモナド
 
-Different languages provide different sets of side effects.
-While most languages feature mutable variables and file I/O, not all have features like exceptions.
-Other languages offer effects that are rare or unique, like Icon's search-based program execution, Scheme and Ruby's continuations, and Common Lisp's resumable exceptions.
-An advantage to encoding effects with monads is that programs are not limited to the set of effects that are provided by the language.
-Because Lean is designed to make programming with any monad convenient, programmers are free to choose exactly the set of side effects that make sense for any given application.
+異なる言語は異なるセットの副作用を提供します。
+ほとんどの言語は変更可能な変数とファイルのI/Oを特徴としていますが、全てが例外のような機能を持っているわけではありません。
+他の言語は、Iconの検索ベースのプログラム実行、SchemeやRubyの継続、そしてCommon Lispの再開可能な例外のような、珍しいまたは固有の効果を提供します。
+モナドを使って副作用をエンコードする利点は、プログラムが言語によって提供される効果のセットに制限されないことです。
+Leanは、任意のモナドでのプログラミングを便利にするように設計されているため、プログラマーは任意のアプリケーションに意味のある副作用のセットを自由に選択することができます。
 
-## The `IO` Monad
+## `IO`モナド
 
-Programs that can affect the real world are written as `IO` actions in Lean.
-`IO` is one monad among many.
-The `IO` monad encodes state and exceptions, with the state being used to keep track of the state of the world and the exceptions modeling failure and recovery.
+実世界に影響を与えることのできるプログラムはLeanで`IO`アクションとして記述されます。
+`IO`は多くのモナドの中のひとつです。
+`IO`モナドは状態と例外をエンコードし、状態は世界の状態を追跡するために、例外は失敗と回復をモデリングするために使用されます。

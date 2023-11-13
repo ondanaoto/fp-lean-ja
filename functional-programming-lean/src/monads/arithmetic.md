@@ -1,60 +1,60 @@
-## Example: Arithmetic in Monads
+## 例: モナドにおける算術
 
-Monads are a way of encoding programs with side effects into a language that does not have them.
-It would be easy to read this as a sort of admission that pure functional programs are missing something important, requiring programmers to jump through hoops just to write a normal program.
-However, while using the `Monad` API does impose a syntactic cost on a program, it brings two important benefits:
- 1. Programs must be honest about which effects they use in their types. A quick glance at a type signature describes _everything_ that the program can do, rather than just what it accepts and what it returns.
- 2. Not every language provides the same effects. For example, only some language have exceptions. Other languages have unique, exotic effects, such as [Icon's searching over multiple values](https://www2.cs.arizona.edu/icon/) and Scheme or Ruby's continuations. Because monads can encode _any_ effect, programmers can choose which ones are the best fit for a given application, rather than being stuck with what the language developers provided.
+モナドは、副作用を含むプログラムを副作用を持たない言語でエンコードする方法です。
+これを読むと、純粋な関数型プログラムが重要な何かを欠いており、通常のプログラムを書くためにプログラマが苦労して飛び跳ねなければならないという認識にすぐさま飛びつきそうです。
+しかしながら、`Monad` APIを使用することは、プログラムに構文上のコストを課しますが、2つの重要な利益をもたらします：
+ 1. プログラムは、それが使用する副作用について、その型で正直でなければなりません。型シグネチャを一目見るだけで、プログラムが行うことの_全て_が分かり、入力内容や返り値だけではありません。
+ 2. 全ての言語が同じ副作用を提供するわけではありません。例えば、例外を持つ言語だけ、その他の言語は[Iconの複数の値にわたって検索する](https://www2.cs.arizona.edu/icon/)など独特のエキゾチックな副作用や、SchemeやRubyの継続を持っています。モナドは_任意_の副作用をエンコードできるため、プログラマは、言語開発者が提供したものに固執するのではなく、特定のアプリケーションに最適なものを選択できます。
 
-One example of a program that can make sense in a variety of monads is an evaluator for arithmetic expressions.
+様々なモナドで意味をなすプログラムの一例は算術表現の評価者です。
 
-### Arithmetic Expressions
+### 算術表現
 
-An arithmetic expression is either a literal integer or a primitive binary operator applied to two expressions. The operators are addition, subtraction, multiplication, and division:
+算術表現は、リテラルな整数または2つの表現に適用された原始的な２項演算子のいずれかです。演算子は加算、減算、乗算、および除算です：
 ```lean
 {{#example_decl Examples/Monads/Class.lean ExprArith}}
 ```
-The expression `2 + 3` is represented:
+表現 `2 + 3` は以下のように表されます：
 ```lean
 {{#example_decl Examples/Monads/Class.lean twoPlusThree}}
 ```
-and `14 / (45 - 5 * 9)` is represented:
+そして `14 / (45 - 5 * 9)` は以下のように表されます：
 ```lean
 {{#example_decl Examples/Monads/Class.lean exampleArithExpr}}
 ```
 
-### Evaluating Expressions
+### 表現の評価
 
-Because expressions include division, and division by zero is undefined, evaluation might fail.
-One way to represent failure is to use `Option`:
+表現には除算が含まれるため、ゼロでの除算は未定義のため、評価は失敗する可能性があります。
+失敗を表す一つの方法は `Option` を使用することです：
 ```lean
 {{#example_decl Examples/Monads/Class.lean evaluateOptionCommingled}}
 ```
-This definition uses the `Monad Option` instance to propagate failures from evaluating both branches of a binary operator.
-However, the function mixes two concerns: evaluating subexpressions and applying a binary operator to the results.
-It can be improved by splitting it into two functions:
+この定義は二項演算子の両方の分岐の評価から失敗を伝播するために `Monad Option` インスタンスを使用しています。
+しかしながら、関数は副表現の評価と副表現の結果に二項演算子を適用する２つの関心事を混在させています。
+これは2つの関数に分割することで改善できます：
 ```lean
 {{#example_decl Examples/Monads/Class.lean evaluateOptionSplit}}
 ```
 
-Running `{{#example_in Examples/Monads/Class.lean fourteenDivOption}}` yields `{{#example_out Examples/Monads/Class.lean fourteenDivOption}}`, as expected, but this is not a very useful error message.
-Because the code was written using `>>=` rather than by explicitly handling the `none` constructor, only a small modification is required for it to provide an error message on failure:
+`{{#example_in Examples/Monads/Class.lean fourteenDivOption}}` を実行すると `{{#example_out Examples/Monads/Class.lean fourteenDivOption}}` となりますが、これはあまり有用なエラーメッセージではありません。
+`>>=` を使用して `none` コンストラクタを明示的に扱うのではなく、コードが書かれているため、失敗時にエラーメッセージを提供するためには小さな修正だけが必要です：
 ```lean
 {{#example_decl Examples/Monads/Class.lean evaluateExcept}}
 ```
-The only difference is that the type signature mentions `Except String` instead of `Option`, and the failing case uses `Except.error` instead of `none`.
-By making `evaluate` polymorphic over its monad and passing it `applyPrim` as an argument, a single evaluator becomes capable of both forms of error reporting:
+唯一の違いは、型シグネチャが `Option` ではなく `Except String` を参照していること、および失敗する場合は `Except.error` を使用することです。
+`evaluate` をそのモナドについて多相的にし、それに `applyPrim` を引数として渡すことで、単一の評価者はエラーメッセージの形式の両方を報告することができます：
 ```lean
 {{#example_decl Examples/Monads/Class.lean evaluateM}}
 ```
-Using it with `applyPrimOption` works just like the first version of `evaluate`:
+`applyPrimOption` を使用すると、`evaluate` の最初のバージョンと同じように動作します：
 ```lean
 {{#example_in Examples/Monads/Class.lean evaluateMOption}}
 ```
 ```output info
 {{#example_out Examples/Monads/Class.lean evaluateMOption}}
 ```
-Similarly, using it with `applyPrimExcept` works just like the version with error messages:
+同じように、`applyPrimExcept` で使用するとエラーメッセージバージョンと同じように動作します：
 ```lean
 {{#example_in Examples/Monads/Class.lean evaluateMExcept}}
 ```
@@ -62,45 +62,45 @@ Similarly, using it with `applyPrimExcept` works just like the version with erro
 {{#example_out Examples/Monads/Class.lean evaluateMExcept}}
 ```
 
-The code can still be improved.
-The functions `applyPrimOption` and `applyPrimExcept` differ only in their treatment of division, which can be extracted into another parameter to the evaluator:
+コードはまだ改善される可能性があります。
+関数 `applyPrimOption` と `applyPrimExcept` は除算の扱いだけが異なりますが、評価者への別のパラメータを抽出することによって異なることを示すことができます：
 ```lean
 {{#example_decl Examples/Monads/Class.lean evaluateMRefactored}}
 ```
 
-In this refactored code, the fact that the two code paths differ only in their treatment of failure has been made fully apparent.
+このリファクタリングされたコードでは、２つのコードパスが失敗の扱いにおいてのみ異なることが完全に明らかとなっています。
 
-### Further Effects
+### 更なる副作用
 
-Failure and exceptions are not the only kinds of effects that can be interesting when working with an evaluator.
-While division's only side effect is failure, adding other primitive operators to the expressions make it possible to express other effects.
+失敗と例外は評価者で作業する際に興味深い唯一の種類の副作用ではありません。
+除算の唯一の副作用は失敗ですが、他の基本的な演算子を表現に加えることは他の副作用を表現する可能性があります。
 
-The first step is an additional refactoring, extracting division from the datatype of primitives:
+最初のステップは、プリミティブのデータ型から除算を抽出するという追加のリファクタリングです：
 ```lean
 {{#example_decl Examples/Monads/Class.lean PrimCanFail}}
 ```
-The name `CanFail` suggests that the effect introduced by division is potential failure.
+名前 `CanFail` は除算によって導入された副作用が潜在的な失敗であることを示唆しています。
 
-The second step is to broaden the scope of the division handler argument to `evaluateM` so that it can process any special operator:
+二つ目のステップは、`evaluateM` への除算の処理アーギュメントのスコープを拡大して、特別な演算子を処理することができるようにすることです：
 ```lean
 {{#example_decl Examples/Monads/Class.lean evaluateMMorePoly}}
 ```
 
-#### No Effects
+#### 副作用無し
 
-The type `Empty` has no constructors, and thus no values, like the `Nothing` type in Scala or Kotlin.
-In Scala and Kotlin, `Nothing` can represent computations that never return a result, such as functions that crash the program, throw exceptions, or always fall into infinite loops.
-An argument to a function or method of type `Nothing` indicates dead code, as there will never be a suitable argument value.
-Lean doesn't support infinite loops and exceptions, but `Empty` is still useful as an indication to the type system that a function cannot be called.
-Using the syntax `nomatch E` when `E` is an expression whose type has no constructors indicates to Lean that the current expression need not return a result, because it could never have been called. 
+型 `Empty` はコンストラクタを持たず、値もない、ScalaやKotlinの `Nothing` 型のようです。
+ScalaとKotlinでは、`Nothing` はプログラムをクラッシュさせる関数や、例外を投げる、または常に無限ループに陥る計算を表すことができます。
+関数またはメソッドへの `Nothing` 型の引数は、適切な引数値が決して存在しないため、使用されないコードを指示します。
+Leanは無限ループや例外をサポートしていませんが、`Empty` は型システムに対して関数を呼び出すことができないことを示唆するために依然として役立ちます。
+型のコンストラクタを持たない式 `E` の場合、構文 `nomatch E` はLeanに現在の式が結果を返す必要がないことを示唆します、なぜならそれは決して呼び出され得ないからです。
 
-Using `Empty` as the parameter to `Prim` indicates that there are no additional cases beyond `Prim.plus`, `Prim.minus`, and `Prim.times`, because it is impossible to come up with a value of type `Empty` to place in the `Prim.other` constructor.
-Because a function to apply an operator of type `Empty` to two integers can never be called, it doesn't need to return a result.
-Thus, it can be used in _any_ monad:
+`Empty` を `Prim` へのパラメータとして使用する場合、`Prim.plus`、`Prim.minus`、`Prim.times` を超えた追加のケースがないことを示します。`Empty` の型の値を `Prim.other` コンストラクタに配置することは不可能であるためです。
+二つの整数に `Empty` 型の演算子を適用する関数が呼び出されることは決してないため、結果を返す必要はありません。
+したがって、どんなモナドでも使用できます：
 ```lean
 {{#example_decl Examples/Monads/Class.lean applyEmpty}}
 ```
-This can be used together with `Id`, the identity monad, to evaluate expressions that have no effects whatsoever:
+これは `Id`、アイデンティティモナドと一緒に使用され、全く副作用のない表現を評価することができます：
 ```lean
 {{#example_in Examples/Monads/Class.lean evalId}}
 ```
@@ -108,253 +108,71 @@ This can be used together with `Id`, the identity monad, to evaluate expressions
 {{#example_out Examples/Monads/Class.lean evalId}}
 ```
 
-#### Nondeterministic Search
+#### 非決定的探索
 
-Instead of simply failing when encountering division by zero, it would also be sensible to backtrack and try a different input.
-Given the right monad, the very same `evaluateM` can perform a nondeterministic search for a _set_ of answers that do not result in failure.
-This requires, in addition to division, some means of specifying a choice of results.
-One way to do this is to add a function `choose` to the language of expressions that instructs the evaluator to pick either of its arguments while searching for non-failing results.
+ゼロでの除算に遭遇した際に単に失敗する代わりに、異なる入力を試してバックトラックすることも理にかなっています。
+適切なモナドを与えられた場合、全く同じ `evaluateM` は失敗しない解の_セット_に対して非決定的探索を実行することができます。
+この場合、除算に加えて、非失敗の結果を探索する間にいずれかの引数を選択するように評価者に指示する式言語への `choose` 関数の追加が必要です。
 
-The result of the evaluator is now a multiset of values, rather than a single value.
-The rules for evaluation into a multiset are:
- * Constants \\( n \\) evaluate to singleton sets \\( \{n\} \\).
- * Arithmetic operators other than division are called on each pair from the Cartesian product of the operators, so \\( X + Y \\) evaluates to \\( \\{ x + y \\mid x ∈ X, y ∈ Y \\} \\).
- * Division \\( X / Y \\) evaluates to \\( \\{ x / y \\mid x ∈ X, y ∈ Y, y ≠ 0\\} \\). In other words, all \\( 0 \\) values in \\( Y \\)  are thrown out.
- * A choice \\( \\mathrm{choose}(x, y) \\) evaluates to \\( \\{ x, y \\} \\).
+評価者の結果は今や値のマルチセットであり、単一の値ではありません。
+マルチセットへの評価規則は以下の通りです：
+ * 定数 \\( n \\) はシングルトンセット \\( \{n\} \\) に評価されます。
+ * 除算以外の算術演算子は演算子のデカルト積の各ペアに対して呼び出され、したがって \\( X + Y \\) は \\( \\{ x + y \\mid x ∈ X, y ∈ Y \\} \\) に評価されます。
+ * 除算 \\( X / Y \\) は \\( \\{ x / y \\mid x ∈ X, y ∈ Y, y ≠ 0\\} \\) に評価されます。つまり、\\( Y \\) の全ての \\( 0 \\) の値は省かれます。
+ * 選択 \\( \\mathrm{choose}(x, y) \\) は \\( \\{ x, y \\} \\) に評価されます。
 
-For example, \\( 1 + \\mathrm{choose}(2, 5) \\) evaluates to \\( \\{ 3, 6 \\} \\), \\(1 + 2 / 0 \\) evaluates to \\( \\{\\} \\), and \\( 90 / (\\mathrm{choose}(-5, 5) + 5) \\) evaluates to \\( \\{ 9 \\} \\).
-Using multisets instead of true sets simplifies the code by removing the need to check for uniqueness of elements.
+たとえば、\\( 1 + \\mathrm{choose}(2, 5) \\) は \\( \\{ 3, 6 \\} \\) に評価され、\\(1 + 2 / 0 \\) は \\( \\{\\} \\) に評価され、\\( 90 / (\\mathrm{choose}(-5, 5) + 5) \\) は \\( \\{ 9 \\} \\) に評価されます。
+真のセットの代わりにマルチセットを使用することは、要素の一意性のチェックを省略することでコードを単純化します。
 
-A monad that represents this non-deterministic effect must be able to represent a situation in which there are no answers, and a situation in which there is at least one answer together with any remaining answers:
+非決定的な影響を表すモナドは、回答がない状況と、少なくとも1つの回答とそれ以外の全ての回答がある状況を表すことができなければなりません：
 ```lean
 {{#example_decl Examples/Monads/Many.lean Many}}
 ```
-This datatype looks very much like `List`.
-The difference is that where `cons` stores the rest of the list, `more` stores a function that should compute the next value on demand.
-This means that a consumer of `Many` can stop the search when some number of results have been found.
+このデータ型は `List` と非常によく似ています。
+違いは、`cons` がリストの残りを保存するところで、`more` が次の値を要求時に計算する関数を保存している点です。
+これは `Many` の消費者が見つけた結果のいくつかを得た時点で探索を止めることができることを意味します。
 
-A single result is represented by a `more` constructor that returns no further results:
+単一の結果はこれ以上の結果を返さない `more` コンストラクタで表されます：
 ```lean
 {{#example_decl Examples/Monads/Many.lean one}}
 ```
-The union of two multisets of results can be computed by checking whether the first multiset is empty.
-If so, the second multiset is the union.
-If not, the union consists of the first element of the first multiset followed by the union of the rest of the first multiset with the second multiset:
+２つのマルチセットの結果のユニオンは、最初のマルチセットが空かどうかを調べることによって計算できます。
+それが空の場合、２つ目のマルチセットがユニオンです。
+それが空でない場合、ユニオンは最初のマルチセットの最初の要素に続いて最初のマルチセットの残りと２つ目のマルチセットのユニオンで構成されます：
 ```lean
 {{#example_decl Examples/Monads/Many.lean union}}
 ```
 
-It can be convenient to start a search process with a list of values.
-`Many.fromList` converts a list into a multiset of results:
+開始する検索プロセスで値のリストがあると便利なことがあります。
+`Many.fromList` はリストを結果のマルチセットに変換します：
 ```lean
 {{#example_decl Examples/Monads/Many.lean fromList}}
 ```
-Similarly, once a search has been specified, it can be convenient to extract either a number of values, or all the values:
+同様に、検索が指定された後に、いくつかの値または全ての値を抽出すると便利なことがあります：
 ```lean
 {{#example_decl Examples/Monads/Many.lean take}}
 ```
 
-A `Monad Many` instance requires a `bind` operator.
-In a nondeterministic search, sequencing two operations consists of taking all possibilities from the first step and running the rest of the program on each of them, taking the union of the results.
-In other words, if the first step returns three possible answers, the second step needs to be tried for all three.
-Because the second step can return any number of answers for each input, taking their union represents the entire search space.
+`Monad Many` インスタンスには `bind` 演算子が必要です。
+非決定的な検索で２つの操作を連続するには、最初のステップから全ての可能性を取り、それぞれに残りのプログラムを実行し、結果のユニオンを取ることが含まれます。
+言い換えると、最初のステップが３つの可能な答えを返す場合、それぞれについて次のステップを試みる必要があります。
+２つ目のステップは各入力に対していくつでも答えを返すことができるので、ユニオンを取ることは全探索空間を表します。
 ```lean
 {{#example_decl Examples/Monads/Many.lean bind}}
 ```
 
-`Many.one` and `Many.bind` obey the monad contract.
-To check that `Many.bind (Many.one v) f` is the same as `f v`, start by evaluating the expression as far as possible:
+`Many.one` と `Many.bind` はモナド契約を遵守します。
+`Many.bind (Many.one v) f` が `f v` と同じであることを確認するために、式を可能な限り評価してみます：
 ```lean
 {{#example_eval Examples/Monads/Many.lean bindLeft}}
 ```
-The empty multiset is a right identity of `union`, so the answer is equivalent to `f v`.
-To check that `Many.bind v Many.one` is the same as `v`, consider that `bind` takes the union of applying `Many.one` to each element of `v`.
-In other words, if `v` has the form `{v1, v2, v3, ..., vn}`, then `Many.bind v Many.one` is `{v1} ∪ {v2} ∪ {v3} ∪ ... ∪ {vn}`, which is `{v1, v2, v3, ..., vn}`.
-
-Finally, to check that `Many.bind` is associative, check that `Many.bind (Many.bind bind v f) g` is the same as `Many.bind v (fun x => Many.bind (f x) g)`.
-If `v` has the form `{v1, v2, v3, ..., vn}`, then:
-```lean
-Many.bind v f
-===>
-f v1 ∪ f v2 ∪ f v3 ∪ ... ∪ f vn
-```
-which means that
-```lean
-Many.bind (Many.bind bind v f) g
-===>
-Many.bind (f v1) g ∪
-Many.bind (f v2) g ∪
-Many.bind (f v3) g ∪
-... ∪
-Many.bind (f vn) g
-```
-Similarly,
-```lean
-Many.bind v (fun x => Many.bind (f x) g)
-===>
-(fun x => Many.bind (f x) g) v1 ∪
-(fun x => Many.bind (f x) g) v2 ∪
-(fun x => Many.bind (f x) g) v3 ∪
-... ∪
-(fun x => Many.bind (f x) g) vn
-===>
-Many.bind (f v1) g ∪
-Many.bind (f v2) g ∪
-Many.bind (f v3) g ∪
-... ∪
-Many.bind (f vn) g
-```
-Thus, both sides are equal, so `Many.bind` is associative.
-
-The resulting monad instance is:
-```lean
-{{#example_decl Examples/Monads/Many.lean MonadMany}}
-```
-An example search using this monad finds all the combinations of numbers in a list that add to 15:
-```lean
-{{#example_decl Examples/Monads/Many.lean addsTo}}
-```
-The search process is recursive over the list.
-The empty list is a successful search when the goal is `0`; otherwise, it fails.
-When the list is non-empty, there are two possibilities: either the head of the list is greater than the goal, in which case it cannot participate in any successful searches, or it is not, in which case it can.
-If the head of the list is _not_ a candidate, then the search proceeds to the tail of the list.
-If the head is a candidate, then there are two possibilities to be combined with `Many.union`: either the solutions found contain the head, or they do not.
-The solutions that do not contain the head are found with a recursive call on the tail, while the solutions that do contain it result from subtracting the head from the goal, and then attaching the head to the solutions that result from the recursive call.
-
-Returning to the arithmetic evaluator that produces multisets of results, the `both` and `neither` operators can be written as follows:
-```lean
-{{#example_decl Examples/Monads/Class.lean NeedsSearch}}
-```
-Using these operators, the earlier examples can be evaluated:
-```lean
-{{#example_decl Examples/Monads/Class.lean opening}}
-
-{{#example_in Examples/Monads/Class.lean searchA}}
-```
-```output info
-{{#example_out Examples/Monads/Class.lean searchA}}
-```
-```lean
-{{#example_in Examples/Monads/Class.lean searchB}}
-```
-```output info
-{{#example_out Examples/Monads/Class.lean searchB}}
-```
-```lean
-{{#example_in Examples/Monads/Class.lean searchC}}
-```
-```output info
-{{#example_out Examples/Monads/Class.lean searchC}}
-```
-
-#### Custom Environments
-
-The evaluator can be made user-extensible by allowing strings to be used as operators, and then providing a mapping from strings to a function that implements them.
-For example, users could extend the evaluator with a remainder operator or with one that returns the maximum of its two arguments.
-The mapping from function names to function implementations is called an _environment_.
-
-The environments needs to be passed in each recursive call.
-Initially, it might seem that `evaluateM` needs an extra argument to hold the environment, and that this argument should be passed to each recursive invocation.
-However, passing an argument like this is another form of monad, so an appropriate `Monad` instance allows the evaluator to be used unchanged.
-
-Using functions as a monad is typically called a _reader_ monad.
-When evaluating expressions in the reader monad, the following rules are used:
- * Constants \\( n \\) evaluate to constant functions \\( λ e . n \\),
- * Arithmetic operators evaluate to functions that pass their arguments on, so \\( f + g \\) evaluates to \\( λ e . f(e) + g(e) \\), and
- * Custom operators evaluate to the result of applying the custom operator to the arguments, so \\( f \\ \\mathrm{OP}\\ g \\) evaluates to
-   \\[
-     λ e .
-     \\begin{cases}
-     h(f(e), g(e)) & \\mathrm{if}\\ e\\ \\mathrm{contains}\\ (\\mathrm{OP}, h) \\\\
-     0 & \\mathrm{otherwise}
-     \\end{cases}
-   \\]
-   with \\( 0 \\) serving as a fallback in case an unknown operator is applied.
-
-To define the reader monad in Lean, the first step is to define the `Reader` type and the effect that allows users to get ahold of the environment:
-```lean
-{{#example_decl Examples/Monads/Class.lean Reader}}
-```
-By convention, the Greek letter `ρ`, which is pronounced "rho", is used for environments.
-
-The fact that constants in arithmetic expressions evaluate to constant functions suggests that the appropriate definition of `pure` for `Reader` is a a constant function:
-```lean
-{{#example_decl Examples/Monads/Class.lean ReaderPure}}
-```
-
-On the other hand, `bind` is a bit tricker.
-Its type is `{{#example_out Examples/Monads/Class.lean readerBindType}}`.
-This type can be easier to understand by expanding the definitions of `Reader`, which yields `{{#example_out Examples/Monads/Class.lean readerBindTypeEval}}`.
-It should take an environment-accepting function as its first argument, while the second argument should transform the result of the environment-accepting function into yet another environment-accepting function.
-The result of combining these is itself a function, waiting for an environment.
-
-It's possible to use Lean interactively to get help writing this function.
-The first step is to write down the arguments and return type, being very explicit in order to get as much help as possible, with an underscore for the definition's body:
-```lean
-{{#example_in Examples/Monads/Class.lean readerbind0}}
-```
-Lean provides a message that describes which variables are available in scope, and the type that's expected for the result.
-The `⊢` symbol, called a _turnstile_ due to its resemblance to subway entrances, separates the local variables from the desired type, which is `ρ → β` in this message:
-```output error
-{{#example_out Examples/Monads/Class.lean readerbind0}}
-```
-
-Because the return type is a function, a good first step is to wrap a `fun` around the underscore:
-```lean
-{{#example_in Examples/Monads/Class.lean readerbind1}}
-```
-The resulting message now shows the function's argument as a local variable:
-```output error
-{{#example_out Examples/Monads/Class.lean readerbind1}}
-```
-
-The only thing in the context that can produce a `β` is `next`, and it will require two arguments to do so.
-Each argument can itself be an underscore:
-```lean
-{{#example_in Examples/Monads/Class.lean readerbind2a}}
-```
-The two underscores have the following respective messages associated with them:
-```output error
-{{#example_out Examples/Monads/Class.lean readerbind2a}}
-```
-```output error
-{{#example_out Examples/Monads/Class.lean readerbind2b}}
-```
-
-Attacking the first underscore, only one thing in the context can produce an `α`, namely `result`:
-```lean
-{{#example_in Examples/Monads/Class.lean readerbind3}}
-```
-Now, both underscores have the same error:
-```output error
-{{#example_out Examples/Monads/Class.lean readerbind3}}
-```
-Happily, both underscores can be replaced by `env`, yielding:
-```lean
-{{#example_decl Examples/Monads/Class.lean readerbind4}}
-```
-
-The final version can be obtained by undoing the expansion of `Reader` and cleaning up the explicit details:
-```lean
-{{#example_decl Examples/Monads/Class.lean Readerbind}}
-```
-
-It's not always possible to write correct functions by simply "following the types", and it carries the risk of not understanding the resulting program.
-However, it can also be easier to understand a program that has been written than one that has not, and the process of filling in the underscores can bring insights.
-In this case, `Reader.bind` works just like `bind` for `Id`, except it accepts an additional argument that it then passes down to its arguments, and this intuition can help in understanding how it works.
-
-`Reader.pure`, which generates constant functions, and `Reader.bind` obey the monad contract.
-To check that `Reader.bind (Reader.pure v) f` is the same as `f v`, it's enough to replace definitions until the last step:
-```lean
-{{#example_eval Examples/Monads/Class.lean ReaderMonad1}}
-```
-For every function `f`, `fun x => f x` is the same as `f`, so the first part of the contract is satisfied.
-To check that `Reader.bind r Reader.pure` is the same as `r`, a similar technique works:
+空のマルチセットは `union` の右のアイデンティティであり、答えは `f v` と等価です。すべての関数 `f` について、`fun x => f x` は `f` と同じなので、最初の部分の契約が満たされます。
+`Reader.bind r Reader.pure` が `r` と同じであることをチェックするには、同様の技術が機能します：
 ```lean
 {{#example_eval Examples/Monads/Class.lean ReaderMonad2}}
 ```
-Because reader actions `r` are themselves functions, this is the same as `r`.
-To check associativity, the same thing can be done for both `{{#example_eval Examples/Monads/Class.lean ReaderMonad3a 0}}` and `{{#example_eval Examples/Monads/Class.lean ReaderMonad3b 0}}`:
+リーダアクション `r` 自体が関数であるため、これは `r` と同じです。
+結合性をチェックするために、`{{#example_eval Examples/Monads/Class.lean ReaderMonad3a 0}}` と `{{#example_eval Examples/Monads/Class.lean ReaderMonad3b 0}}` の両方に対して同じことを行います：
 ```lean
 {{#example_eval Examples/Monads/Class.lean ReaderMonad3a}}
 ```
@@ -363,27 +181,27 @@ To check associativity, the same thing can be done for both `{{#example_eval Exa
 {{#example_eval Examples/Monads/Class.lean ReaderMonad3b}}
 ```
 
-Thus, a `Monad (Reader ρ)` instance is justified:
+したがって、`Monad (Reader ρ)` インスタンスが正当化されています：
 ```lean
 {{#example_decl Examples/Monads/Class.lean MonadReaderInst}}
 ```
 
-The custom environments that will be passed to the expression evaluator can be represented as lists of pairs:
+式評価器に渡されるカスタム環境は、ペアのリストとして表現できます：
 ```lean
 {{#example_decl Examples/Monads/Class.lean Env}}
 ```
-For instance, `exampleEnv` contains maximum and modulus functions:
+例えば、`exampleEnv` には最大値と剰余の機能が含まれています：
 ```lean
 {{#example_decl Examples/Monads/Class.lean exampleEnv}}
 ```
 
-Lean already has a function `List.lookup` that finds the value associated with a key in a list of pairs, so `applyPrimReader` needs only check whether the custom function is present in the environment. It returns `0` if the function is unknown:
+Leanにはすでに `List.lookup` という関数があり、キーに対応する値をペアのリストから見つけるため、`applyPrimReader` は環境内にカスタム関数が存在するかどうかをチェックするだけで十分です。もし関数が見知らぬものであれば `0` を返します：
 ```lean
 {{#example_decl Examples/Monads/Class.lean applyPrimReader}}
 ```
 
-Using `evaluateM` with `applyPrimReader` and an expression results in a function that expects an environment.
-Luckily, `exampleEnv` is available:
+`evaluateM` を `applyPrimReader` と式を使って使用すると、環境を期待する関数の結果が得られます。
+幸いにも、`exampleEnv` が使用できます：
 ```lean
 {{#example_in Examples/Monads/Class.lean readerEval}}
 ```
@@ -391,54 +209,53 @@ Luckily, `exampleEnv` is available:
 {{#example_out Examples/Monads/Class.lean readerEval}}
 ```
 
-Like `Many`, `Reader` is an example of an effect that is difficult to encode in most languages, but type classes and monads make it just as convenient as any other effect.
-The dynamic or special variables found in Common Lisp, Clojure, and Emacs Lisp can be used like `Reader`.
-Similarly, Scheme and Racket's parameter objects are an effect that exactly correspond to `Reader`.
-The Kotlin idiom of context objects can solve a similar problem, but they are fundamentally a means of passing function arguments automatically, so this idiom is more like the encoding as a reader monad than it is an effect in the language.
+`Many` のように、`Reader` はほとんどの言語でエンコードするのが困難な効果の一例ですが、型クラスとモナドを使うことで他のどんな効果と同じくらい便利になります。
+Common Lisp、Clojure、Emacs Lispで見られる動的または特別な変数は、`Reader` のように使用できます。
+同様に、SchemeやRacketのパラメータオブジェクトは、`Reader` に完全に対応している効果です。
+Kotlinのコンテキストオブジェクトの慣用句は同様の問題を解決することができますが、それは自動的に関数引数を渡す手段であるため、この慣用句は言語の効果よりもリーダモナドとしてのエンコーディングに似ています。
 
-## Exercises
+## 練習
 
-### Checking Contracts
+### 契約のチェック
 
-Check the monad contract for `State σ` and `Except ε`.
+`State σ` と `Except ε` についてモナド契約をチェックしてください。
 
+### 失敗を伴うリーダー
 
-### Readers with Failure
-Adapt the reader monad example so that it can also indicate failure when the custom operator is not defined, rather than just returning zero.
-In other words, given these definitions:
+リーダーモナドの例を適応させて、カスタムオペレータが定義されていない場合に失敗を示すことができるようにしてください。つまり、ゼロを単に返すのではなく、これらの定義を与えられた場合に：
 ```lean
 {{#example_decl Examples/Monads/Class.lean ReaderFail}}
 ```
-do the following:
- 1. Write suitable `pure` and `bind` functions
- 2. Check that these functions satisfy the `Monad` contract
- 3. Write `Monad` instances for `ReaderOption` and `ReaderExcept`
- 4. Define suitable `applyPrim` operators and test them with `evaluateM` on some example expressions
+次のことを行います：
+ 1. 適切な `pure` と `bind` 関数を書く
+ 2. これらの関数が `Monad` 契約を満たすことを確認する
+ 3. `ReaderOption` と `ReaderExcept` のための `Monad` インスタンスを書く
+ 4. 適切な `applyPrim` 演算子を定義し、いくつかの例題の式に `evaluateM` でテストする
 
-### A Tracing Evaluator
+### トレース評価器
 
-The `WithLog` type can be used with the evaluator to add optional tracing of some operations.
-In particular, the type `ToTrace` can serve as a signal to trace a given operator:
+`WithLog` 型は、評価器と共に使用されることで、特定の操作のオプションのトレースを追加することができます。
+特に、`ToTrace` 型は、与えられたオペレータをトレースする信号として機能することができます：
 ```lean
 {{#example_decl Examples/Monads/Class.lean ToTrace}}
 ```
-For the tracing evaluator, expressions should have type `Expr (Prim (ToTrace (Prim Empty)))`.
-This says that the operators in the expression consist of addition, subtraction, and multiplication, augmented with traced versions of each. The innermost argument is `Empty` to signal that there are no further special operators inside of `trace`, only the three basic ones.
 
-Do the following:
- 1. Implement a `Monad (WithLog logged)` instance
- 2. Write an `{{#example_in Examples/Monads/Class.lean applyTracedType}}` function to apply traced operators to their arguments, logging both the operator and the arguments, with type `{{#example_out Examples/Monads/Class.lean applyTracedType}}`
- 
-If the exercise has been completed correctly, then
+トレース評価器の場合、式は型 `Expr (Prim (ToTrace (Prim Empty)))` を持つべきです。これは、追跡されたそれぞれのバージョンと増やされた追加、減少、および乗算の表現内のオペレータであり、内部の引数が `Empty` は `trace` の中にそれ以上の特別なオペレータがないことを示すためです。
+
+以下を行います：
+ 1. `Monad (WithLog logged)` インスタンスを実装する
+ 2. トレースされたオペレータをその引数に適用する `{{#example_in Examples/Monads/Class.lean applyTracedType}}` 関数を書き、型 `{{#example_out Examples/Monads/Class.lean applyTracedType}}` で運用する
+
+この練習が正しく完了している場合、
 ```lean
 {{#example_in Examples/Monads/Class.lean evalTraced}}
 ```
-should result in
+は次の結果になります：
 ```output info
 {{#example_out Examples/Monads/Class.lean evalTraced}}
 ```
- 
- Hint: values of type `Prim Empty` will appear in the resulting log. In order to display them as a result of `#eval`, the following instances are required:
+
+ヒント：結果のログには `Prim Empty` の型の値が表示されることがあります。`#eval` の結果としてそれらを表示するためには、以下のインスタンスが必要です：
  ```lean
  {{#example_decl Examples/Monads/Class.lean ReprInstances}}
  ```

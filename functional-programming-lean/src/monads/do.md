@@ -1,91 +1,91 @@
-# `do`-Notation for Monads
+# モナドのための`do`記法
 
-While APIs based on monads are very powerful, the explicit use of `>>=` with anonymous functions is still somewhat noisy.
-Just as infix operators are used instead of explicit calls to `HAdd.hAdd`, Lean provides a syntax for monads called _`do`-notation_ that can make programs that use monads easier to read and write.
-This is the very same `do`-notation that is used to write programs in `IO`, and `IO` is also a monad.
+APIがモナドに基づいていることは非常に強力ですが、匿名関数と共に`>>=`の明示的な使用はまだ少しわかりにくいものがあります。
+`HAdd.hAdd`への明示的な呼び出しの代わりに中置演算子が使われるのと同様に、Leanには_`do`記法_と呼ばれるモナド用の構文があり、これによりモナドを使用するプログラムの読み書きが容易になります。
+これは、`IO`プログラムを記述する際に使用される全く同じ`do`記法であり、`IO`もまたモナドです。
 
-In [Hello, World!](../hello-world.md), the `do` syntax is used to combine `IO` actions, but the meaning of these programs is explained directly.
-Understanding how to program with monads means that `do` can now be explained in terms of how it translates into uses of the underlying monad operators.
+[Hello, World!](../hello-world.md)では、`do`記法が`IO`アクションを組み合わせるために使用されていますが、これらのプログラムの意味は直接説明されています。
+モナドを使ってプログラミングする方法を理解することは、`do`を基本的なモナド演算子の使用方法に基づいて説明することを意味しています。
 
-The first translation of `do` is used when the only statement in the `do` is a single expression `E`.
-In this case, the `do` is removed, so
+`do`の最初の翻訳は、`do`内の唯一の文が単一の式`E`である場合に使用されます。
+このケースでは、`do`は取り除かれ、
 ```lean
 {{#example_in Examples/Monads/Do.lean doSugar1}}
 ```
-translates to
+は以下のように翻訳されます。
 ```lean
 {{#example_out Examples/Monads/Do.lean doSugar1}}
 ```
 
-The second translation is used when the first statement of the `do` is a `let` with an arrow, binding a local variable.
-This translates to a use of `>>=` together with a function that binds that very same variable, so
+2番目の翻訳は、`do`の最初の文が矢印を持つ`let`であり、ローカル変数を束縛する場合に使用されます。
+これは、その同じ変数を束縛する関数と共に`>>=`の使用に翻訳されるので、
 ```lean
 {{#example_in Examples/Monads/Do.lean doSugar2}}
 ```
-translates to
+は以下のように翻訳されます。
 ```lean
 {{#example_out Examples/Monads/Do.lean doSugar2}}
 ```
 
-When the first statement of the `do` block is an expression, then it is considered to be a monadic action that returns `Unit`, so the function matches the `Unit` constructor and
+`do`ブロックの最初の文が式である場合、それは`Unit`を返すモナドアクションと見なされ、そのため関数は`Unit`コンストラクタにマッチし、
 ```lean
 {{#example_in Examples/Monads/Do.lean doSugar3}}
 ```
-translates to
+は以下のように翻訳されます。
 ```lean
 {{#example_out Examples/Monads/Do.lean doSugar3}}
 ```
 
-Finally, when the first statement of the `do` block is a `let` that uses `:=`, the translated form is an ordinary let expression, so
+最後に、`do`ブロックの最初の文が`:=`を使用する`let`である場合、翻訳された形式は通常の`let`式で、
 ```lean
 {{#example_in Examples/Monads/Do.lean doSugar4}}
 ```
-translates to
+は以下のように翻訳されます。
 ```lean
 {{#example_out Examples/Monads/Do.lean doSugar4}}
 ```
 
-The definition of `firstThirdFifthSeventh` that uses the `Monad` class looks like this:
+`Monad`クラスを使用して書かれた`firstThirdFifthSeventh`の定義は以下のようになります。
 ```lean
 {{#example_decl Examples/Monads/Class.lean firstThirdFifthSeventhMonad}}
 ```
-Using `do`-notation, it becomes significantly more readable:
+`do`記法を使用すると、それはかなり読みやすくなります：
 ```lean
 {{#example_decl Examples/Monads/Do.lean firstThirdFifthSeventhDo}}
 ```
 
-Without the `Monad` type class, the function `number` that numbers the nodes of a tree was written:
+`Monad`型クラスなしでは、木のノードに番号を付ける関数`number`が以下のように書かれました：
 ```lean
 {{#example_decl Examples/Monads.lean numberMonadicish}}
 ```
-With `Monad` and `do`, its definition is much less noisy:
+`Monad`と`do`を使用すると、その定義はかなり煩わしさがなくなります：
 ```lean
 {{#example_decl Examples/Monads/Do.lean numberDo}}
 ```
 
 
-All of the conveniences from `do` with `IO` are also available when using it with other monads.
-For example, nested actions also work in any monad.
-The original definition of `mapM` was:
+`IO`での`do`のすべての便利さは、他のモナドで使う場合にも利用可能です。
+例えば、ネストされたアクションはどんなモナドでも動作します。
+`mapM`の元の定義は以下のようでした：
 ```lean
 {{#example_decl Examples/Monads/Class.lean mapM}}
 ```
-With `do`-notation, it can be written:
+`do`記法を使うと、以下のように書くことができます：
 ```lean
 {{#example_decl Examples/Monads/Do.lean mapM}}
 ```
-Using nested actions makes it almost as short as the original non-monadic `map`:
+ネストされたアクションを使用することで、それはオリジナルの非モナド`map`とほぼ同じ短さになります：
 ```lean
 {{#example_decl Examples/Monads/Do.lean mapMNested}}
 ```
-Using nested actions, `number` can be made much more concise:
+ネストされたアクションを使って、`number`関数をより簡潔にすることができます：
 ```lean
 {{#example_decl Examples/Monads/Do.lean numberDoShort}}
 ```
 
 
 
-## Exercises
+## 練習問題
 
- * Rewrite `evaluateM`, its helpers, and the different specific use cases using `do`-notation instead of explicit calls to `>>=`.
- * Rewrite `firstThirdFifthSeventh` using nested actions.
+ * `evaluateM`、そのヘルパー、および異なる特定の使用例を`>>=`を明示的に呼び出す代わりに`do`記法を使用して書き直してください。
+ * `firstThirdFifthSeventh`をネストされたアクションを使って書き直してください。

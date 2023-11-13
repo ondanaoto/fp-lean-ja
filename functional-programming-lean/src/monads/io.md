@@ -1,108 +1,89 @@
-# The IO Monad
+# IOモナド
 
-`IO` as a monad can be understood from two perspectives, which were described in the section on [running programs](../hello-world/running-a-program.md).
-Each can help to understand the meanings of `pure` and `bind` for `IO`.
+`IO`をモナドとして理解するには、[プログラムの実行](../hello-world/running-a-program.md)セクションで説明された二つの視点があります。これらはそれぞれ`pure`および`bind`の`IO`での意味を理解するのに役立ちます。
 
-From the first perspective, an `IO` action is an instruction to Lean's run-time system.
-For example, the instruction might be "read a string from this file descriptor, then re-invoke the pure Lean code with the string".
-This perspective is an _exterior_ one, viewing the program from the perspective of the operating system.
-In this case, `pure` is an `IO` action that does not request any effects from the RTS, and `bind` instructs the RTS to first carry out one potentially-effectful operation and then invoke the rest of the program with the resulting value.
+一つ目の視点では、`IO`アクションはLeanのランタイムシステムへの命令として理解できます。例えば、その命令は「このファイルディスクリプタから文字列を読み取り、その文字列を使って純粋なLeanコードを再実行する」といったものになるかもしれません。この視点は_外部的_なもので、オペレーティングシステムの視点からプログラムを見るものです。この場合、`pure`はRTSに何の効果も要請しない`IO`アクションであり、`bind`はRTSに潜在的に影響を及ぼす操作を最初に実行するよう指示し、その後で結果の値を使ってプログラムの残りの部分を呼び出します。
 
-From the second perspective, an `IO` action transforms the whole world.
-`IO` actions are actually pure, because they receive a unique world as an argument and then return the changed world.
-This perspective is an _interior_ one that matches how `IO` is represented inside of Lean.
-The world is represented in Lean as a token, and the `IO` monad is structured to make sure that each token is used exactly once.
+二つ目の視点では、`IO`アクションは世界全体を変換します。`IO`アクションは実際には純粋であり、唯一無二の世界を引数として受け取り、その変更された世界を返します。この視点は_内部的_なもので、Leanの内部での`IO`の表現に合っています。Lean内で世界はトークンとして表現され、`IO`モナドは各トークンが正確に一度だけ使用されるように構造化されています。
 
-To see how this works, it can be helpful to peel back one definition at a time.
-The `#print` command reveals the internals of Lean datatypes and definitions.
-For example,
+これがどのように機能するのかを見るためには、定義を一つずつ剥がしていくと役立ちます。`#print`コマンドは、Leanデータ型や定義の内部情報を明らかにします。たとえば、
 ```lean
 {{#example_in Examples/Monads/IO.lean printNat}}
 ```
-results in
+は以下の結果になります。
 ```output info
 {{#example_out Examples/Monads/IO.lean printNat}}
 ```
-and
+また、
 ```lean
 {{#example_in Examples/Monads/IO.lean printCharIsAlpha}}
 ```
-results in
+は以下の結果になります。
 ```output info
 {{#example_out Examples/Monads/IO.lean printCharIsAlpha}}
 ```
 
-Sometimes, the output of `#print` includes Lean features that have not yet been presented in this book.
-For example,
+時には、`#print`の出力には、まだこの本で紹介されていないLeanの機能が含まれています。例えば、
 ```lean
 {{#example_in Examples/Monads/IO.lean printListIsEmpty}}
 ```
-produces
+は以下の出力を生成します。
 ```output info
 {{#example_out Examples/Monads/IO.lean printListIsEmpty}}
 ```
-which includes a `.{u}` after the definition's name, and annotates types as `Type u` rather than just `Type`.
-This can be safely ignored for now.
+これには、定義名の後に`.{u}`が含まれ、型が単に`Type`ではなく`Type u`と注釈されています。これは今のところ無視して構いません。
 
-Printing the definition of `IO` shows that it's defined in terms of simpler structures:
+`IO`の定義をプリントすると、それがより単純な構造に基づいて定義されているのがわかります。
 ```lean
 {{#example_in Examples/Monads/IO.lean printIO}}
 ```
 ```output info
 {{#example_out Examples/Monads/IO.lean printIO}}
 ```
-`IO.Error` represents all the errors that could be thrown by an `IO` action:
+`IO.Error`は、`IO`アクションによってスローされ得るすべてのエラーを表しています。
 ```lean
 {{#example_in Examples/Monads/IO.lean printIOError}}
 ```
 ```output info
 {{#example_out Examples/Monads/IO.lean printIOError}}
 ```
-`EIO ε α` represents `IO` actions that will either terminate with an error of type `ε` or succeed with a value of type `α`.
-This means that, like the `Except ε` monad, the `IO` monad includes the ability to define error handling and exceptions.
+`EIO ε α`は、`ε`型のエラーで終了するか、または`α`型の値で成功する`IO`アクションを表します。これは、`Except ε`モナドと同様に、`IO`モナドにはエラーハンドリングと例外の定義能力が含まれていることを意味します。
 
-Peeling back another layer, `EIO` is itself defined in terms of a simpler structure:
+さらに層を剥がすと、`EIO`自体がより単純な構造によって定義されています。
 ```lean
 {{#example_in Examples/Monads/IO.lean printEIO}}
 ```
 ```output info
 {{#example_out Examples/Monads/IO.lean printEIO}}
 ```
-The `EStateM` monad includes both errors and state—it's a combination of `Except` and `State`.
-It is defined using another type, `EStateM.Result`:
+`EStateM`モナドはエラーと状態の両方を含んでおり、`Except`と`State`の組み合わせです。それは別の型、`EStateM.Result`を使用して定義されます。
 ```lean
 {{#example_in Examples/Monads/IO.lean printEStateM}}
 ```
 ```output info
 {{#example_out Examples/Monads/IO.lean printEStateM}}
 ```
-In other words, a program with type `EStateM ε σ α` is a function that accepts an initial state of type `σ` and returns an `EStateM.Result ε σ α`.
+つまり、`EStateM ε σ α`型のプログラムは、初期状態`σ`を受け取る関数であり、`EStateM.Result ε σ α`を返します。
 
-`EStateM.Result` is very much like the definition of `Except`, with one constructor that indicates a successful termination and one constructor that indicates an error:
+`EStateM.Result`は`Except`の定義に非常に似ており、成功した終了を示すコンストラクタとエラーを示すコンストラクタがあります。
 ```lean
 {{#example_in Examples/Monads/IO.lean printEStateMResult}}
 ```
 ```output info
 {{#example_out Examples/Monads/IO.lean printEStateMResult}}
 ```
-Just like `Except ε α`, the `ok` constructor includes a result of type `α`, and the `error` constructor includes an exception of type `ε`.
-Unlike `Except`, both constructors have an additional state field that includes the final state of the computation.
+`Except ε α`のように、`ok`コンストラクタは型`α`の結果を含み、`error`コンストラクタは型`ε`の例外を含みます。しかし`Except`と違って、どちらのコンストラクタも計算の最終状態を含む追加の状態フィールドがあります。
 
-The `Monad` instance for `EStateM ε σ` requires `pure` and `bind`.
-Just as with `State`, the implementation of `pure` for `EStateM` accepts an initial state and returns it unchanged, and just as with `Except`, it returns its argument in the `ok` constructor:
+`EStateM ε σ`の`Monad`インスタンスには`pure`と`bind`が必要です。`State`の場合と同様に、`EStateM`の`pure`の実装は初期状態を受け取り、それを変更せずに返します。そして、`Except`の場合と同様に、その引数を`ok`コンストラクタで返します：
 ```lean
 {{#example_in Examples/Monads/IO.lean printEStateMpure}}
 ```
 ```output info
 {{#example_out Examples/Monads/IO.lean printEStateMpure}}
 ```
-`protected` means that the full name `EStateM.pure` is needed even if the `EStateM` namespace has been opened.
+`protected`は、`EStateM`ネームスペースが開かれていても、完全な名前`EStateM.pure`が必要であることを意味します。
 
-Similarly, `bind` for `EStateM` takes an initial state as an argument.
-It passes this initial state to its first action.
-Like `bind` for `Except`, it then checks whether the result is an error.
-If so, the error is returned unchanged and the second argument to `bind` remains unused.
-If the result was a success, then the second argument is applied to both the returned value and to the resulting state.
+同様に、`EStateM`の`bind`も初期状態を引数として取ります。これは初期状態を最初のアクションに渡します。`Except`の`bind`のように、結果がエラーかどうかをチェックします。もしエラーだった場合、そのエラーは変更されずに返され、`bind`の二番目の引数は使用されません。成功した結果であれば、二番目の引数は返された値と生成された状態の両方に適用されます。
 ```lean
 {{#example_in Examples/Monads/IO.lean printEStateMbind}}
 ```
@@ -110,15 +91,9 @@ If the result was a success, then the second argument is applied to both the ret
 {{#example_out Examples/Monads/IO.lean printEStateMbind}}
 ```
 
-Putting all of this together, `IO` is a monad that tracks state and errors at the same time.
-The collection of available errors is that given by the datatype `IO.Error`, which has constructors that describe many things that can go wrong in a program.
-The state is a type that represents the real world, called `IO.RealWorld`.
-Each basic `IO` action receives this real world and returns another one, paired either with an error or a result.
-In `IO`, `pure` returns the world unchanged, while `bind` passes the modified world from one action into the next action.
+これらすべてをまとめると、`IO`は同時に状態とエラーを追跡するモナドです。利用可能なエラーのコレクションは、プログラムで発生する多くの問題を説明するコンストラクタを持つデータ型`IO.Error`によって与えられます。状態は現実の世界を表す型であり、`IO.RealWorld`と呼ばれます。各基本`IO`アクションはこの現実の世界を受け取り、エラーまたは結果とペアにされた別の世界を返します。`IO`では、`pure`は世界を変更せずに返し、`bind`は一つのアクションから変更された世界を次のアクションに渡します。
 
-Because the entire universe doesn't fit in a computer's memory, the world being passed around is just a representation.
-So long as world tokens are not re-used, the representation is safe.
-This means that world tokens do not need to contain any data at all:
+宇宙全体はコンピュータのメモリに収まらないので、渡されている世界はただの表現です。世界のトークンが再利用されない限り、この表現は安全です。つまり、世界のトークンには一切のデータを含む必要はありません：
 ```lean
 {{#example_in Examples/Monads/IO.lean printRealWorld}}
 ```
