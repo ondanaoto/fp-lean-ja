@@ -1,6 +1,6 @@
 [book]
 authors = ["David Thrane Christiansen"]
-language = "en"
+language = "ja"
 multilingual = false
 src = "src"
 title = "Functional Programming in Lean"
