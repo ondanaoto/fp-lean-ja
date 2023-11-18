@@ -65,3 +65,18 @@
 ## ライセンス
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="クリエイティブ・コモンズ・ライセンス" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />この作品は<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">クリエイティブ・コモンズ 表示 4.0 国際 ライセンス</a>に基づいて提供されています。
+
+## 訳者脚注
+この文書は非公式の日本語訳です。以下の点にご注意ください。
+
+- **非公式の翻訳:** この文書は公式のものではなく、非公式に翻訳されたものです。
+- **原文の参照:** 翻訳に疑問がある場合は、必要に応じて原文を参照してください。
+- **翻訳ツールの使用:** この翻訳はGPT-4を用いて機械的に行われました。
+- **翻訳の不備:** 機械翻訳のため、不備が存在する可能性があります。現在、手動での補完作業を行っています。
+- **訂正の依頼:** 訳に問題を見つけた場合は、[GitHub](https://github.com/ondanaoto/fp-lean-ja)のissueで報告するか、pull requestを通じて訂正をリクエストしてください。welcomeです！
+## 翻訳の進捗
+### 2023年11月
+- 暫定版のリリース
+- 訳者脚注の追記
+
+ご協力いただき、ありがとうございます。
