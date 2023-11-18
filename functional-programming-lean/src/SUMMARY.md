@@ -59,7 +59,7 @@
   - [インデックス、パラメータ、そして宇宙レベル](./dependent-types/indices-parameters-universes.md)
   - [依存型を使ったプログラミングの落とし穴](./dependent-types/pitfalls-of-programming-with-dependent-types.md)
   - [要約](./dependent-types/summary.md)
-- [小休止: 戦術、帰納、そして証明](./tactics-induction-and-proofs.md)
+- [小休止: 戦術、帰納、そして証明](./tactics-induction-proofs.md)
 - [プログラミング、証明、そしてパフォーマンス](programs-proofs.md)
   - [末尾再帰](programs-proofs/tail-recursion.md)
   - [同一性の証明](programs-proofs/tail-recursion-proofs.md)

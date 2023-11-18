@@ -150,7 +150,7 @@ Leanは`dbgTraceIfShared`と呼ばれる組み込み関数を提供しており�
 ```
 帰納法ステップでの`insertSorted`を使用した単純化は`insertSorted`のパターンマッチを明らかにしました：
 ```output error
-{{#example_out ExamplesProgramsProofs/InsertionSort.lean insert_sorted_size_eq_0}}
+{{#example_out Examples/ProgramsProofs/InsertionSort.lean insert_sorted_size_eq_0}}
 ```
 あなたが`if`や`match`を含むゴールに直面したとき、`split`タクティックはコントロールフローの各パスについて1つの新しいゴールを置き換えます。
 ```leantac

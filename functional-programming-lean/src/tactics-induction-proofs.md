@@ -108,10 +108,7 @@ _全ての_ 自然数に対して個別に命題をチェックすることは�
 
 しかし、「exact」の使用はややもろいです。証明を「ゴルフ」化する間に帰納仮説の名前が変更されることがあり、それによってこの証明が機能しなくなる可能性があります。`assumption` 戦術は、_全ての_ 仮定がそれに一致する場合に現在のゴールを解決します：
 ```leantac
-{{#example_decl
-
-```leantac
-{{#example_decl Examples/Induction.lean plusR_zero_left_golf_done}}
+{{#example_decl Examples/Induction.lean plusR_zero_left_golf_4}}
 ```
 
 このように、`assumption` 戦術を使用することで、ゴールの名前を覚える必要なく、現在のゴールに一致する任意の仮定を使って直ちに解決できます。これが、特に戦術ゴルフの文脈では好まれる理由です。証明のロバスト性を向上させ、将来の変更に対しても安定性を保つために役立つからです。

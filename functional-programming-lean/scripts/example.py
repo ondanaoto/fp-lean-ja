@@ -58,6 +58,7 @@ def load_examples(filename):
         accum_start = ''
         accum_end = ''
         examples = {}
+        print(f"Loading examples from {filename}", file=sys.stderr)
         with open(filename) as f:
             for line in f.readlines():
                 if state is None:
