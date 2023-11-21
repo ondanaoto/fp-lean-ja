@@ -1,0 +1,428 @@
+<!DOCTYPE HTML>
+<html lang="ja" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>強制変換 - Functional Programming in Lean</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../custom.css">
+        <link rel="stylesheet" href="../pygments.css">
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../title.html">Leanにおける関数型プログラミング</a></li><li class="chapter-item expanded affix "><a href="../introduction.html">イントロダクション</a></li><li class="chapter-item expanded affix "><a href="../acknowledgments.html">謝辞</a></li><li class="chapter-item expanded "><a href="../getting-to-know.html"><strong aria-hidden="true">1.</strong> Leanの基本を学ぶ</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../getting-to-know/evaluating.html"><strong aria-hidden="true">1.1.</strong> 式の評価</a></li><li class="chapter-item expanded "><a href="../getting-to-know/types.html"><strong aria-hidden="true">1.2.</strong> 型</a></li><li class="chapter-item expanded "><a href="../getting-to-know/functions-and-definitions.html"><strong aria-hidden="true">1.3.</strong> 関数と定義</a></li><li class="chapter-item expanded "><a href="../getting-to-know/structures.html"><strong aria-hidden="true">1.4.</strong> 構造体</a></li><li class="chapter-item expanded "><a href="../getting-to-know/datatypes-patterns-and-pattern.html"><strong aria-hidden="true">1.5.</strong> データタイプ、パターン、そして再帰</a></li><li class="chapter-item expanded "><a href="../getting-to-know/polymorphism.html"><strong aria-hidden="true">1.6.</strong> 多相性</a></li><li class="chapter-item expanded "><a href="../getting-to-know/conveniences.html"><strong aria-hidden="true">1.7.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../getting-to-know/summary.html"><strong aria-hidden="true">1.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../hello-world.html"><strong aria-hidden="true">2.</strong> Hello, World!</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../hello-world/running-a-program.html"><strong aria-hidden="true">2.1.</strong> プログラムの実行</a></li><li class="chapter-item expanded "><a href="../hello-world/step-by-step.html"><strong aria-hidden="true">2.2.</strong> ステップバイステップ</a></li><li class="chapter-item expanded "><a href="../hello-world/starting-a-project.html"><strong aria-hidden="true">2.3.</strong> プロジェクトの始め方</a></li><li class="chapter-item expanded "><a href="../hello-world/cat.html"><strong aria-hidden="true">2.4.</strong> 実例:cat</a></li><li class="chapter-item expanded "><a href="../hello-world/conveniences.html"><strong aria-hidden="true">2.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../hello-world/summary.html"><strong aria-hidden="true">2.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../props-proofs-indexing.html"><strong aria-hidden="true">3.</strong> 小休止: 命題、証明、そして索引</a></li><li class="chapter-item expanded "><a href="../type-classes.html"><strong aria-hidden="true">4.</strong> オーバーロードと型クラス</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../type-classes/pos.html"><strong aria-hidden="true">4.1.</strong> 正の数</a></li><li class="chapter-item expanded "><a href="../type-classes/polymorphism.html"><strong aria-hidden="true">4.2.</strong> 型クラスと多相性</a></li><li class="chapter-item expanded "><a href="../type-classes/out-params.html"><strong aria-hidden="true">4.3.</strong> インスタンス検索の制御</a></li><li class="chapter-item expanded "><a href="../type-classes/arrays-and-indexing.html"><strong aria-hidden="true">4.4.</strong> 配列とインデックス化</a></li><li class="chapter-item expanded "><a href="../type-classes/standard-classes.html"><strong aria-hidden="true">4.5.</strong> 標準クラス</a></li><li class="chapter-item expanded "><a href="../type-classes/coercion.html" class="active"><strong aria-hidden="true">4.6.</strong> 強制変換</a></li><li class="chapter-item expanded "><a href="../type-classes/conveniences.html"><strong aria-hidden="true">4.7.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../type-classes/summary.html"><strong aria-hidden="true">4.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../monads.html"><strong aria-hidden="true">5.</strong> モナド</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../monads/monad-type-class.html"><strong aria-hidden="true">5.1.</strong> モナド型クラス</a></li><li class="chapter-item expanded "><a href="../monads/arithmetic-in-monads.html"><strong aria-hidden="true">5.2.</strong> 例: モナドでの算術</a></li><li class="chapter-item expanded "><a href="../monads/do-notation-for-monads.html"><strong aria-hidden="true">5.3.</strong> モナド用do記法</a></li><li class="chapter-item expanded "><a href="../monads/io-monad.html"><strong aria-hidden="true">5.4.</strong> IOモナド</a></li><li class="chapter-item expanded "><a href="../monads/conveniences.html"><strong aria-hidden="true">5.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../monads/summary.html"><strong aria-hidden="true">5.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../functor-applicative-monad.html"><strong aria-hidden="true">6.</strong> 関手、アプリカティブ関手、そしてモナド</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../functor-applicative-monad/structure-and-inheritance.html"><strong aria-hidden="true">6.1.</strong> 構造と継承</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/applicative-functors.html"><strong aria-hidden="true">6.2.</strong> アプリカティブ関手</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/applicative-contract.html"><strong aria-hidden="true">6.3.</strong> アプリカティブの契約</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/alternative.html"><strong aria-hidden="true">6.4.</strong> 代替物</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/universes.html"><strong aria-hidden="true">6.5.</strong> 宇宙</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/complete-definitions.html"><strong aria-hidden="true">6.6.</strong> 完全な定義</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/summary.html"><strong aria-hidden="true">6.7.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../monad-transformers.html"><strong aria-hidden="true">7.</strong> モナドトランスフォーマ</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../monad-transformers/reader-io.html"><strong aria-hidden="true">7.1.</strong> IOとReaderの組み合わせ</a></li><li class="chapter-item expanded "><a href="../monad-transformers/transformers-kit.html"><strong aria-hidden="true">7.2.</strong> モナド構築キット</a></li><li class="chapter-item expanded "><a href="../monad-transformers/order-of-monad-transformers.html"><strong aria-hidden="true">7.3.</strong> モナドトランスフォーマの並び順</a></li><li class="chapter-item expanded "><a href="../monad-transformers/enhanced-do.html"><strong aria-hidden="true">7.4.</strong> doの機能強化</a></li><li class="chapter-item expanded "><a href="../monad-transformers/conveniences.html"><strong aria-hidden="true">7.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../monad-transformers/summary.html"><strong aria-hidden="true">7.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../dependent-types.html"><strong aria-hidden="true">8.</strong> 依存型を使用したプログラミング</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../dependent-types/indexed-families.html"><strong aria-hidden="true">8.1.</strong> インデックス付きファミリー</a></li><li class="chapter-item expanded "><a href="../dependent-types/universe-pattern.html"><strong aria-hidden="true">8.2.</strong> 宇宙デザインパターン</a></li><li class="chapter-item expanded "><a href="../dependent-types/typed-queries-examples.html"><strong aria-hidden="true">8.3.</strong> 実例: 型指定されたクエリ</a></li><li class="chapter-item expanded "><a href="../dependent-types/indices-parameters-universes.html"><strong aria-hidden="true">8.4.</strong> インデックス、パラメータ、そして宇宙レベル</a></li><li class="chapter-item expanded "><a href="../dependent-types/pitfalls-of-programming-with-dependent-types.html"><strong aria-hidden="true">8.5.</strong> 依存型を使ったプログラミングの落とし穴</a></li><li class="chapter-item expanded "><a href="../dependent-types/summary.html"><strong aria-hidden="true">8.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../tactics-induction-proofs.html"><strong aria-hidden="true">9.</strong> 小休止: 戦術、帰納、そして証明</a></li><li class="chapter-item expanded "><a href="../programs-proofs.html"><strong aria-hidden="true">10.</strong> プログラミング、証明、そしてパフォーマンス</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../programs-proofs/tail-recursion.html"><strong aria-hidden="true">10.1.</strong> 末尾再帰</a></li><li class="chapter-item expanded "><a href="../programs-proofs/tail-recursion-proofs.html"><strong aria-hidden="true">10.2.</strong> 同一性の証明</a></li><li class="chapter-item expanded "><a href="../programs-proofs/arrays-and-termination.html"><strong aria-hidden="true">10.3.</strong> 配列と終了性</a></li><li class="chapter-item expanded "><a href="../programs-proofs/inequalities.html"><strong aria-hidden="true">10.4.</strong> その他の不等式</a></li><li class="chapter-item expanded "><a href="../programs-proofs/fin.html"><strong aria-hidden="true">10.5.</strong> 安全な配列インデックス</a></li><li class="chapter-item expanded "><a href="../programs-proofs/insertion-sort.html"><strong aria-hidden="true">10.6.</strong> 挿入ソートと配列の変更</a></li><li class="chapter-item expanded "><a href="../programs-proofs/special-types.html"><strong aria-hidden="true">10.7.</strong> 特殊な型</a></li><li class="chapter-item expanded "><a href="../programs-proofs/summary.html"><strong aria-hidden="true">10.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../next-steps.html">次のステップ</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Functional Programming in Lean</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <pre><code class="language-markdown"># 強制変換 (Coercions)
+
+数学では、異なる文脈において同じ記号が、ある対象の異なる側面を表すために使用されることが一般的です。
+例えば、環が集合が期待される文脈で参照される場合、それは環の根底にある集合が意図されていると理解されます。
+プログラミング言語では、一つの型の値を別の型の値に自動的に変換するための規則を持つことが一般的です。
+例えば、Javaでは `byte` 型から `int` 型への自動昇格が許され、Kotlinでは null でない型が null を許容する型の文脈で使用されることを許します。
+
+Leanでは、これらの目的は _強制変換 (coercions)_ と呼ばれるメカニズムによって充足されます。
+Leanは、ある型の式が別の型が期待される文脈で見出された場合、型エラーを報告する前に式を強制変換しようとします。
+JavaやC、Kotlinとは異なり、強制変換は型クラスのインスタンスを定義することで拡張可能です。
+
+## 正の数 (Positive Numbers)
+
+例えば、すべての正の数には自然数が対応します。
+以前定義された関数 `Pos.toNat` は、`Pos` を対応する `Nat` に変換します：
+```lean
+def Pos.toNat : Pos → Nat
+  | Pos.one =&gt; 1
+  | Pos.succ n =&gt; n.toNat + 1
+</code></pre>
+<p>型 <code>{α : Type} → Nat → List α → List α</code> の関数 <code>List.drop</code> は、リストのプレフィックスを削除します。
+しかし、<code>List.drop</code> を <code>Pos</code> に適用すると型エラーが生じます：</p>
+<pre><code class="language-lean">[1, 2, 3, 4].drop (2 : Pos)
+</code></pre>
+<pre><code class="language-output error">application type mismatch
+  List.drop 2
+argument
+  2
+has type
+  Pos : Type
+but is expected to have type
+  Nat : Type
+</code></pre>
+<p><code>List.drop</code> の著者はそれを型クラスのメソッドにしなかったため、新しいインスタンスを定義することで上書きすることはできません。</p>
+<p>型クラス <code>Coe</code> は、一つの型から別の型への強制変換の方法を多重に記述します：</p>
+<pre><code class="language-lean">class Coe (α : Type) (β : Type) where
+  coe : α → β
+</code></pre>
+<p><code>Coe Pos Nat</code> のインスタンスがあれば、先ほどのコードが動作するのに十分です：</p>
+<pre><code class="language-lean">instance : Coe Pos Nat where
+  coe x := x.toNat
+
+#eval [1, 2, 3, 4].drop (2 : Pos)
+</code></pre>
+<pre><code class="language-output info">[3, 4]
+</code></pre>
+<p><code>#check</code> を使用すると、舞台裏で使用されたインスタンス検索の結果が表示されます：</p>
+<pre><code class="language-lean">#check [1, 2, 3, 4].drop (2 : Pos)
+</code></pre>
+<pre><code class="language-output info">List.drop (Pos.toNat 2) [1, 2, 3, 4] : List Nat
+</code></pre>
+<h2 id="連鎖強制変換-chaining-coercions"><a class="header" href="#連鎖強制変換-chaining-coercions">連鎖強制変換 (Chaining Coercions)</a></h2>
+<p>強制変換を検索する際、Leanは小さな強制変換の連鎖から強制変換を組み立てようとします。
+例えば、すでに <code>Nat</code> から <code>Int</code> への強制変換が存在します。
+そのインスタンスと <code>Coe Pos Nat</code> インスタンスを組み合わせることで、以下のコードが承認されます：</p>
+<pre><code class="language-lean">def oneInt : Int := Pos.one
+</code></pre>
+<p>この定義は、<code>Pos</code> から <code>Nat</code> へ、そして <code>Nat</code> から <code>Int</code> への二つの強制変換を使用しています。</p>
+<p>左括弧の両側 <code>()</code> は <code>Unit.unit</code> のコンストラクタの略です。
+<code>Repr B</code> インスタンスを導出した後、</p>
+<pre><code class="language-lean">#eval coercedToB
+</code></pre>
+<p>の結果は次のようになります：</p>
+<pre><code class="language-output info">B.b
+</code></pre>
+<p><code>Option</code> 型は、C#やKotlinのnull許容型と同様に使用できます：<code>none</code> コンストラクタは値の不在を表します。
+Lean標準ライブラリでは、任意の型 <code>α</code> から <code>Option α</code> への強制変換を定義しており、その値を <code>some</code> でラッピングします。
+これにより、<code>Option</code> 型はnull許容型と同じように使用できるようになりますが、<code>some</code> を省略することができます。
+例えば、リストの最後のエントリを見つける関数 <code>List.getLast?</code> は、返り値 <code>x</code> の周りに <code>some</code> を付けずに書くことができます：</p>
+<pre><code class="language-lean">def List.last? : List α → Option α
+  | [] =&gt; none
+  | [x] =&gt; x
+  | _ :: x :: xs =&gt; last? (x :: xs)
+</code></pre>
+<p>インスタンス検索は強制変換を見つけ、引数を <code>some</code> でラッピングする <code>coe</code> の呼び出しを挿入します。
+これらの強制変換は連鎖することができるため、<code>Option</code> のネストされた使用ではネストされた <code>some</code> コンストラクタが必要になることはありません：</p>
+<pre><code class="language-lean">def perhapsPerhapsPerhaps : Option (Option (Option String)) :=
+  &quot;Please don't tell me&quot;
+</code></pre>
+<p>強制変換は、プログラムの残りの部分から課せられた型と推論された型の間に不一致が生じたときにのみ自動的にアクティブになります。
+他のエラーがある場合には、強制変換はアクティブになりません。
+例えば、エラーがインスタンスが不足していることである場合、強制変換は使用されません：</p>
+<pre><code class="language-lean">def perhapsPerhapsPerhapsNat : Option (Option (Option Nat)) :=
+  392
+</code></pre>
+<pre><code class="language-output error">failed to synthesize instance
+  OfNat (Option (Option (Option Nat))) 392
+</code></pre>
+<p>これは、<code>OfNat</code> のために使用したい型を手動で示すことで回避できます：</p>
+<pre><code class="language-lean">def perhapsPerhapsPerhapsNat : Option (Option (Option Nat)) :=
+  (392 : Nat)
+</code></pre>
+<p>さらに、強制変換は上矢印を使用することで手動で挿入することができます：</p>
+<pre><code class="language-lean">def perhapsPerhapsPerhapsNat : Option (Option (Option Nat)) :=
+  ↑(392 : Nat)
+</code></pre>
+<p>場合によっては、これを使用することでLeanが正しいインスタンスを見つけることを保証できます。
+また、プログラマの意図をより明確にすることもできます。</p>
+<h2 id="非空リストと依存性のある強制変換-non-empty-lists-and-dependent-coercions"><a class="header" href="#非空リストと依存性のある強制変換-non-empty-lists-and-dependent-coercions">非空リストと依存性のある強制変換 (Non-Empty Lists and Dependent Coercions)</a></h2>
+<p><code>Coe α β</code> のインスタンスは、型 <code>β</code> が型 <code>α</code> からのすべての値を表すことができる値を持っているときに意味をなします。
+<code>Nat</code> から <code>Int</code> への強制変換は理にかなっています。なぜなら型 <code>Int</code> はすべての自然数を含んでいるからです。
+同様に、非空リストから通常のリストへの強制変換は理にかなっています。なぜなら <code>List</code> 型はすべての非空リストを表すことができるからです：</p>
+<pre><code class="language-lean">instance : Coe (NonEmptyList α) (List α) where
+  coe
+    | { head := x, tail := xs } =&gt; x :: xs
+</code></pre>
+<p>これにより、非空リストは <code>List</code> API全体で使用できます。</p>
+<p>一方で、<code>List α</code> から <code>NonEmptyList α</code> への <code>Coe</code> のインスタンスを書くことは不可能です。なぜなら、空リストを表す非空リストはないからです。
+この制限は、<em>依存性のある強制変換 (dependent coercions)</em> と呼ばれる別のバージョンの強制変換を使用することで回避できます。
+依存性のある強制変換は、一つの型から別の型への強制変換が、強制される特定の値に依存するときに使用できます。<code>OfNat</code>型クラスがオーバーロードされる具体的な<code>Nat</code>をパラメータとして取るのと同じように、依存性のある強制変換は、それをパラメータとして取ります：</p>
+<pre><code class="language-lean">class CoeDep (α : Type) (x : α) (β : Type) where
+  coe : β
+</code></pre>
+<p>これは、特定の値を選択するチャンスです。型クラスの制約を値にさらに課すか、特定のコンストラクタを直接記述するかしてです。
+例えば、実際には空でない <code>List</code> を <code>NonEmptyList</code> に強制変換することができます：</p>
+<pre><code class="language-lean">instance : CoeDep (List α) (x :: xs) (NonEmptyList α) where
+  coe := { head := x, tail := xs }
+</code></pre>
+<h2 id="型への強制変換-coercing-to-types"><a class="header" href="#型への強制変換-coercing-to-types">型への強制変換 (Coercing to Types)</a></h2>
+<p>数学では、集合と追加の構造を備えた概念を持つのが一般的です。
+例えば、モノイドは集合 <em>S</em> 、<em>S</em> の要素 <em>s</em> 、および <em>S</em> 上の結合的な二項演算子からなります。ここで、<em>s</em> は演算子の左右で中立です。
+<em>S</em> はモノイドの「担体集合 (carrier set)」として参照されます。
+0と加算を伴う自然数はモノイドを形成します。なぜなら加算は結合的で、任意の数に0を加えると恒等になるからです。
+同様に、1と乗算を伴う自然数もモノイドを形成します。
+モノイドは関数型プログラミングでも広く使用されています。リスト、空リスト、および追加演算子はモノイドを形成し、文字列、空文字列、および文字列追加も同様です：</p>
+<pre><code class="language-lean">structure Monoid where
+  Carrier : Type
+  neutral : Carrier
+  op : Carrier → Carrier → Carrier
+
+def natMulMonoid : Monoid :=
+  { Carrier := Nat, neutral := 1, op := (· * ·) }
+
+def natAddMonoid : Monoid :=
+  { Carrier := Nat, neutral := 0, op := (· + ·) }
+
+def stringMonoid : Monoid :=
+  { Carrier := String, neutral := &quot;&quot;, op := String.append }
+
+def listMonoid (α : Type) : Monoid :=
+  { Carrier := List α, neutral := [], op := List.append }
+</code></pre>
+<p>モノイドが与えられると、リストのエントリをモノイドの担体集合に変換し、次にモノイドの演算子を使用してそれらを組み合わせる <code>foldMap</code> 関数を記述することができます。
+モノイドは中立元を持っているので、リストが空の場合には自然な結果が返されます。そして演算子が結合的であるため、関数のクライアントは、再帰関数が左から右、あるいは右から左に要素を組み合わせるかどうかを気にする必要がありません。</p>
+<pre><code class="language-lean">def foldMap (M : Monoid) (f : α → M.Carrier) (xs : List α) : M.Carrier :=
+  let rec go (soFar : M.Carrier) : List α → M.Carrier
+    | [] =&gt; soFar
+    | y :: ys =&gt; go (M.op soFar (f y)) ys
+  go M.neutral xs
+</code></pre>
+<p>モノイドは3つの異なる情報から成るものですが、モノイドの名前だけを使ってその集合を参照するのが一般的です。
+「Aをモノイドとし、<em>x</em> と <em>y</em> をその担体集合の要素とする」の代わりに、「<em>A</em> をモノイドとし、<em>x</em> と <em>y</em> を <em>A</em> の要素とする」という言い方が一般的です。
+この慣習をLeanでエンコードするには、モノイドからその担体集合への新しい種類の強制変換を定義します。</p>
+<p><code>CoeSort</code>クラスは<code>Coe</code>クラスと似ていますが、強制変換の対象が <em>sort</em> （すなわち、<code>Type</code> または <code>Prop</code>）であるという例外があります。
+Leanにおける用語_sort_は、これらデータを分類する型—<code>Type</code>はデータを分類する型を分類する型で、<code>Prop</code>はその真実の証拠を分類する命題を分類する型。
+<code>Coe</code>が型の不一致が発生したときにチェックされるのと同様に、ソート以外の何かがソートを期待する文脈で提供されるときに<code>CoeSort</code>が使用されます。</p>
+<p>モノイドからその担体集合への強制変換は担体を抽出します：</p>
+<pre><code class="language-lean">instance : CoeSort Monoid Type where
+  coe m := m.Carrier
+</code></pre>
+<p>この強制変換を使用すると、型シグネチャが負担の少ないものになります：</p>
+<pre><code class="language-lean">def foldMap (M : Monoid) (f : α → M) (xs : List α) : M :=
+  let rec go (soFar : M) : List α → M
+    | [] =&gt; soFar
+    | y :: ys =&gt; go (M.op soFar (f y)) ys
+  go M.neutral xs
+</code></pre>
+<p><code>CoeSort</code>のもう一つの有用な例は、<code>Bool</code>と<code>Prop</code>の間の隙間を埋めるために使用されます。
+<a href="standard-classes.html#equality-and-ordering">等価性と順序についての章</a>で議論したように、Leanの <code>if</code> 文は条件が <code>Bool</code> ではなく判定可能な命題であることを期待しています。
+しかし、プログラムは通常、ブール値に基づいて分岐する必要があります。
+それに対し、Lean標準ライブラリは <code>Bool</code> から問題の <code>Bool</code> が <code>true</code> に等しいという命題への強制変換を定義しています：</p>
+<pre><code class="language-lean">instance : CoeSort Bool Prop where
+  coe b := b = true
+</code></pre>
+<p>この場合、疑問に思われるソートは <code>Prop</code> ではなく <code>Type</code> です。</p>
+<h2 id="関数への強制変換-coercing-to-functions"><a class="header" href="#関数への強制変換-coercing-to-functions">関数への強制変換 (Coercing to Functions)</a></h2>
+<p>プログラミングで定期的に出現する多くのデータ型は、その関数についていくつかの追加情報とともに構成されます。
+例えば、名前はログに表示するためのものやいくつかの設定データが関数に伴って提供されることがあります。
+さらに、<code>Monoid</code> の例のように、構造のフィールドに型を置くことは、操作の実装方法が複数あり、型クラスを使用するよりも手動での制御が必要な文脈で意味を成す場合があります。
+例えば、JSONシリアライザによって発行される値の特定の詳細が重要であるかもしれません。これは、別のアプリケーションが特定の形式を期待しているためです。
+場合によっては、構成データ自体から関数を導出できることもあります。</p>
+<p>非関数型の値を関数型へと変換する型クラスとして <code>CoeFun</code> があります。
+<code>CoeFun</code> には二つのパラメータがあります：一つ目は関数に変換されるべき型で、二つ目はどの関数型をターゲットにするかを決定する出力パラメータです。</p>
+<pre><code class="language-lean">class CoeFun (α : Type) (makeFunctionType : outParam (α → Type)) where
+  coe : (x : α) → makeFunctionType x
+</code></pre>
+<p>二つ目のパラメータ自体は型を計算する関数です。
+Leanでは、型は第一級の市民であり、他のどんなものと同じように関数に渡されたり、関数から返されたりします。</p>
+<p>例えば、その引数に定数を加える関数は、加える量を含むラッパーとして表現できます。
+そして、実際の関数を定義するのではなく、どれだけ加えるかに関するラッパーとして以下のようになります：</p>
+<pre><code class="language-lean">structure Adder where
+  howMuch : Nat
+</code></pre>
+<p>その引数に5を加える関数は、<code>howMuch</code> フィールドに <code>5</code> を持っています：</p>
+<pre><code class="language-lean">def add5 : Adder := ⟨5⟩
+</code></pre>
+<p>この <code>Adder</code> 型は、関数ではなく、その引数に適用するとエラーが発生します。</p>
+<pre><code class="language-lean">#eval add5 3
+</code></pre>
+<pre><code class="language-output error">function expected at
+  add5
+term has type
+  Adder
+</code></pre>
+<p><code>CoeFun</code> インスタンスを定義することで、Leanはadderを <code>Nat → Nat</code> 型の関数へと変換します：</p>
+<pre><code class="language-lean">instance : CoeFun Adder (fun _ =&gt; Nat → Nat) where
+  coe a := (· + a.howMuch)
+
+#eval add5 3
+</code></pre>
+<pre><code class="language-output info">8
+</code></pre>
+<p>すべての <code>Adder</code> が <code>Nat → Nat</code> 関数に変換されるべきであるため、「CoeFun」の二つ目のパラメータへの引数は無視されました。</p>
+<p>値自体が正しい関数型を特定するために必要な場合、<code>CoeFun</code> の二つ目のパラメータはもはや無視されません。
+例えば、以下のJSON値の表現を考えます：</p>
+<pre><code class="language-lean">inductive JSON where
+  | true : JSON
+  | false : JSON
+  | null : JSON
+  | string : String → JSON
+  | number : Float → JSON
+  | object : List (String × JSON) → JSON
+  | array : List JSON → JSON
+deriving Repr
+</code></pre>
+<p>JSONシリアライザは、シリアライズ可能な型を追跡し、そのシリアライズ自体のコードを含む構造体です：</p>
+<pre><code class="language-lean">structure Serializer where
+  Contents : Type
+  serialize : Contents → JSON
+</code></pre>
+<p>文字列のシリアライザは、提供された文字列を <code>JSON.string</code> コンストラクタに包む必要しかないです：</p>
+<pre><code class="language-lean">def Str : Serializer :=
+  { Contents := String,
+    serialize := JSON.string
+  }
+</code></pre>
+<p>JSONシリアライザを、引数をシリアライズする関数として見るためには、シリアライズ可能なデータの内部型を抽出する必要があります：</p>
+<pre><code class="language-lean">instance : CoeFun Serializer (fun s =&gt; s.Contents → JSON) where
+  coe s := s.serialize
+</code></pre>
+<p>このインスタンスがあれば、シリアライザを直接引数に適用することができます：</p>
+<pre><code class="language-lean">def buildResponse (title : String) (R : Serializer) (record : R.Contents) : JSON :=
+  JSON.object [
+    (&quot;title&quot;, JSON.string title),
+    (&quot;status&quot;, JSON.number 200),
+    (&quot;record&quot;, R record)
+  ]
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../type-classes/standard-classes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../type-classes/conveniences.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../type-classes/standard-classes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../type-classes/conveniences.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+    </body>
+</html>

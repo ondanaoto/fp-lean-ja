@@ -1,0 +1,291 @@
+<!DOCTYPE HTML>
+<html lang="ja" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>関数と定義 - Functional Programming in Lean</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../custom.css">
+        <link rel="stylesheet" href="../pygments.css">
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../title.html">Leanにおける関数型プログラミング</a></li><li class="chapter-item expanded affix "><a href="../introduction.html">イントロダクション</a></li><li class="chapter-item expanded affix "><a href="../acknowledgments.html">謝辞</a></li><li class="chapter-item expanded "><a href="../getting-to-know.html"><strong aria-hidden="true">1.</strong> Leanの基本を学ぶ</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../getting-to-know/evaluating.html"><strong aria-hidden="true">1.1.</strong> 式の評価</a></li><li class="chapter-item expanded "><a href="../getting-to-know/types.html"><strong aria-hidden="true">1.2.</strong> 型</a></li><li class="chapter-item expanded "><a href="../getting-to-know/functions-and-definitions.html" class="active"><strong aria-hidden="true">1.3.</strong> 関数と定義</a></li><li class="chapter-item expanded "><a href="../getting-to-know/structures.html"><strong aria-hidden="true">1.4.</strong> 構造体</a></li><li class="chapter-item expanded "><a href="../getting-to-know/datatypes-patterns-and-pattern.html"><strong aria-hidden="true">1.5.</strong> データタイプ、パターン、そして再帰</a></li><li class="chapter-item expanded "><a href="../getting-to-know/polymorphism.html"><strong aria-hidden="true">1.6.</strong> 多相性</a></li><li class="chapter-item expanded "><a href="../getting-to-know/conveniences.html"><strong aria-hidden="true">1.7.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../getting-to-know/summary.html"><strong aria-hidden="true">1.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../hello-world.html"><strong aria-hidden="true">2.</strong> Hello, World!</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../hello-world/running-a-program.html"><strong aria-hidden="true">2.1.</strong> プログラムの実行</a></li><li class="chapter-item expanded "><a href="../hello-world/step-by-step.html"><strong aria-hidden="true">2.2.</strong> ステップバイステップ</a></li><li class="chapter-item expanded "><a href="../hello-world/starting-a-project.html"><strong aria-hidden="true">2.3.</strong> プロジェクトの始め方</a></li><li class="chapter-item expanded "><a href="../hello-world/cat.html"><strong aria-hidden="true">2.4.</strong> 実例:cat</a></li><li class="chapter-item expanded "><a href="../hello-world/conveniences.html"><strong aria-hidden="true">2.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../hello-world/summary.html"><strong aria-hidden="true">2.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../props-proofs-indexing.html"><strong aria-hidden="true">3.</strong> 小休止: 命題、証明、そして索引</a></li><li class="chapter-item expanded "><a href="../type-classes.html"><strong aria-hidden="true">4.</strong> オーバーロードと型クラス</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../type-classes/pos.html"><strong aria-hidden="true">4.1.</strong> 正の数</a></li><li class="chapter-item expanded "><a href="../type-classes/polymorphism.html"><strong aria-hidden="true">4.2.</strong> 型クラスと多相性</a></li><li class="chapter-item expanded "><a href="../type-classes/out-params.html"><strong aria-hidden="true">4.3.</strong> インスタンス検索の制御</a></li><li class="chapter-item expanded "><a href="../type-classes/arrays-and-indexing.html"><strong aria-hidden="true">4.4.</strong> 配列とインデックス化</a></li><li class="chapter-item expanded "><a href="../type-classes/standard-classes.html"><strong aria-hidden="true">4.5.</strong> 標準クラス</a></li><li class="chapter-item expanded "><a href="../type-classes/coercion.html"><strong aria-hidden="true">4.6.</strong> 強制変換</a></li><li class="chapter-item expanded "><a href="../type-classes/conveniences.html"><strong aria-hidden="true">4.7.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../type-classes/summary.html"><strong aria-hidden="true">4.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../monads.html"><strong aria-hidden="true">5.</strong> モナド</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../monads/monad-type-class.html"><strong aria-hidden="true">5.1.</strong> モナド型クラス</a></li><li class="chapter-item expanded "><a href="../monads/arithmetic-in-monads.html"><strong aria-hidden="true">5.2.</strong> 例: モナドでの算術</a></li><li class="chapter-item expanded "><a href="../monads/do-notation-for-monads.html"><strong aria-hidden="true">5.3.</strong> モナド用do記法</a></li><li class="chapter-item expanded "><a href="../monads/io-monad.html"><strong aria-hidden="true">5.4.</strong> IOモナド</a></li><li class="chapter-item expanded "><a href="../monads/conveniences.html"><strong aria-hidden="true">5.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../monads/summary.html"><strong aria-hidden="true">5.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../functor-applicative-monad.html"><strong aria-hidden="true">6.</strong> 関手、アプリカティブ関手、そしてモナド</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../functor-applicative-monad/structure-and-inheritance.html"><strong aria-hidden="true">6.1.</strong> 構造と継承</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/applicative-functors.html"><strong aria-hidden="true">6.2.</strong> アプリカティブ関手</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/applicative-contract.html"><strong aria-hidden="true">6.3.</strong> アプリカティブの契約</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/alternative.html"><strong aria-hidden="true">6.4.</strong> 代替物</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/universes.html"><strong aria-hidden="true">6.5.</strong> 宇宙</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/complete-definitions.html"><strong aria-hidden="true">6.6.</strong> 完全な定義</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/summary.html"><strong aria-hidden="true">6.7.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../monad-transformers.html"><strong aria-hidden="true">7.</strong> モナドトランスフォーマ</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../monad-transformers/reader-io.html"><strong aria-hidden="true">7.1.</strong> IOとReaderの組み合わせ</a></li><li class="chapter-item expanded "><a href="../monad-transformers/transformers-kit.html"><strong aria-hidden="true">7.2.</strong> モナド構築キット</a></li><li class="chapter-item expanded "><a href="../monad-transformers/order-of-monad-transformers.html"><strong aria-hidden="true">7.3.</strong> モナドトランスフォーマの並び順</a></li><li class="chapter-item expanded "><a href="../monad-transformers/enhanced-do.html"><strong aria-hidden="true">7.4.</strong> doの機能強化</a></li><li class="chapter-item expanded "><a href="../monad-transformers/conveniences.html"><strong aria-hidden="true">7.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../monad-transformers/summary.html"><strong aria-hidden="true">7.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../dependent-types.html"><strong aria-hidden="true">8.</strong> 依存型を使用したプログラミング</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../dependent-types/indexed-families.html"><strong aria-hidden="true">8.1.</strong> インデックス付きファミリー</a></li><li class="chapter-item expanded "><a href="../dependent-types/universe-pattern.html"><strong aria-hidden="true">8.2.</strong> 宇宙デザインパターン</a></li><li class="chapter-item expanded "><a href="../dependent-types/typed-queries-examples.html"><strong aria-hidden="true">8.3.</strong> 実例: 型指定されたクエリ</a></li><li class="chapter-item expanded "><a href="../dependent-types/indices-parameters-universes.html"><strong aria-hidden="true">8.4.</strong> インデックス、パラメータ、そして宇宙レベル</a></li><li class="chapter-item expanded "><a href="../dependent-types/pitfalls-of-programming-with-dependent-types.html"><strong aria-hidden="true">8.5.</strong> 依存型を使ったプログラミングの落とし穴</a></li><li class="chapter-item expanded "><a href="../dependent-types/summary.html"><strong aria-hidden="true">8.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../tactics-induction-proofs.html"><strong aria-hidden="true">9.</strong> 小休止: 戦術、帰納、そして証明</a></li><li class="chapter-item expanded "><a href="../programs-proofs.html"><strong aria-hidden="true">10.</strong> プログラミング、証明、そしてパフォーマンス</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../programs-proofs/tail-recursion.html"><strong aria-hidden="true">10.1.</strong> 末尾再帰</a></li><li class="chapter-item expanded "><a href="../programs-proofs/tail-recursion-proofs.html"><strong aria-hidden="true">10.2.</strong> 同一性の証明</a></li><li class="chapter-item expanded "><a href="../programs-proofs/arrays-and-termination.html"><strong aria-hidden="true">10.3.</strong> 配列と終了性</a></li><li class="chapter-item expanded "><a href="../programs-proofs/inequalities.html"><strong aria-hidden="true">10.4.</strong> その他の不等式</a></li><li class="chapter-item expanded "><a href="../programs-proofs/fin.html"><strong aria-hidden="true">10.5.</strong> 安全な配列インデックス</a></li><li class="chapter-item expanded "><a href="../programs-proofs/insertion-sort.html"><strong aria-hidden="true">10.6.</strong> 挿入ソートと配列の変更</a></li><li class="chapter-item expanded "><a href="../programs-proofs/special-types.html"><strong aria-hidden="true">10.7.</strong> 特殊な型</a></li><li class="chapter-item expanded "><a href="../programs-proofs/summary.html"><strong aria-hidden="true">10.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../next-steps.html">次のステップ</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Functional Programming in Lean</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="関数と定義"><a class="header" href="#関数と定義">関数と定義</a></h1>
+<p>Leanでは、<code>def</code>キーワードを使用して定義を導入します。例えば、文字列 <code>&quot;Hello&quot;</code> を参照する名前 <code>hello</code> を定義するには、以下のように書きます：</p>
+<pre><code class="language-lean">def hello := &quot;Hello&quot;
+</code></pre>
+<p>Leanでは、新しい名前を定義するときは等号<code>=</code>ではなくコロンイコール演算子<code>:=</code>を使用します。これは<code>=</code>が既存の式間の等式を表すのに使われ、二つの異なる演算子を使用することで混乱を防ぐためです。</p>
+<p><code>hello</code>の定義では、式 <code>&quot;Hello&quot;</code> が十分に単純なので、Leanは自動的に定義のタイプを決定できます。
+しかし、ほとんどの定義はこれほど単純ではないので、通常はタイプを追加する必要があります。
+これは、定義されている名前の後にコロンを使用することで行われます。</p>
+<pre><code class="language-lean">def lean : String := &quot;Lean&quot;
+</code></pre>
+<p>名前が定義されたら、以下のように使用することができます。</p>
+<pre><code class="language-Lean">#eval String.append hello (String.append &quot; &quot; lean)
+</code></pre>
+<p>出力としては、</p>
+<pre><code class="language-Lean info">&quot;Hello Lean&quot;
+</code></pre>
+<p>Leanでは、定義された名前はその定義の後にのみ使用することができます。</p>
+<p>多くの言語では、関数の定義は他の値の定義とは異なる構文を使用します。
+たとえば、Pythonの関数定義は<code>def</code>キーワードで始まりますが、他の定義は等号で定義されます。
+Leanでは、関数は他の値と同様に<code>def</code>キーワードを使用して定義されます。
+それでも、<code>hello</code>のような定義は、それぞれ呼び出されるたびに同じ結果を返すゼロ引数関数を参照するのではなく、<em>直接</em> その値を参照する名前を導入します。</p>
+<h2 id="関数の定義"><a class="header" href="#関数の定義">関数の定義</a></h2>
+<p>Leanで関数を定義する方法は様々です。最も単純な方法は、関数の引数を定義のタイプの前にスペースで区切って配置することです。例えば、引数に1を加える関数は以下のように書かれます：</p>
+<pre><code class="language-lean">def add1 (n : Nat) : Nat := n + 1
+</code></pre>
+<p>この関数を<code>#eval</code>でテストすると、期待通りの <code>8</code> を得ます：</p>
+<pre><code class="language-lean">#eval add1 7
+</code></pre>
+<p>関数が複数の引数に適用される場合には、各引数の間にスペースを配置するように、複数の引数を受け取る関数は、引数の名前とタイプの間にスペースを配置して定義されます。関数 <code>maximum</code>は、2つの<code>Nat</code>引数<code>n</code>と<code>k</code>を取り、最も大きい方の引数と等しい結果を返します。</p>
+<pre><code class="language-lean">def maximum (n : Nat) (k : Nat) : Nat :=
+  if n &lt; k then
+    k
+  else n
+</code></pre>
+<p><code>maximum</code>のような定義された関数に引数が与えられると、結果はまず引数名を提供された値で本体内で置き換え、次に結果の本体を評価することによって決定されます。例えば：</p>
+<pre><code class="language-lean">maximum (5 + 8) (2 * 7)
+===&gt;
+maximum 13 14
+===&gt;
+if 13 &lt; 14 then 14 else 13
+===&gt;
+14
+</code></pre>
+<p>自然数、整数、および文字列に評価される式には、これを言うタイプがあります（それぞれ<code>Nat</code>、<code>Int</code>、および<code>String</code>）。
+これは関数にも当てはまります。
+<code>Nat</code>を受け取り<code>Bool</code>を返す関数は<code>Nat → Bool</code>型を持ち、二つの<code>Nat</code>を受け取り<code>Nat</code>を返す関数は<code>Nat → Nat → Nat</code>型を持ちます。</p>
+<p>特別なケースとして、Leanは関数の名前が直接<code>#check</code>と共に使用されたときに、その関数のシグネチャを返します。
+<code>#check add1</code> を入力すると <code>add1 (n : Nat) : Nat</code> を得ます。
+しかし、関数の名前を括弧で囲むことでLeanを「だます」ことができ、通常の式として処理されるため、<code>#check (add1)</code> を入力すると <code>add1 : Nat → Nat</code> となり、<code>#check (maximum)</code> を入力すると <code>maximum : Nat → Nat → Nat</code> を得ます。
+この矢印はASCII代替矢印 <code>-&gt;</code> としても書かれることができるので、上記の関数タイプはそれぞれ <code>Nat -&gt; Nat</code> および <code>Nat -&gt; Nat -&gt; Nat</code> として書かれます。</p>
+<p>内部的には、すべての関数は実際には正確に1つの引数を期待しています。
+<code>maximum</code>のように複数の引数を取るように見える関数は、実際には1つの引数を取り、その後新しい関数を返す関数です。
+この新しい関数は次の引数を取り、それ以上の引数が期待されなくなるまでプロセスが続きます。
+これは、<code>#check maximum 3</code> を提供すると <code>maximum 3 : Nat → Nat</code> を得、<code>#check String.append &quot;Hello &quot;</code> を提供すると <code>String.append &quot;Hello &quot; : String → String</code> を得ることによって見ることができます。
+複数の引数を持つ関数を実装するために関数を返す関数を使用することは、数学者ハスケル・カリーに因んで <em>カリー化</em> と呼ばれます。
+関数の矢印は右に結合するため、<code>Nat → Nat → Nat</code> は<code>Nat → (Nat → Nat)</code>と括弧で囲むべきです。</p>
+<h3 id="練習問題"><a class="header" href="#練習問題">練習問題</a></h3>
+<ul>
+<li><code>String -&gt; String -&gt; String -&gt; String</code>型の関数<code>joinStringsWith</code>を定義して、最初の引数を2番目と3番目の引数の間に配置して新しい文字列を作成します。<code>joinStringsWith &quot;, &quot; &quot;one&quot; &quot;and another&quot;</code>は<code>&quot;one, and another&quot;</code>と同じ結果になるはずです。</li>
+<li><code>joinStringsWith &quot;: &quot;</code>のタイプは何ですか？Leanで答えを確認してください。</li>
+<li>与えられた高さ、幅、奥行きで直方体の体積を計算する、<code>Nat → Nat → Nat → Nat</code>型の関数<code>volume</code>を定義します。</li>
+</ul>
+<h2 id="型の定義"><a class="header" href="#型の定義">型の定義</a></h2>
+<p>ほとんどの型付きプログラミング言語には、Cの<code>typedef</code>のように型に別名を定義する手段があります。
+しかし、Leanでは、型は言語のファーストクラスに属しています - それらは他のどのような式と同じです。
+これは、定義が他の値だけでなく型を参照することもできることを意味します。</p>
+<p>例えば、もし<code>String</code>とタイピングするのが面倒であれば、より短い略称<code>Str</code>を定義することができます：</p>
+<pre><code class="language-lean">def Str : Type := String
+</code></pre>
+<p>それから、<code>Str</code>を<code>String</code>の代わりに定義のタイプとして使用することが可能になります：</p>
+<pre><code class="language-lean">def aStr : Str := &quot;This is a string.&quot;
+</code></pre>
+<p>これが機能する理由は、型がLeanの残りの部分と同じ規則に従うためです。
+型は式であり、式では、定義済みの名前はその定義と置き換えることができます。
+<code>Str</code>が<code>String</code>を意味するように定義されているため、<code>aStr</code>の定義は理にかなっています。</p>
+<h3 id="出会うかもしれないメッセージ"><a class="header" href="#出会うかもしれないメッセージ">出会うかもしれないメッセージ</a></h3>
+<p>型のための定義を使用することで実験することは、Leanが整数リテラルのオーバーロードをサポートする方法によってより複雑になります。
+もし<code>Nat</code>が短すぎる場合、より長い名前<code>NaturalNumber</code>が定義されることができます：</p>
+<pre><code class="language-lean">def NaturalNumber : Type := Nat
+</code></pre>
+<p>しかし、<code>Nat</code>の代わりに<code>NaturalNumber</code>を定義のタイプとして使用すると、期待された効果はありません。
+特に、定義：</p>
+<pre><code class="language-lean">def thirtyEight : NaturalNumber := 38
+</code></pre>
+<p>は以下のエラーを生じます：</p>
+<pre><code class="language-output error">failed to synthesize instance
+  OfNat NaturalNumber 38
+</code></pre>
+<p>このエラーは、Leanが数値リテラルを_オーバーロード_することを許可しているために発生します。
+意味があるとき、自然数リテラルは新しいタイプについても使用することができます。まるでそれらのタイプがシステムに組み込まれているかのようです。
+これは数学を表現する上で便利にするLeanのミッションの一部であり、異なる分野の数学は非常に異なる目的で数値表記を使用します。
+このオーバーロードを可能にする特定の機能は、オーバーロードを探す前にすべての定義済みの名前をその定義に置き換えるわけではありません。これが上記のエラーメッセージにつながります。</p>
+<p>この制限を回避する方法の1つは、定義の右側に<code>Nat</code>のタイプを提供し、<code>Nat</code>のオーバーロードルールを<code>38</code>に使用させることです：</p>
+<pre><code class="language-lean">def thirtyEight : NaturalNumber := (38 : Nat)
+</code></pre>
+<p>定義はまだタイプが正しいです。なぜなら<code>NaturalNumber</code>は<code>Nat</code>と同じタイプです—定義によって！</p>
+<p>また、<code>Nat</code>に対して行われるのと同等に機能する<code>NaturalNumber</code>のオーバーロードを定義するという解決策もあります。
+ただし、これにはLeanのより進んだ機能が必要になります。</p>
+<p>最後に、<code>def</code>の代わりに<code>abbrev</code>を使用して<code>Nat</code>のための新しい名前を定義すると、オーバーロード解決中に定義済みの名前をその定義に置き換えることができます。
+<code>abbrev</code>を使用して書かれた定義は常に展開されます。
+例えば、</p>
+<pre><code class="language-lean">abbrev N : Type := Nat
+</code></pre>
+<p>および</p>
+<pre><code class="language-lean">def thirtyNine : N := 39
+</code></pre>
+<p>は問題なく受け入れられます。</p>
+<p>内部的には、一部の定義はオーバーロード解決中に展開可能として内部的にマークされているものがあり、他はそうではありません。
+展開されるべき定義は_還元可能_と呼ばれます。
+還元可能性に対する制御は、Leanがスケールすることを可能にするために不可欠です：全ての定義を完全に展開すると、マシンが処理するのに時間がかかる非常に大きなタイプが生じ、ユーザーが理解するのが難しくなります。
+<code>abbrev</code>で生成された定義は還元可能としてマークされます。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../getting-to-know/types.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../getting-to-know/structures.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../getting-to-know/types.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../getting-to-know/structures.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+    </body>
+</html>

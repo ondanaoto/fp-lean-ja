@@ -1,0 +1,509 @@
+<!DOCTYPE HTML>
+<html lang="ja" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>依存型を使ったプログラミングの落とし穴 - Functional Programming in Lean</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../custom.css">
+        <link rel="stylesheet" href="../pygments.css">
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../title.html">Leanにおける関数型プログラミング</a></li><li class="chapter-item expanded affix "><a href="../introduction.html">イントロダクション</a></li><li class="chapter-item expanded affix "><a href="../acknowledgments.html">謝辞</a></li><li class="chapter-item expanded "><a href="../getting-to-know.html"><strong aria-hidden="true">1.</strong> Leanの基本を学ぶ</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../getting-to-know/evaluating.html"><strong aria-hidden="true">1.1.</strong> 式の評価</a></li><li class="chapter-item expanded "><a href="../getting-to-know/types.html"><strong aria-hidden="true">1.2.</strong> 型</a></li><li class="chapter-item expanded "><a href="../getting-to-know/functions-and-definitions.html"><strong aria-hidden="true">1.3.</strong> 関数と定義</a></li><li class="chapter-item expanded "><a href="../getting-to-know/structures.html"><strong aria-hidden="true">1.4.</strong> 構造体</a></li><li class="chapter-item expanded "><a href="../getting-to-know/datatypes-patterns-and-pattern.html"><strong aria-hidden="true">1.5.</strong> データタイプ、パターン、そして再帰</a></li><li class="chapter-item expanded "><a href="../getting-to-know/polymorphism.html"><strong aria-hidden="true">1.6.</strong> 多相性</a></li><li class="chapter-item expanded "><a href="../getting-to-know/conveniences.html"><strong aria-hidden="true">1.7.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../getting-to-know/summary.html"><strong aria-hidden="true">1.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../hello-world.html"><strong aria-hidden="true">2.</strong> Hello, World!</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../hello-world/running-a-program.html"><strong aria-hidden="true">2.1.</strong> プログラムの実行</a></li><li class="chapter-item expanded "><a href="../hello-world/step-by-step.html"><strong aria-hidden="true">2.2.</strong> ステップバイステップ</a></li><li class="chapter-item expanded "><a href="../hello-world/starting-a-project.html"><strong aria-hidden="true">2.3.</strong> プロジェクトの始め方</a></li><li class="chapter-item expanded "><a href="../hello-world/cat.html"><strong aria-hidden="true">2.4.</strong> 実例:cat</a></li><li class="chapter-item expanded "><a href="../hello-world/conveniences.html"><strong aria-hidden="true">2.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../hello-world/summary.html"><strong aria-hidden="true">2.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../props-proofs-indexing.html"><strong aria-hidden="true">3.</strong> 小休止: 命題、証明、そして索引</a></li><li class="chapter-item expanded "><a href="../type-classes.html"><strong aria-hidden="true">4.</strong> オーバーロードと型クラス</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../type-classes/pos.html"><strong aria-hidden="true">4.1.</strong> 正の数</a></li><li class="chapter-item expanded "><a href="../type-classes/polymorphism.html"><strong aria-hidden="true">4.2.</strong> 型クラスと多相性</a></li><li class="chapter-item expanded "><a href="../type-classes/out-params.html"><strong aria-hidden="true">4.3.</strong> インスタンス検索の制御</a></li><li class="chapter-item expanded "><a href="../type-classes/arrays-and-indexing.html"><strong aria-hidden="true">4.4.</strong> 配列とインデックス化</a></li><li class="chapter-item expanded "><a href="../type-classes/standard-classes.html"><strong aria-hidden="true">4.5.</strong> 標準クラス</a></li><li class="chapter-item expanded "><a href="../type-classes/coercion.html"><strong aria-hidden="true">4.6.</strong> 強制変換</a></li><li class="chapter-item expanded "><a href="../type-classes/conveniences.html"><strong aria-hidden="true">4.7.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../type-classes/summary.html"><strong aria-hidden="true">4.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../monads.html"><strong aria-hidden="true">5.</strong> モナド</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../monads/monad-type-class.html"><strong aria-hidden="true">5.1.</strong> モナド型クラス</a></li><li class="chapter-item expanded "><a href="../monads/arithmetic-in-monads.html"><strong aria-hidden="true">5.2.</strong> 例: モナドでの算術</a></li><li class="chapter-item expanded "><a href="../monads/do-notation-for-monads.html"><strong aria-hidden="true">5.3.</strong> モナド用do記法</a></li><li class="chapter-item expanded "><a href="../monads/io-monad.html"><strong aria-hidden="true">5.4.</strong> IOモナド</a></li><li class="chapter-item expanded "><a href="../monads/conveniences.html"><strong aria-hidden="true">5.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../monads/summary.html"><strong aria-hidden="true">5.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../functor-applicative-monad.html"><strong aria-hidden="true">6.</strong> 関手、アプリカティブ関手、そしてモナド</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../functor-applicative-monad/structure-and-inheritance.html"><strong aria-hidden="true">6.1.</strong> 構造と継承</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/applicative-functors.html"><strong aria-hidden="true">6.2.</strong> アプリカティブ関手</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/applicative-contract.html"><strong aria-hidden="true">6.3.</strong> アプリカティブの契約</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/alternative.html"><strong aria-hidden="true">6.4.</strong> 代替物</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/universes.html"><strong aria-hidden="true">6.5.</strong> 宇宙</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/complete-definitions.html"><strong aria-hidden="true">6.6.</strong> 完全な定義</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/summary.html"><strong aria-hidden="true">6.7.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../monad-transformers.html"><strong aria-hidden="true">7.</strong> モナドトランスフォーマ</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../monad-transformers/reader-io.html"><strong aria-hidden="true">7.1.</strong> IOとReaderの組み合わせ</a></li><li class="chapter-item expanded "><a href="../monad-transformers/transformers-kit.html"><strong aria-hidden="true">7.2.</strong> モナド構築キット</a></li><li class="chapter-item expanded "><a href="../monad-transformers/order-of-monad-transformers.html"><strong aria-hidden="true">7.3.</strong> モナドトランスフォーマの並び順</a></li><li class="chapter-item expanded "><a href="../monad-transformers/enhanced-do.html"><strong aria-hidden="true">7.4.</strong> doの機能強化</a></li><li class="chapter-item expanded "><a href="../monad-transformers/conveniences.html"><strong aria-hidden="true">7.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../monad-transformers/summary.html"><strong aria-hidden="true">7.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../dependent-types.html"><strong aria-hidden="true">8.</strong> 依存型を使用したプログラミング</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../dependent-types/indexed-families.html"><strong aria-hidden="true">8.1.</strong> インデックス付きファミリー</a></li><li class="chapter-item expanded "><a href="../dependent-types/universe-pattern.html"><strong aria-hidden="true">8.2.</strong> 宇宙デザインパターン</a></li><li class="chapter-item expanded "><a href="../dependent-types/typed-queries-examples.html"><strong aria-hidden="true">8.3.</strong> 実例: 型指定されたクエリ</a></li><li class="chapter-item expanded "><a href="../dependent-types/indices-parameters-universes.html"><strong aria-hidden="true">8.4.</strong> インデックス、パラメータ、そして宇宙レベル</a></li><li class="chapter-item expanded "><a href="../dependent-types/pitfalls-of-programming-with-dependent-types.html" class="active"><strong aria-hidden="true">8.5.</strong> 依存型を使ったプログラミングの落とし穴</a></li><li class="chapter-item expanded "><a href="../dependent-types/summary.html"><strong aria-hidden="true">8.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../tactics-induction-proofs.html"><strong aria-hidden="true">9.</strong> 小休止: 戦術、帰納、そして証明</a></li><li class="chapter-item expanded "><a href="../programs-proofs.html"><strong aria-hidden="true">10.</strong> プログラミング、証明、そしてパフォーマンス</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../programs-proofs/tail-recursion.html"><strong aria-hidden="true">10.1.</strong> 末尾再帰</a></li><li class="chapter-item expanded "><a href="../programs-proofs/tail-recursion-proofs.html"><strong aria-hidden="true">10.2.</strong> 同一性の証明</a></li><li class="chapter-item expanded "><a href="../programs-proofs/arrays-and-termination.html"><strong aria-hidden="true">10.3.</strong> 配列と終了性</a></li><li class="chapter-item expanded "><a href="../programs-proofs/inequalities.html"><strong aria-hidden="true">10.4.</strong> その他の不等式</a></li><li class="chapter-item expanded "><a href="../programs-proofs/fin.html"><strong aria-hidden="true">10.5.</strong> 安全な配列インデックス</a></li><li class="chapter-item expanded "><a href="../programs-proofs/insertion-sort.html"><strong aria-hidden="true">10.6.</strong> 挿入ソートと配列の変更</a></li><li class="chapter-item expanded "><a href="../programs-proofs/special-types.html"><strong aria-hidden="true">10.7.</strong> 特殊な型</a></li><li class="chapter-item expanded "><a href="../programs-proofs/summary.html"><strong aria-hidden="true">10.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../next-steps.html">次のステップ</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Functional Programming in Lean</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="依存型を使ったプログラミングの落とし穴"><a class="header" href="#依存型を使ったプログラミングの落とし穴">依存型を使ったプログラミングの落とし穴</a></h1>
+<p>依存型の柔軟性により、型の言語が十分に表現力を持ち、それほど表現力のない型システムでは記述できない変化を記述できるため、より有用なプログラムが型チェッカーによって受け入れられます。
+同時に、依存型が非常に細かい仕様を表現できることにより、より多くのバグを含むプログラムが型チェッカーにより拒否されます。
+この力は、コストがかかります。</p>
+<p>型を返す関数（<code>Row</code>など）の内部と、それらが生成する型との密接な結合は、より大きな難しさの一例です。関数を型に使用する際に、その関数のインターフェースと実装の区別が崩れ始めます。
+通常、型シグネチャや関数の入出力動作を変えない限り、リファクタリングはすべて有効です。
+関数は、より効率的なアルゴリズムやデータ構造を使用するように書き換えることができ、バグを修正し、コードの明快さを改善しても、クライアントコードを壊さずに済むのです。
+ただし、関数を型に使用した場合、関数の実装の内部が型の一部となり、他のプログラムへの_インターフェース_の一部となります。</p>
+<p>例として、<code>Nat</code>上の加算の次の二つの実装を考えてみましょう。
+<code>Nat.plusL</code>は最初の引数に対して再帰的です：</p>
+<pre><code class="language-lean">def Nat.plusL : Nat → Nat → Nat
+  | 0, k =&gt; k
+  | n + 1, k =&gt; plusL n k + 1
+</code></pre>
+<p>一方、<code>Nat.plusR</code>は二番目の引数に対して再帰的です：</p>
+<pre><code class="language-lean">def Nat.plusR : Nat → Nat → Nat
+  | n, 0 =&gt; n
+  | n, k + 1 =&gt; plusR n k + 1
+</code></pre>
+<p>加算の両実装は基本となる数学的概念に忠実であり、同じ引数を与えられると同じ結果を返します。</p>
+<p>しかし、これらの二つの実装は型に使用される際にはかなり異なるインターフェースを提示します。
+例として、二つの<code>Vect</code>を連結する関数を考えてみましょう。
+この関数は、引数の長さの合計が判るような長さの<code>Vect</code>を返すべきです。
+<code>Vect</code>は本質的には型がより情報豊富な<code>List</code>なので、<code>List.append</code>と全く同じように、最初の引数にパターンマッチを使い再帰的に関数を書くのは理にかなっています。
+型シグネチャと、プレースホルダーを指し示す初期のパターンマッチから始めると、次の二つのメッセージが出ます：</p>
+<pre><code class="language-lean">def appendL : Vect α n → Vect α k → Vect α (n.plusL k)
+  | .nil, ys =&gt; _
+  | .cons x xs, ys =&gt; _
+</code></pre>
+<p>最初のメッセージは<code>nil</code>のケースで、プレースホルダーを<code>plusL 0 k</code>の長さを持つ<code>Vect</code>に置き換えるべきだと述べています：</p>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+α : Type u_1
+n k : Nat
+ys : Vect α k
+⊢ Vect α (Nat.plusL 0 k)
+</code></pre>
+<p>二番目のメッセージは<code>cons</code>のケースで、プレースホルダーを<code>plusL (n✝ + 1) k</code>の長さを持つ<code>Vect</code>に置き換えるべきだと述べています：</p>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+α : Type u_1
+n k n✝ : Nat
+x : α
+xs : Vect α n✝
+ys : Vect α k
+⊢ Vect α (Nat.plusL (n✝ + 1) k)
+</code></pre>
+<p><code>n</code>の後の記号を_ダガー_と呼び、Leanが内部的に発明した名前を示すために使用されます。
+内部で、最初の<code>Vect</code>に対するパターンマッチは、構成要素<code>cons</code>にインデックス<code>n + 1</code>があり、<code>Vect</code>の尾部が長さ<code>n</code>を持っているため、第一の<code>Nat</code>の値を洗練させました。
+ここで、<code>n✝</code>は引数<code>n</code>より一つ小さい<code>Nat</code>です。</p>
+<h2 id="素性の等価性definitional-equality"><a class="header" href="#素性の等価性definitional-equality">素性の等価性（Definitional Equality）</a></h2>
+<p><code>plusL</code>の定義にはパターンケース<code>0, k =&gt; k</code>があります。
+これは最初のプレースホルダーで使われる長さに適用されるため、プレースホルダーの型<code>Vect α (Nat.plusL 0 k)</code>を<code>Vect α k</code>と書くこともできます。
+同様に、<code>plusL</code>にはパターンケース<code>n + 1, k =&gt; plusN n k + 1</code>が含まれます。
+これにより、第二のプレースホルダーの型は同様に<code>Vect α (plusL n✝ k + 1)</code>と書くことができます。</p>
+<p>舞台裏で何が起こっているのかを明らかにする最初のステップは、<code>Nat</code>の引数を明示的に書くことです。これはエラーメッセージをダガー無しにすることにもつながります。なぜなら今プログラムの中で名前が明示的に書かれるからです：</p>
+<pre><code class="language-lean">def appendL : (n k : Nat) → Vect α n → Vect α k → Vect α (n.plusL k)
+  | 0, k, .nil, ys =&gt; _
+  | n + 1, k, .cons x xs, ys =&gt; _
+</code></pre>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+α : Type u_1
+k : Nat
+ys : Vect α k
+⊢ Vect α (Nat.plusL 0 k)
+</code></pre>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+α : Type u_1
+n k : Nat
+x : α
+xs : Vect α n
+ys : Vect α k
+⊢ Vect α (Nat.plusL (n + 1) k)
+</code></pre>
+<p>プレースホルダーに型の簡単なバージョンを注釈すると、型エラーが発生しないため、プログラムに書かれた型はLean自身が見つけた型に等価です：</p>
+<pre><code class="language-lean">def appendL : (n k : Nat) → Vect α n → Vect α k → Vect α (n.plusL k)
+  | 0, k, .nil, ys =&gt; (_ : Vect α k)
+  | n + 1, k, .cons x xs, ys =&gt; (_ : Vect α (n.plusL k + 1))
+</code></pre>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+α : Type u_1
+k : Nat
+ys : Vect α k
+⊢ Vect α k
+</code></pre>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+α : Type u_1
+n k : Nat
+x : α
+xs : Vect α n
+ys : Vect α k
+⊢ Vect α (Nat.plusL n k + 1)
+</code></pre>
+<p>第一のケースでは<code>Vect α k</code>を要求し、<code>ys</code>はその型です。
+これは、空のリストを他のリストに追加するとその他のリストが返されるという方法と平行しています。
+最初のプレースホルダーの代わりに<code>ys</code>を入れることで、埋められるべき残り一つのプレースホルダー以外のプログラムが出来上がります：</p>
+<pre><code class="language-lean">def appendL : (n k : Nat) → Vect α n → Vect α k → Vect α (n.plusL k)
+  | 0, k, .nil, ys =&gt; ys
+  | n + 1, k, .cons x xs, ys =&gt; (_ : Vect α (n.plusL k + 1))
+</code></pre>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+α : Type u_1
+n k : Nat
+x : α
+xs : Vect α n
+ys : Vect α k
+⊢ Vect α (Nat.plusL n k + 1)
+</code></pre>
+<p>ここで非常に重要なことが起きています。
+<code>Nat.plusL 0 k</code>が期待されるコンテキストで<code>Vect α k</code>が受け取られました。
+しかし、<code>Nat.plusL</code>は<code>abbrev</code>ではないので、型チェック中に実行されるかのようには見えません。
+別のことが起きています。</p>
+<p>何が起きているのかを理解する鍵は、Leanは型チェック中に<code>abbrev</code>を展開するだけではないということです。
+また、二つの型が互いに等価かどうかをチェックするときに計算を行うことができるため、一方の型の式を他方の型が期待されるコンテキストで使用することができます。
+この性質は_素性の等価性_と呼ばれ、それは微妙です。</p>
+<p>確かに、書かれた内容が同一の二つの型は素性の等価性と見なされるべきです。<code>Nat</code>と<code>Nat</code>、または<code>List String</code>と<code>List String</code>は等しいと考えられるべきです。
+異なるデータ型から構築された任意の二つの具体的な型は等しくありませんので、<code>List Nat</code>は<code>Int</code>と等しくありません。
+また、内部名の単なるリネームによって異なる型も等しいので、<code>(n : Nat) → Vect String n</code>は<code>(k : Nat) → Vect String k</code>と同じです。
+型が通常のデータを含むので、素性の等価性はまたデータが等しいときを記述する必要もあります。
+同じコンストラクタの使用は等しく、<code>0</code>は<code>0</code>に等しく、<code>[5, 3, 1]</code>は<code>[5, 3, 1]</code>に等しくなります。</p>
+<p>しかし型は単なる関数の矢印やデータ型、コンストラクタ以上のものを含みます。
+型はまた_変数_や_関数_を含みます。
+変数の素性の等価性は比較的単純です。つまり、各変数はそれ自体にのみ等しいので、<code>(n k : Nat) → Vect Int n</code>は<code>(n k : Nat) → Vect Int k</code>とは素性の等価性を持ちません。
+一方、関数の場合はより複雑です。
+数学では、二つの関数が同一の入出力動作を持っている場合に等しいと考えられますが、それをチェックする効率的なアルゴリズムは存在せず、素性の等価性のポイント全体がどちらの型も交換可能であるかをLeanがチェックすることにあります。
+代わりに、Leanは二つの関数が素性の等価性を持つと考えるのは、それらが定義的に等しい本文を持つ<code>fun</code>式の両方のときです。
+言い換えれば、二つの関数は同じアルゴリズムを使用し、同じヘルパーを呼び出す必要があります。
+これは通常は非常に役に立たないので、関数の素性の等価性は、主に全く同じ定義された関数が二つの型で発生するときに利用されます。</p>
+<p>関数が型で呼ばれたとき、素性の等価性のチェックは関数呼び出しを減らすことを伴うかもしれません。
+型<code>Vect String (1 + 4)</code>は<code>Vect String (3 + 2)</code>と素性の等価性を持つのは、<code>1 + 4</code>が<code>3 + 2</code>に素性の等価性を持つためです。
+それらが等しいかどうかをチェックするために、両方が<code>5</code>に減らされ、コンストラクタールールが5回使用されます。
+関数がデータに適用された素性の等価性は、まずそれらが既に同じかどうかを見ることによってチェックされます。つまり、<code>[&quot;a&quot;, &quot;b&quot;] ++ [&quot;c&quot;]</code>を<code>[&quot;a&quot;, &quot;b&quot;] ++ [&quot;c&quot;]</code>と等しいかどうかをチェックするために減らす必要はありません。
+そうでなければ、関数は呼び出され、それが値で置き換えられ、値がチェックされるです。</p>
+<p>すべての関数の引数が具体的なデータではありません。
+例えば、型はコンストラクタ<code>zero</code>と<code>succ</code>から構築されていない<code>Nat</code>を含むかもしれません。
+型<code>(n : Nat) → Vect String n</code>において、変数<code>n</code>は<code>Nat</code>ですが、関数が呼び出される前にはそれがどの<code>Nat</code>なのかは知ることができません。
+実際、関数は最初に<code>0</code>で呼ばれ、次に<code>17</code>で、その次は<code>33</code>で呼ばれるかもしれません。
+<code>appendL</code>の定義で見られたように、型が<code>Nat</code>である変数は<code>plusL</code>のような関数に渡されるかもしれません。
+確かに、型<code>(n : Nat) → Vect String n</code>は型<code>(n : Nat) → Vect String (Nat.plusL 0 n)</code>に素性の等価性を持ちます。</p>
+<p><code>n</code>と<code>Nat.plusL 0 n</code>が素性の等価性を持っているということは、<code>plusL</code>のパターンマッチがその_最初の_引数を検査するということです。
+これは問題を引き起こします：<code>(n : Nat) → Vect String n</code>は<code>(n : Nat) → Vect String (Nat.plusL n 0)</code>と素性の等価性を持っていません。これは、加算の左右の恒等性を持っているはずですが、パターンマッチが変数に対してスタックするためです。
+<code>n</code>の実際の値がわかるまで、<code>Nat.plusL n 0</code>のどのケースを選べばいいのかがわからないからです。</p>
+<p>同じ問題がクエリ例の<code>Row</code>関数にも現れます。
+型<code>Row (c :: cs)</code>はあらゆるデータ型に還元されません。なぜなら<code>Row</code>の定義は一人称リストと2つ以上のエントリを持つリストのための別々のケースを持っているからです。
+言い換えれば、変数<code>cs</code>を具体的な<code>List</code>コンストラクタにマッチしなければスタックしてしまいます。
+これがほぼすべての<code>Row</code>を取り扱う、または構築する関数が<code>Row</code>自体と同じ3つのケースにマッチする必要がある理由です。それをアンスタックすると、パターンマッチングやコンストラクタに使用できる具体的な型が明らかになります。</p>
+<p><code>appendL</code>の足りないケースには<code>Vect α (Nat.plusL n k + 1)</code>が要求されます。
+インデックスの中に<code>+ 1</code>があることから、次のステップは<code>Vect.cons</code>の使用であることが示唆されます：</p>
+<pre><code class="language-lean">def appendL : (n k : Nat) → Vect α n → Vect α k → Vect α (n.plusL k)
+  | 0, k, .nil, ys =&gt; ys
+  | n + 1, k, .cons x xs, ys =&gt; .cons x (_ : Vect α (n.plusL k))
+</code></pre>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+α : Type u_1
+n k : Nat
+x : α
+xs : Vect α n
+ys : Vect α k
+⊢ Vect α (Nat.plusL n k)
+</code></pre>
+<p><code>appendL</code>への再帰的な呼び出しは所望の長さの<code>Vect</code>を構築できます:</p>
+<pre><code class="language-lean">def appendL : (n k : Nat) → Vect α n → Vect α k → Vect α (n.plusL k)
+  | 0, k, .nil, ys =&gt; ys
+  | n + 1, k, .cons x xs, ys =&gt; .cons x (appendL n k xs ys)
+</code></pre>
+<p>プログラムが完成した今、<code>n</code>と<code>k</code>に明示的なマッチングを除去することで、関数を読みやすく、また呼び出しやすくすることができます:</p>
+<pre><code class="language-lean">def appendL : Vect α n → Vect α k → Vect α (n.plusL k)
+  | .nil, ys =&gt; ys
+  | .cons x xs, ys =&gt; .cons x (appendL xs ys)
+</code></pre>
+<p>定義上の等価性を用いて型を比較することは、定義上の等価性に関わるすべてのもの、含む関数定義の内部、を依存型やインデックス付きのファミリーを使うプログラムの_インターフェース_の一部にします。関数の内部を型にさらけ出すことは、そのプログラムを使用するプログラムがもはや型検査に合格しないかもしれないというリスクをもたらす可能性があります。 特に、<code>plusL</code>が<code>appendL</code>の型に用いられていることは、<code>plusL</code>の定義を同等な<code>plusR</code>に置き換えることができないことを意味します。</p>
+<h2 id="加算におけるスタック"><a class="header" href="#加算におけるスタック">加算におけるスタック</a></h2>
+<p><code>plusR</code>を使って<code>append</code>が定義された場合はどうなるでしょうか？ 同じように、明示的な長さと各ケースでのプレースホルダーアンダースコアで始めると、以下のような有用なエラーメッセージが表示されます:</p>
+<pre><code class="language-lean">def appendR : (n k : Nat) → Vect α n → Vect α k → Vect α (n.plusR k)
+  | 0, k, .nil, ys =&gt; _
+  | n + 1, k, .cons x xs, ys =&gt; _
+</code></pre>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+α : Type u_1
+k : Nat
+ys : Vect α k
+⊢ Vect α (Nat.plusR 0 k)
+</code></pre>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+α : Type u_1
+n k : Nat
+x : α
+xs : Vect α n
+ys : Vect α k
+⊢ Vect α (Nat.plusR (n + 1) k)
+</code></pre>
+<p>しかし、最初のプレースホルダーに<code>Vect α k</code>型注釈を配置しようとすると、型不一致のエラーが生じます:</p>
+<pre><code class="language-lean">def appendR : (n k : Nat) → Vect α n → Vect α k → Vect α (n.plusR k)
+  | 0, k, .nil, ys =&gt; (_ : Vect α k)
+  | n + 1, k, .cons x xs, ys =&gt; _
+</code></pre>
+<pre><code class="language-output error">type mismatch
+  ?m.3036
+has type
+  Vect α k : Type ?u.2973
+but is expected to have type
+  Vect α (Nat.plusR 0 k) : Type ?u.2973
+</code></pre>
+<p>このエラーは、<code>plusR 0 k</code>と<code>k</code>が定義上等価では_ない_と指摘しています。</p>
+<p>これは<code>plusR</code>が以下の定義を持っているためです:</p>
+<pre><code class="language-lean">def Nat.plusR : Nat → Nat → Nat
+  | n, 0 =&gt; n
+  | n, k + 1 =&gt; plusR n k + 1
+</code></pre>
+<p>そのパターンマッチングは_第二_引数に対して行われており、変数<code>k</code>がその位置に存在することが、計算を行えないように阻止しています。 Leanの標準ライブラリの<code>Nat.add</code>は<code>plusL</code>ではなく<code>plusR</code>に相当し、この定義を使おうとするとまさに同じ困難に直面します:</p>
+<pre><code class="language-lean">def appendR : (n k : Nat) → Vect α n → Vect α k → Vect α (n + k)
+  | 0, k, .nil, ys =&gt; (_ : Vect α k)
+  | n + 1, k, .cons x xs, ys =&gt; _
+</code></pre>
+<pre><code class="language-output error">type mismatch
+  ?m.3068
+has type
+  Vect α k : Type ?u.2973
+but is expected to have type
+  Vect α (0 + k) : Type ?u.2973
+</code></pre>
+<p>加算が変数で_スタック_しています。 スタックを解消するには<a href="../type-classes/standard-classes.html#equality-and-ordering">命題等価</a>を必要とします。</p>
+<h2 id="命題等価"><a class="header" href="#命題等価">命題等価</a></h2>
+<p>命題等価は、二つの式が等しいことを数学的に主張するものです。 定義上の等価性が必要な時にLeanが自動的に検査する一方で、命題等価性の主張は明確な証明が必要です。 一度等価命題が証明されると、プログラム内で型を変更し、一方の等価性を他方に置き換えることができ、型検査をスタックから解放することができます。</p>
+<p>定義上の等価性がこれほど制限されているのはアルゴリズムで検査できるようにするためです。 命題等価性はより豊かですが、コンピュータが一般的に二つの式が命題的に等しいかどうかを検査することはできませんが、提案された証明が実際に証明であることを検証できます。 定義上の等価性と命題等価性の間の分割は、人間と機械間の労働分担を表しています：面倒な等価性は定義上の等価性の一部として自動的にチェックされるので、命題等価性の興味深い問題を解決するために人間の頭脳を解放します。
+同様に、定義上の等価性は型検査によって自動的に呼び出されるのに対し、命題等価性は明示的に訴える必要があります。</p>
+<p><a href="../props-proofs-indexing.html">命題、証明、およびインデックス</a>で、<code>simp</code>を使っていくつかの等価性ステートメントが証明されています。これらすべての等価性ステートメントは、実際にはすでに定義上の等価性であることです。 通常、命題等価性ステートメントは、それらが定義上の等価性であるか、既に証明されている等価性に十分に近い形にまで導かれた後、<code>simp</code>のようなツールを利用して簡略化されたケースを処理することで証明されます。 <code>simp</code>タクティクは非常に強力です：舞台裏では、証明を構築するためにいくつかの高速で自動化されたツールを使用しています。 <code>rfl</code>というよりシンプルなタクティクは、命題等価性を証明するために定義上の等価性を特に使用します。 <code>rfl</code>の名前は、すべてがそれ自体と等しいという等価性の特性である_反射性_を短くしたものです。</p>
+<p><code>appendR</code>をスタックから解放するには、<code>k = Nat.plusR 0 k</code>の証明が必要ですが、これは<code>plusR</code>がその第二引数の変数にスタックするため、定義上の等価性ではありません。 それを計算させるには、<code>k</code>を具体的なコンストラクタにしなければなりません。 これはパターンマッチングのための仕事です。</p>
+<p>特に、<code>k</code>が_どんな_ <code>Nat</code>でもありうるので、このタスクには<code>(k : Nat) → k = Nat.plusR 0 k</code>の証明を返すことができる関数が必要です。 初期のパターンズとプレースホルダーで始まって、以下のようなメッセージが出力されます:</p>
+<pre><code class="language-lean">def plusR_zero_left : (k : Nat) → k = Nat.plusR 0 k
+  | 0 =&gt; _
+  | k + 1 =&gt; _
+</code></pre>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+⊢ 0 = Nat.plusR 0 0
+</code></pre>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+k : Nat
+⊢ k + 1 = Nat.plusR 0 (k + 1)
+</code></pre>
+<p>パターンマッチングを通じて<code>k</code>を<code>0</code>に絞り込んだ後、最初のプレースホルダーは定義上で成立しているステートメントの証拠を代表します。 <code>rfl</code>タクティクがそれを処理し、第二のプレースホルダーだけが残されます:</p>
+<pre><code class="language-lean">def plusR_zero_left : (k : Nat) → k = Nat.plusR 0 k
+  | 0 =&gt; by rfl
+  | k + 1 =&gt; _
+</code></pre>
+<p>第二のプレースホルダーは少し厄介です。 式<code>Nat.plusR 0 k + 1</code>は定義上で<code>Nat.plusR 0 (k + 1)</code>と等価です。 これは、ゴールが<code>k + 1 = Nat.plusR 0 k + 1</code>としても書くことができることを意味します:</p>
+<pre><code class="language-lean">def plusR_zero_left : (k : Nat) → k = Nat.plusR 0 k
+  | 0 =&gt; by rfl
+  | k + 1 =&gt; (_ : k + 1 = Nat.plusR 0 k + 1)
+</code></pre>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+k : Nat
+⊢ k + 1 = Nat.plusR 0 k + 1
+</code></pre>
+<p>等価性ステートメントの両側の<code>+ 1</code>の下には、関数自体が返す別のインスタンスがあります。 他の言い方をすれば、<code>k</code>に対する再帰呼び出しは<code>k = Nat.plusR 0 k</code>であることを証明する証拠を返すはずです。 等価性が等価性でなかったら、それは関数引数に適用されないでしょう。 言い換えれば、もし<code>x = y</code>ならば、<code>f x = f y</code>です。 標準ライブラリには<code>congrArg</code>という関数があり、一つの関数と等価性の証明を受け取り、等価性の両側にその関数が適用された新しい証明を返します。 この場合、関数は<code>(· + 1)</code>です:</p>
+<pre><code class="language-lean">def plusR_zero_left : (k : Nat) → k = Nat.plusR 0 k
+  | 0 =&gt; by rfl
+  | k + 1 =&gt;
+    congrArg (· + 1) (plusR_zero_left k)
+</code></pre>
+<p>命題等価性はプログラム内で右向きの三角演算子<code>▸</code>を使って展開されます。 最初の引数として等価性の証明を受け取り、第二の引数として他の式を受け取るこのオペレーターは、第二の引数の型の中で等価性の左側のインスタンスを右側のものと置き換えることができます。 つまり、以下の定義にはタイプエラーが含まれていません:</p>
+<pre><code class="language-lean">def appendR : (n k : Nat) → Vect α n → Vect α k → Vect α (n.plusR k)
+  | 0, k, .nil, ys =&gt; plusR_zero_left k ▸ (_ : Vect α k)
+  | n + 1, k, .cons x xs, ys =&gt; _
+</code></pre>
+<p>最初のプレースホルダーは予想通りの型を持っています:</p>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+α : Type u_1
+k : Nat
+ys : Vect α k
+⊢ Vect α k
+</code></pre>
+<p>これで<code>ys</code>で記入できるようになります:</p>
+<pre><code class="language-lean">def appendR : (n k : Nat) → Vect α n → Vect α k → Vect α (n.plusR k)
+  | 0, k, .nil, ys =&gt; plusR_zero_left k ▸ ys
+  | n + 1, k, .cons x xs, ys =&gt; _
+</code></pre>
+<p>残りのプレースホルダーを埋めるには、もう一度加算のインスタンスをスタックから解放する必要があります:</p>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+α : Type u_1
+n k : Nat
+x : α
+xs : Vect α n
+ys : Vect α k
+⊢ Vect α (Nat.plusR (n + 1) k)
+</code></pre>
+<p>ここで証明しなければならないステートメントは、<code>Nat.plusR (n + 1) k = Nat.plusR n k + 1</code>であり、これを<code>▸</code>と組み合わせて式の一番上に<code>+ 1</code>を引き出すことができれば、<code>cons</code>のインデックスと一致させることができます。</p>
+<p>証明は、<code>plusR</code>に対する第二の引数としての<code>k</code>にパターンマッチングする再帰関数です。 <code>plusR</code>自体がその第二引数にパターンマッチングしているので、パターンマッチングを通じてそれを「スタックから解放」し、計算の動作を明らかにすることができます。 この証明の骨格は<code>plusR_zero_left</code>に非常に似ています:</p>
+<pre><code class="language-lean">def plusR_succ_left (n : Nat) : (k : Nat) → Nat.plusR (n + 1) k = Nat.plusR n k + 1
+  | 0 =&gt; by rfl
+  | k + 1 =&gt; _
+</code></pre>
+<p>残りのケースの型は定義上で<code>Nat.plusR (n + 1) k + 1 = Nat.plusR n (k + 1) + 1</code>と等しいので、<code>plusR_zero_left</code>で行われたのと同じように<code>congrArg</code>を使って解決できます:</p>
+<pre><code class="language-output error">don't know how to synthesize placeholder
+context:
+n k : Nat
+⊢ Nat.plusR (n + 1) (k + 1) = Nat.plusR n (k + 1) + 1
+</code></pre>
+<p>これにより完成した証明になります:</p>
+<pre><code class="language-lean">def plusR_succ_left (n : Nat) : (k : Nat) → Nat.plusR (n + 1) k = Nat.plusR n k + 1
+  | 0 =&gt; by rfl
+  | k + 1 =&gt; congrArg (· + 1) (plusR_succ_left n k)
+</code></pre>
+<p>完成した証明は<code>appendR</code>の第二のケースでスタックから解放するために使うことができます:</p>
+<pre><code class="language-lean">def appendR : (n k : Nat) → Vect α n → Vect α k → Vect α (n.plusR k)
+  | 0, k, .nil, ys =&gt; plusR_zero_left k ▸ ys
+  | n + 1, k, .cons x xs, ys =&gt; plusR_succ_left n k ▸ .cons x (appendR n k xs ys)
+</code></pre>
+<p><code>appendR</code>の長さの引数を再び暗黙的にすると、証明に訴えるために明示的に名前をつけることはなくなりますが、Leanの型検査は裏で十分な情報を持っており、自動的にそれらを埋めることができます。 他の値では型がマッチしないためです:</p>
+<pre><code class="language-lean">def appendR : Vect α n → Vect α k → Vect α (n.plusR k)
+  | .nil, ys =&gt; plusR_zero_left _ ▸ ys
+  | .cons x xs, ys =&gt; plusR_succ_left _ _ ▸ .cons x (appendR xs ys)
+</code></pre>
+<h2 id="長所と短所"><a class="header" href="#長所と短所">長所と短所</a></h2>
+<p>インデックス付きファミリーは重要な特性を持っています：それらに対するパターンマッチングは定義上の等価性に影響を与えます。 例えば、<code>Vect</code>に対する<code>match</code>式の<code>nil</code>ケースでは、単に長さが<code>0</code>に_なります_。 定義上の等価性は非常に便利です。なぜならそれは常に活発であって、明示的に呼び出す必要がないからです。</p>
+<p>しかし、依存型とパターンマッチングに定義上の等価性を使用することは、ソフトウェアエンジニアリングに重大な欠点を有しています。まず、関数は型で使われるために特別に書かれなければなりません。型で使うことが便利な関数は、最も効率的なアルゴリズムを使用していないかもしれません。一度関数が型を使用してさらけ出されると、その実装はインターフェースの一部となり、将来のリファクタリングに困難をもたらします。 二つ目に、定義上の等価性は遅い可能性があります。 当事者が2つの式が定義上等しいかどうかをチェックするように求めた場合、質問である関数が複雑で多くの抽象化の層を持っている場合、大量のコードを実行する必要があるかもしれません。 三つ目に、定義上の等価性の失敗によるエラーメッセージは必ずしも理解しやすいわけではありません。な</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../dependent-types/indices-parameters-universes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../dependent-types/summary.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../dependent-types/indices-parameters-universes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../dependent-types/summary.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+    </body>
+</html>

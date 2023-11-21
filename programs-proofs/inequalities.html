@@ -1,0 +1,581 @@
+<!DOCTYPE HTML>
+<html lang="ja" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>その他の不等式 - Functional Programming in Lean</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../custom.css">
+        <link rel="stylesheet" href="../pygments.css">
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../title.html">Leanにおける関数型プログラミング</a></li><li class="chapter-item expanded affix "><a href="../introduction.html">イントロダクション</a></li><li class="chapter-item expanded affix "><a href="../acknowledgments.html">謝辞</a></li><li class="chapter-item expanded "><a href="../getting-to-know.html"><strong aria-hidden="true">1.</strong> Leanの基本を学ぶ</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../getting-to-know/evaluating.html"><strong aria-hidden="true">1.1.</strong> 式の評価</a></li><li class="chapter-item expanded "><a href="../getting-to-know/types.html"><strong aria-hidden="true">1.2.</strong> 型</a></li><li class="chapter-item expanded "><a href="../getting-to-know/functions-and-definitions.html"><strong aria-hidden="true">1.3.</strong> 関数と定義</a></li><li class="chapter-item expanded "><a href="../getting-to-know/structures.html"><strong aria-hidden="true">1.4.</strong> 構造体</a></li><li class="chapter-item expanded "><a href="../getting-to-know/datatypes-patterns-and-pattern.html"><strong aria-hidden="true">1.5.</strong> データタイプ、パターン、そして再帰</a></li><li class="chapter-item expanded "><a href="../getting-to-know/polymorphism.html"><strong aria-hidden="true">1.6.</strong> 多相性</a></li><li class="chapter-item expanded "><a href="../getting-to-know/conveniences.html"><strong aria-hidden="true">1.7.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../getting-to-know/summary.html"><strong aria-hidden="true">1.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../hello-world.html"><strong aria-hidden="true">2.</strong> Hello, World!</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../hello-world/running-a-program.html"><strong aria-hidden="true">2.1.</strong> プログラムの実行</a></li><li class="chapter-item expanded "><a href="../hello-world/step-by-step.html"><strong aria-hidden="true">2.2.</strong> ステップバイステップ</a></li><li class="chapter-item expanded "><a href="../hello-world/starting-a-project.html"><strong aria-hidden="true">2.3.</strong> プロジェクトの始め方</a></li><li class="chapter-item expanded "><a href="../hello-world/cat.html"><strong aria-hidden="true">2.4.</strong> 実例:cat</a></li><li class="chapter-item expanded "><a href="../hello-world/conveniences.html"><strong aria-hidden="true">2.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../hello-world/summary.html"><strong aria-hidden="true">2.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../props-proofs-indexing.html"><strong aria-hidden="true">3.</strong> 小休止: 命題、証明、そして索引</a></li><li class="chapter-item expanded "><a href="../type-classes.html"><strong aria-hidden="true">4.</strong> オーバーロードと型クラス</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../type-classes/pos.html"><strong aria-hidden="true">4.1.</strong> 正の数</a></li><li class="chapter-item expanded "><a href="../type-classes/polymorphism.html"><strong aria-hidden="true">4.2.</strong> 型クラスと多相性</a></li><li class="chapter-item expanded "><a href="../type-classes/out-params.html"><strong aria-hidden="true">4.3.</strong> インスタンス検索の制御</a></li><li class="chapter-item expanded "><a href="../type-classes/arrays-and-indexing.html"><strong aria-hidden="true">4.4.</strong> 配列とインデックス化</a></li><li class="chapter-item expanded "><a href="../type-classes/standard-classes.html"><strong aria-hidden="true">4.5.</strong> 標準クラス</a></li><li class="chapter-item expanded "><a href="../type-classes/coercion.html"><strong aria-hidden="true">4.6.</strong> 強制変換</a></li><li class="chapter-item expanded "><a href="../type-classes/conveniences.html"><strong aria-hidden="true">4.7.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../type-classes/summary.html"><strong aria-hidden="true">4.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../monads.html"><strong aria-hidden="true">5.</strong> モナド</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../monads/monad-type-class.html"><strong aria-hidden="true">5.1.</strong> モナド型クラス</a></li><li class="chapter-item expanded "><a href="../monads/arithmetic-in-monads.html"><strong aria-hidden="true">5.2.</strong> 例: モナドでの算術</a></li><li class="chapter-item expanded "><a href="../monads/do-notation-for-monads.html"><strong aria-hidden="true">5.3.</strong> モナド用do記法</a></li><li class="chapter-item expanded "><a href="../monads/io-monad.html"><strong aria-hidden="true">5.4.</strong> IOモナド</a></li><li class="chapter-item expanded "><a href="../monads/conveniences.html"><strong aria-hidden="true">5.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../monads/summary.html"><strong aria-hidden="true">5.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../functor-applicative-monad.html"><strong aria-hidden="true">6.</strong> 関手、アプリカティブ関手、そしてモナド</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../functor-applicative-monad/structure-and-inheritance.html"><strong aria-hidden="true">6.1.</strong> 構造と継承</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/applicative-functors.html"><strong aria-hidden="true">6.2.</strong> アプリカティブ関手</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/applicative-contract.html"><strong aria-hidden="true">6.3.</strong> アプリカティブの契約</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/alternative.html"><strong aria-hidden="true">6.4.</strong> 代替物</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/universes.html"><strong aria-hidden="true">6.5.</strong> 宇宙</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/complete-definitions.html"><strong aria-hidden="true">6.6.</strong> 完全な定義</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/summary.html"><strong aria-hidden="true">6.7.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../monad-transformers.html"><strong aria-hidden="true">7.</strong> モナドトランスフォーマ</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../monad-transformers/reader-io.html"><strong aria-hidden="true">7.1.</strong> IOとReaderの組み合わせ</a></li><li class="chapter-item expanded "><a href="../monad-transformers/transformers-kit.html"><strong aria-hidden="true">7.2.</strong> モナド構築キット</a></li><li class="chapter-item expanded "><a href="../monad-transformers/order-of-monad-transformers.html"><strong aria-hidden="true">7.3.</strong> モナドトランスフォーマの並び順</a></li><li class="chapter-item expanded "><a href="../monad-transformers/enhanced-do.html"><strong aria-hidden="true">7.4.</strong> doの機能強化</a></li><li class="chapter-item expanded "><a href="../monad-transformers/conveniences.html"><strong aria-hidden="true">7.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../monad-transformers/summary.html"><strong aria-hidden="true">7.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../dependent-types.html"><strong aria-hidden="true">8.</strong> 依存型を使用したプログラミング</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../dependent-types/indexed-families.html"><strong aria-hidden="true">8.1.</strong> インデックス付きファミリー</a></li><li class="chapter-item expanded "><a href="../dependent-types/universe-pattern.html"><strong aria-hidden="true">8.2.</strong> 宇宙デザインパターン</a></li><li class="chapter-item expanded "><a href="../dependent-types/typed-queries-examples.html"><strong aria-hidden="true">8.3.</strong> 実例: 型指定されたクエリ</a></li><li class="chapter-item expanded "><a href="../dependent-types/indices-parameters-universes.html"><strong aria-hidden="true">8.4.</strong> インデックス、パラメータ、そして宇宙レベル</a></li><li class="chapter-item expanded "><a href="../dependent-types/pitfalls-of-programming-with-dependent-types.html"><strong aria-hidden="true">8.5.</strong> 依存型を使ったプログラミングの落とし穴</a></li><li class="chapter-item expanded "><a href="../dependent-types/summary.html"><strong aria-hidden="true">8.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../tactics-induction-proofs.html"><strong aria-hidden="true">9.</strong> 小休止: 戦術、帰納、そして証明</a></li><li class="chapter-item expanded "><a href="../programs-proofs.html"><strong aria-hidden="true">10.</strong> プログラミング、証明、そしてパフォーマンス</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../programs-proofs/tail-recursion.html"><strong aria-hidden="true">10.1.</strong> 末尾再帰</a></li><li class="chapter-item expanded "><a href="../programs-proofs/tail-recursion-proofs.html"><strong aria-hidden="true">10.2.</strong> 同一性の証明</a></li><li class="chapter-item expanded "><a href="../programs-proofs/arrays-and-termination.html"><strong aria-hidden="true">10.3.</strong> 配列と終了性</a></li><li class="chapter-item expanded "><a href="../programs-proofs/inequalities.html" class="active"><strong aria-hidden="true">10.4.</strong> その他の不等式</a></li><li class="chapter-item expanded "><a href="../programs-proofs/fin.html"><strong aria-hidden="true">10.5.</strong> 安全な配列インデックス</a></li><li class="chapter-item expanded "><a href="../programs-proofs/insertion-sort.html"><strong aria-hidden="true">10.6.</strong> 挿入ソートと配列の変更</a></li><li class="chapter-item expanded "><a href="../programs-proofs/special-types.html"><strong aria-hidden="true">10.7.</strong> 特殊な型</a></li><li class="chapter-item expanded "><a href="../programs-proofs/summary.html"><strong aria-hidden="true">10.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../next-steps.html">次のステップ</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Functional Programming in Lean</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <pre><code class="language-markdown"># より多くの不等式
+
+Leanの組み込みの証明自動化は、`arrayMapHelper` と `findHelper` が終了することを確認するのに十分です。
+必要だったのは、各再帰呼び出しで減少する値を表す式を提供することだけでした。
+しかし、Leanの組み込み自動化は魔法ではなく、しばしばいくつかの助けを必要とします。
+
+## マージソート
+
+終了証明が非自明な関数の一例は `List` 上のマージソートです。
+マージソートは2つのフェーズで構成されます：まず、リストは半分に分かれます。
+それぞれの半分はマージソートを使用してソートされ、そして結果は二つのソートされたリストを大きなソートされたリストに結合する関数を使用してマージされます。
+基底ケースは空リストと単一要素のリストであり、どちらもすでにソートされたとみなされます。
+
+二つのソートされたリストをマージするためには、考えるべき2つの基本ケースがあります：
+ 1. 入力リストの一方が空の場合、結果はもう一方のリストです。
+ 2. 両方のリストが空でない場合、それらの頭を比較すべきです。関数の結果は二つの頭のうち小さい方で、それに両方のリストの残りのエントリをマージした結果が続きます。
+
+これはどちらのリストに対しても構造的に再帰的ではありません。
+再帰が終了するのは、各再帰呼び出しでどちらかのリストからエントリが削除されるためですが、どちらのリストであっても構いません。
+`termination_by` 句は両方のリストの長さの合計を減少値として使用します：
+```lean
+def merge [Ord α] (xs : List α) (ys : List α) : List α :=
+  match xs, ys with
+  | [], _ =&gt; ys
+  | _, [] =&gt; xs
+  | x'::xs', y'::ys' =&gt;
+    match Ord.compare x' y' with
+    | .lt | .eq =&gt; x' :: merge xs' (y' :: ys')
+    | .gt =&gt; y' :: merge (x'::xs') ys'
+termination_by merge xs ys =&gt; xs.length + ys.length
+</code></pre>
+<p>リストの長さを使用する代わりに、両方のリストを含んだペアを提供することもできます：</p>
+<pre><code class="language-lean">def merge [Ord α] (xs : List α) (ys : List α) : List α :=
+  match xs, ys with
+  | [], _ =&gt; ys
+  | _, [] =&gt; xs
+  | x'::xs', y'::ys' =&gt;
+    match Ord.compare x' y' with
+    | .lt | .eq =&gt; x' :: merge xs' (y' :: ys')
+    | .gt =&gt; y' :: merge (x'::xs') ys'
+termination_by merge xs ys =&gt; (xs, ys)
+</code></pre>
+<p>これは、Leanが <code>WellFoundedRelation</code> という型クラスを通じてデータのサイズの概念を組み込んでおり、ペアに対するインスタンスが自動的に、ペアの第一または第二のアイテムが縮小する場合にそれをより小さなものと見なすからです。</p>
+<p>リストを分割する簡単な方法は、入力リストの各エントリを二つの交互の出力リストに追加することです：</p>
+<pre><code class="language-lean">def splitList (lst : List α) : (List α × List α) :=
+  match lst with
+  | [] =&gt; ([], [])
+  | x :: xs =&gt;
+    let (a, b) := splitList xs
+    (x :: b, a)
+</code></pre>
+<p>マージソートは基底ケースに達しているかどうかを確認します。
+もし達していれば、入力リストを返します。
+そうでなければ、入力を分割し、それぞれの半分をソートした結果をマージします：</p>
+<pre><code class="language-lean">def mergeSort [Ord α] (xs : List α) : List α :=
+  if h : xs.length &lt; 2 then
+    match xs with
+    | [] =&gt; []
+    | [x] =&gt; [x]
+  else
+    let halves := splitList xs
+    merge (mergeSort halves.fst) (mergeSort halves.snd)
+</code></pre>
+<p>Leanのパターンマッチコンパイラーは、<code>if</code>によって導入された仮定 <code>h</code> は <code>xs.length &lt; 2</code> をテストするために一つ以上のエントリを持たないリストを排除しているので、「ケースが不足している」というエラーはありません。
+しかし、このプログラムは常に終了しますが、構造的に再帰的ではありません：</p>
+<pre><code class="language-output error">fail to show termination for
+  mergeSort
+with errors
+argument #3 was not used for structural recursion
+  failed to eliminate recursive application
+    mergeSort halves.fst
+
+structural recursion cannot be used
+
+failed to prove termination, use `termination_by` to specify a well-founded relation
+</code></pre>
+<p>終了する理由は、<code>splitList</code>が常にその入力よりも短いリストを返すからです。
+したがって、<code>halves.fst</code> と <code>halves.snd</code> の長さは <code>xs</code> の長さよりも少なくなります。
+これは <code>termination_by</code> 句を使って表現することができます：</p>
+<pre><code class="language-lean">def mergeSort [Ord α] (xs : List α) : List α :=
+  if h : xs.length &lt; 2 then
+    match xs with
+    | [] =&gt; []
+    | [x] =&gt; [x]
+  else
+    let halves := splitList xs
+    merge (mergeSort halves.fst) (mergeSort halves.snd)
+termination_by mergeSort xs =&gt; xs.length
+</code></pre>
+<p>この句により、エラーメッセージが変わります。
+関数が構造的に再帰的ではないという不満ではなく、 Leanは <code>(splitList xs).fst.length &lt; xs.length</code> の自動証明に失敗したと指摘しています：</p>
+<pre><code class="language-output error">failed to prove termination, possible solutions:
+  - Use `have`-expressions to prove the remaining goals
+  - Use `termination_by` to specify a different well-founded relation
+  - Use `decreasing_by` to specify your own tactic for discharging this kind of goal
+α : Type u_1
+xs : List α
+h : ¬List.length xs &lt; 2
+halves : List α × List α := splitList xs
+⊢ List.length (splitList xs).fst &lt; List.length xs
+</code></pre>
+<h2 id="リストを分割することはそれを短くする"><a class="header" href="#リストを分割することはそれを短くする">リストを分割することはそれを短くする</a></h2>
+<p><code>(splitList xs).snd.length &lt; xs.length</code> を証明することも必要になります。
+<code>splitList</code>は二つのリストにエントリを交互に追加するため、両方のステートメントを一度に証明するのが最も簡単で、証明の構造が <code>splitList</code>の実装に使用されたアルゴリズムに従うことができます。
+言い換えると、<code>∀(lst : List), (splitList lst).fst.length &lt; lst.length ∧ (splitList lst).snd.length &lt; lst.length</code> を証明するのが最も簡単です。</p>
+<p>残念ながら、このステートメントは偽です。
+特に、<code>splitList []</code> は <code>([], [])</code> です。両方の出力リストは長さ <code>0</code> であり、これは入力リストの長さ <code>0</code> よりも短くありません。
+同様に、<code>splitList [&quot;basalt&quot;]</code> は <code>([&quot;basalt&quot;], [])</code> に評価され、<code>[&quot;basalt&quot;]</code> は <code>[&quot;basalt&quot;]</code> より短くありません。
+しかし、<code>splitList [&quot;basalt&quot;, &quot;granite&quot;]</code> は <code>([&quot;basalt&quot;], [&quot;granite&quot;])</code> に評価され、これらの出力リストは入力リストよりも短くなります。</p>
+<p>実は、出力リストの長さは常に入力リストの長さ以下ですが、入力リストに少なくとも二つのエントリが含まれている場合にのみ、厳密に短くなります。
+前者のステートメントを証明してから、後者のステートメントに拡張するのが最も簡単です。
+定理ステートメントから始めます：</p>
+<pre><code class="language-leantac">theorem splitList_shorter_le (lst : List α) :
+    (splitList lst).fst.length ≤ lst.length ∧
+      (splitList lst).snd.length ≤ lst.length := by
+  skip
+</code></pre>
+<pre><code class="language-output error">unsolved goals
+α : Type u_1
+lst : List α
+⊢ List.length (splitList lst).fst ≤ List.length lst ∧ List.length (splitList lst).snd ≤ List.length lst
+</code></pre>
+<p><code>splitList</code>はリストに構造的に再帰的なので、証明は帰納法を使用すべきです。
+<code>splitList</code>の構造的再帰は帰納法の証明に完全に一致します：帰納法の基底ケースは再帰の基底ケースに一致し、帰納ステップは再帰呼び出しに一致します。
+<code>induction</code> タクティックは2つのゴールを与えます：</p>
+<pre><code class="language-leantac">theorem splitList_shorter_le (lst : List α) :
+    (splitList lst).fst.length ≤ lst.length ∧
+      (splitList lst).snd.length ≤ lst.length := by
+  induction lst with
+  | nil =&gt; skip
+  | cons x xs ih =&gt; skip
+</code></pre>
+<pre><code class="language-output error">unsolved goals
+case nil
+α : Type u_1
+⊢ List.length (splitList []).fst ≤ List.length [] ∧ List.length (splitList []).snd ≤ List.length []
+</code></pre>
+<pre><code class="language-output error">unsolved goals
+case cons
+α : Type u_1
+x : α
+xs : List α
+ih : List.length (splitList xs).fst ≤ List.length xs ∧ List.length (splitList xs).snd ≤ List.length xs
+⊢ List.length (splitList (x :: xs)).fst ≤ List.length (x :: xs) ∧
+    List.length (splitList (x :: xs)).snd ≤ List.length (x :: xs)
+</code></pre>
+<p><code>nil</code> ケースのゴールは、<code>splitList</code> の定義を展開するように指示することにより、単純化を呼び出すことによって証明することができます。なぜなら、空リストの長さは空リストの長さより小さいか等しいからです。
+同様に、<code>splitList</code> とともに単純化することにより、<code>cons</code> ケースはゴールの長さに <code>Nat.succ</code> を配置します：</p>
+<pre><code class="language-leantac">theorem splitList_shorter_le (lst : List α) :
+    (splitList lst).fst.length ≤ lst.length ∧
+      (splitList lst).snd.length ≤ lst.length := by
+  induction lst with
+  | nil =&gt; simp [splitList]
+  | cons x xs ih =&gt;
+    simp [splitList]
+</code></pre>
+<pre><code class="language-output error">unsolved goals
+case cons
+α : Type u_1
+x : α
+xs : List α
+ih : List.length (splitList xs).fst ≤ List.length xs ∧ List.length (splitList xs).snd ≤ List.length xs
+⊢ Nat.succ (List.length (splitList xs).snd) ≤ Nat.succ (List.length xs) ∧
+    List.length (splitList xs).fst ≤ Nat.succ (List.length xs)
+</code></pre>
+<p>これは、<code>List.length</code> の呼び出しがリスト <code>x :: xs</code> の頭を消費し、入力リストの長さと最初の出力リストの長さの両方を <code>Nat.succ</code> に変換するためです。</p>
+<p>Leanで <code>A ∧ B</code> と書くのは <code>And A B</code> のショートカットです。
+<code>And</code> は <code>Prop</code> 宇宙内の構造型です：</p>
+<pre><code class="language-lean">structure And (a b : Prop) : Prop where
+  intro ::
+  left : a
+  right : b
+</code></pre>
+<p>言い換えれば、<code>A ∧ B</code> の証明は <code>left</code> フィールドに <code>A</code> の証明と <code>right</code> フィールドに <code>B</code> の証明が適用された <code>And.intro</code> コンストラクタで構成されています。</p>
+<p><code>cases</code> タクティックは、データ型の各コンストラクタまたは提案の潜在的な証明を順番に考慮するための証明を可能にします。
+それは再帰を伴わない <code>match</code> 式に対応します。
+構造に <code>cases</code> を使用すると、構造が分解され、各フィールドの構造に対する仮定が追加されます。これはパターンマッチ式がプログラムで使用するために構造のフィールドを抽出するようなものです。
+構造には一つのコンストラクタしかないので、構造に <code>cases</code> を使用することは追加のゴールではありません。</p>
+<p><code>ih</code> は <code>List.length (splitList xs).fst ≤ List.length xs ∧ List.length (splitList xs).snd ≤ List.length xs</code> の証明であるので、<code>cases ih</code> を使用すると <code>List.length (splitList xs).fst ≤ List.length xs</code> という仮定と <code>List.length (splitList xs).snd ≤ List.length xs</code> という仮定になります：</p>
+<pre><code class="language-leantac">theorem splitList_shorter_le (lst : List α) :
+    (splitList lst).fst.length ≤ lst.length ∧
+      (splitList lst).snd.length ≤ lst.length := by
+  induction lst with
+  | nil =&gt; simp [splitList]
+  | cons x xs ih =&gt;
+    simp [splitList]
+    cases ih
+</code></pre>
+<pre><code class="language-output error">unsolved goals
+case cons.intro
+α : Type u_1
+x : α
+xs : List α
+left✝ : List.length (splitList xs).fst ≤ List.length xs
+right✝ : List.length (splitList xs).snd ≤ List.length xs
+⊢ Nat.succ (List.length (splitList xs).snd) ≤ Nat.succ (List.length xs) ∧
+    List.length (splitList xs).fst ≤ Nat.succ (List.length xs)
+</code></pre>
+<p>証明のゴールも <code>And</code> なので、<code>constructor</code> タクティックを使って <code>And.intro</code> を適用することができ、各引数のゴールが作成されます：</p>
+<pre><code class="language-leantac">theorem splitList_shorter_le (lst : List α) :
+    (splitList lst).fst.length ≤ lst.length ∧
+      (splitList lst).snd.length ≤ lst.length := by
+  induction lst with
+  | nil =&gt; simp [splitList]
+  | cons x xs ih =&gt;
+    simp [splitList]
+    cases ih
+    constructor
+</code></pre>
+<pre><code class="language-output error">unsolved goals
+case cons.intro.left
+α : Type u_1
+x : α
+xs : List α
+left✝ : List.length (splitList xs).fst ≤ List.length xs
+right✝ : List.length (splitList xs).snd ≤ List.length xs
+⊢ Nat.succ (List.length (splitList xs).snd) ≤ Nat.succ (List.length xs)
+
+case cons.intro.right
+α : Type u_1
+x : α
+xs : List α
+left✝ : List.length (splitList xs).fst ≤ List.length xs
+right✝ : List.length (splitList xs).snd ≤ List.length xs
+⊢ List.length (splitList xs).fst ≤ Nat.succ (List.length xs)
+</code></pre>
+<p><code>left</code> ゴールは <code>left✝</code> 仮定に非常に似ていますが、ゴールは不等式の両側を <code>Nat.succ</code> でラップします。
+同様に、<code>right</code> ゴールは <code>right✝</code> 仮定に似ていますが、ゴールは <code>Nat.succ</code> を入力リストの長さにのみ追加します。
+これらの <code>Nat.succ</code> のラッピングがステートメントの真実を保つことを証明する時がきました。</p>
+<h3 id="両側に1を追加する"><a class="header" href="#両側に1を追加する">両側に1を追加する</a></h3>
+<p><code>left</code> ゴールの場合、証明すべきステートメントは <code>Nat.succ_le_succ : n ≤ m → Nat.succ n ≤ Nat.succ m</code> です。
+言い換えれば、もし <code>n ≤ m</code> であれば、両側に1を追加してもこの事実は変わりません。
+なぜこれが真実なのでしょうか？
+<code>n ≤ m</code> の証明は <code>m - n</code> という <code>Nat.le.step</code> コンストラクタのインスタンスであり、前よりも大きい数値に <code>refl</code> が適用される場合、同じ数の <code>step</code> コンストラクタがラップされます。</p>
+<p>より形式的には、証明は <code>n ≤ m</code> の証拠に対する帰納法によるものです。
+証拠が <code>refl</code> の場合、それは <code>n = m</code> なので、<code>Nat.succ n = Nat.succ m</code> であり <code>refl</code> を再び使用できます。
+証拠が <code>step</code> の場合、帰納法の仮説は <code>Nat.succ n ≤ Nat.succ m</code> の証拠を提供し、目標は <code>Nat.succ n ≤ Nat.succ (Nat.succ m)</code> を示すことです。
+これは帰納仮説と一緒に <code>step</code> を使用することによって行われます。</p>
+<p>Leanでの定理ステートメントは：</p>
+<pre><code class="language-leantac">theorem Nat.succ_le_succ : n ≤ m → Nat.succ n ≤ Nat.succ m := by
+  skip
+</code></pre>
+<p>エラーメッセージはそれを再確認します：</p>
+<pre><code class="language-output error">unsolved goals
+n m : Nat
+⊢ n ≤ m → Nat.succ n ≤ Nat.succ m
+</code></pre>
+<p>最初のステップは、仮説 <code>n ≤ m</code> をスコープ内にもたらして名前を付ける <code>intro</code> タクティックを使用することです：</p>
+<pre><code class="language-leantac">theorem Nat.succ_le_succ : n ≤ m → Nat.succ n ≤ Nat.succ m := by
+  intro h
+</code></pre>
+<pre><code class="language-output error">unsolved goals
+n m : Nat
+h : n ≤ m
+⊢ Nat.succ n ≤ Nat.succ m
+</code></pre>
+<p>証明は <code>n ≤ m</code> の証拠の帰納法によるので、次のタクティックは <code>induction h</code> です：</p>
+<pre><code class="language-leantac">theorem Nat.succ_le_succ : n ≤ m → Nat.succ n ≤ Nat.succ m := by
+  intro h
+  induction h
+</code></pre>
+<p>これにより、<code>Nat.le</code> の各コンストラクタについて一度に二つのゴールが得られます：</p>
+<pre><code class="language-output error">unsolved goals
+case refl
+n m : Nat
+⊢ Nat.succ n ≤ Nat.succ n
+
+case step
+n m m✝ : Nat
+a✝ : Nat.le n m✝
+a_ih✝ : Nat.succ n ≤ Nat.succ m✝
+⊢ Nat.succ n ≤ Nat.succ (Nat.succ m✝)
+</code></pre>
+<p><code>refl</code> のゴールは <code>refl</code> を使用して解決することができますが、<code>constructor</code> タクティックが選びます。
+<code>step</code> のゴールも <code>step</code> コンストラクタの使用を必要とします：</p>
+<pre><code class="language-leantac">theorem splitList_shorter_le (lst : List α) :
+    (splitList lst).fst.length ≤ lst.length ∧
+      (splitList lst).snd.length ≤ lst.length := by
+  induction lst with
+  | nil =&gt; simp [splitList]
+  | cons x xs ih =&gt;
+    simp [splitList]
+    cases ih
+    constructor
+</code></pre>
+<p>これで、対象の <code>And</code> の左右両側のゴールが得られました。</p>
+<p>これらのゴールは、<code>And</code> 構造のフィールドに挙げられた名前と同じものです。よって、<code>case</code> タクティック（<code>cases</code> と混同しないように注意）を使って、それぞれに集中することができます：</p>
+<pre><code class="language-leantac">theorem splitList_shorter_le (lst : List α) :
+    (splitList lst).fst.length ≤ lst.length ∧ (splitList lst).snd.length ≤ lst.length := by
+  induction lst with
+  | nil =&gt; simp [splitList]
+  | cons x xs ih =&gt;
+    simp [splitList]
+    cases ih
+    constructor
+    case left =&gt; skip
+    case right =&gt; skip
+</code></pre>
+<p>単一のエラーではなく、それぞれの <code>skip</code> の上にある二つのメッセージがあります。
+<code>left</code> のゴールには、<code>Nat.succ_le_succ</code> を使用できます：</p>
+<pre><code class="language-output error">unsolved goals
+α : Type u_1
+x : α
+xs : List α
+left✝ : List.length (splitList xs).fst ≤ List.length xs
+right✝ : List.length (splitList xs).snd ≤ List.length xs
+⊢ Nat.succ (List.length (splitList xs).snd) ≤ Nat.succ (List.length xs)
+</code></pre>
+<p>右側のゴールでは、<code>Nat.le_succ_of_le</code> が適合します：</p>
+<pre><code class="language-output error">unsolved goals
+α : Type u_1
+x : α
+xs : List α
+left✝ : List.length (splitList xs).fst ≤ List.length xs
+right✝ : List.length (splitList xs).snd ≤ List.length xs
+⊢ List.length (splitList xs).fst ≤ Nat.succ (List.length xs)
+</code></pre>
+<p>両方の定理には、<code>n ≤ m</code> という前提条件が含まれます。
+これらは <code>left✝</code> および <code>right✝</code> の仮定として見つかるため、<code>assumption</code> タクティックで最後のゴールを処理することができます：</p>
+<pre><code class="language-leantac">theorem splitList_shorter_le (lst : List α) :
+    (splitList lst).fst.length ≤ lst.length ∧ (splitList lst).snd.length ≤ lst.length := by
+  induction lst with
+  | nil =&gt; simp [splitList]
+  | cons x xs ih =&gt;
+    simp [splitList]
+    cases ih
+    constructor
+    case left =&gt; apply Nat.succ_le_succ; assumption
+    case right =&gt; apply Nat.le_succ_of_le; assumption
+</code></pre>
+<p>次に、少なくとも二つの要素を含むリストを分割した場合に、それぞれの結果が厳密に短くなることを証明する必要がある実際の定理に戻ります。そのためには次のように始めます：</p>
+<pre><code class="language-leantac">theorem splitList_shorter (lst : List α) (_ : lst.length ≥ 2) :
+    (splitList lst).fst.length &lt; lst.length ∧
+      (splitList lst).snd.length &lt; lst.length := by
+  skip
+</code></pre>
+<pre><code class="language-output error">unsolved goals
+α : Type u_1
+lst : List α
+x✝ : List.length lst ≥ 2
+⊢ List.length (splitList lst).fst &lt; List.length lst ∧ List.length (splitList lst).snd &lt; List.length lst
+</code></pre>
+<p><code>lst</code> が少なくとも二つの要素を含んでいるため、<code>match</code> を使ってそれらを明らかにし、依存型のパターンマッチングを通じて型を詰めることができます：</p>
+<pre><code class="language-leantac">theorem splitList_shorter (lst : List α) (_ : lst.length ≥ 2) :
+    (splitList lst).fst.length &lt; lst.length ∧
+      (splitList lst).snd.length &lt; lst.length := by
+  match lst with
+  | x :: y :: xs =&gt;
+    skip
+</code></pre>
+<pre><code class="language-output error">unsolved goals
+α : Type u_1
+lst : List α
+x y : α
+xs : List α
+x✝ : List.length (x :: y :: xs) ≥ 2
+⊢ List.length (splitList (x :: y :: xs)).fst &lt; List.length (x :: y :: xs) ∧
+    List.length (splitList (x :: y :: xs)).snd &lt; List.length (x :: y :: xs)
+</code></pre>
+<p><code>simplify</code> を使うと <code>x</code> と <code>y</code> が取り除かれ、計算されたリストの長さがそれぞれ <code>Nat.succ</code> を増やします：</p>
+<pre><code class="language-leantac">theorem splitList_shorter (lst : List α) (_ : lst.length ≥ 2) :
+    (splitList lst).fst.length &lt; lst.length ∧
+      (splitList lst).snd.length &lt; lst.length := by
+  match lst with
+  | x :: y :: xs =&gt;
+    simp [splitList]
+</code></pre>
+<pre><code class="language-output error">unsolved goals
+α : Type u_1
+lst : List α
+x y : α
+xs : List α
+x✝ : List.length (x :: y :: xs) ≥ 2
+⊢ Nat.succ (List.length (splitList xs).fst) &lt; Nat.succ (Nat.succ (List.length xs)) ∧
+    Nat.succ (List.length (splitList xs).snd) &lt; Nat.succ (Nat.succ (List.length xs))
+</code></pre>
+<p><code>simplify</code> を <code>simp_arith</code> に置き換えると、これらの <code>Nat.succ</code> コンストラクタが取り除かれます。なぜなら、<code>simp_arith</code> では <code>n + 1 &lt; m + 1</code> が <code>n &lt; m</code> を意味するという事実を利用しているからです：</p>
+<pre><code class="language-leantac">theorem splitList_shorter (lst : List α) (_ : lst.length ≥ 2) :
+    (splitList lst).fst.length &lt; lst.length ∧
+      (splitList lst).snd.length &lt; lst.length := by
+  match lst with
+  | x :: y :: xs =&gt;
+    simp_arith [splitList]
+</code></pre>
+<pre><code class="language-output error">unsolved goals
+α : Type u_1
+lst : List α
+x y : α
+xs : List α
+x✝ : List.length (x :: y :: xs) ≥ 2
+⊢ List.length (splitList xs).fst ≤ List.length xs ∧ List.length (splitList xs).snd ≤ List.length xs
+</code></pre>
+<p>このゴールは、<code>splitList_shorter_le</code> と一致するので、これを使用して証明を結論付けることができます：</p>
+<pre><code class="language-leantac">theorem splitList_shorter (lst : List α) (_ : lst.length ≥ 2) :
+    (splitList lst).fst.length &lt; lst.length ∧
+      (splitList lst).snd.length &lt; lst.length := by
+  match lst with
+  | x :: y :: xs =&gt;
+    simp_arith [splitList]
+    apply splitList_shorter_le
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../programs-proofs/arrays-and-termination.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../programs-proofs/fin.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../programs-proofs/arrays-and-termination.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../programs-proofs/fin.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+    </body>
+</html>

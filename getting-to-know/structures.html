@@ -1,0 +1,418 @@
+<!DOCTYPE HTML>
+<html lang="ja" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>構造体 - Functional Programming in Lean</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../custom.css">
+        <link rel="stylesheet" href="../pygments.css">
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../title.html">Leanにおける関数型プログラミング</a></li><li class="chapter-item expanded affix "><a href="../introduction.html">イントロダクション</a></li><li class="chapter-item expanded affix "><a href="../acknowledgments.html">謝辞</a></li><li class="chapter-item expanded "><a href="../getting-to-know.html"><strong aria-hidden="true">1.</strong> Leanの基本を学ぶ</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../getting-to-know/evaluating.html"><strong aria-hidden="true">1.1.</strong> 式の評価</a></li><li class="chapter-item expanded "><a href="../getting-to-know/types.html"><strong aria-hidden="true">1.2.</strong> 型</a></li><li class="chapter-item expanded "><a href="../getting-to-know/functions-and-definitions.html"><strong aria-hidden="true">1.3.</strong> 関数と定義</a></li><li class="chapter-item expanded "><a href="../getting-to-know/structures.html" class="active"><strong aria-hidden="true">1.4.</strong> 構造体</a></li><li class="chapter-item expanded "><a href="../getting-to-know/datatypes-patterns-and-pattern.html"><strong aria-hidden="true">1.5.</strong> データタイプ、パターン、そして再帰</a></li><li class="chapter-item expanded "><a href="../getting-to-know/polymorphism.html"><strong aria-hidden="true">1.6.</strong> 多相性</a></li><li class="chapter-item expanded "><a href="../getting-to-know/conveniences.html"><strong aria-hidden="true">1.7.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../getting-to-know/summary.html"><strong aria-hidden="true">1.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../hello-world.html"><strong aria-hidden="true">2.</strong> Hello, World!</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../hello-world/running-a-program.html"><strong aria-hidden="true">2.1.</strong> プログラムの実行</a></li><li class="chapter-item expanded "><a href="../hello-world/step-by-step.html"><strong aria-hidden="true">2.2.</strong> ステップバイステップ</a></li><li class="chapter-item expanded "><a href="../hello-world/starting-a-project.html"><strong aria-hidden="true">2.3.</strong> プロジェクトの始め方</a></li><li class="chapter-item expanded "><a href="../hello-world/cat.html"><strong aria-hidden="true">2.4.</strong> 実例:cat</a></li><li class="chapter-item expanded "><a href="../hello-world/conveniences.html"><strong aria-hidden="true">2.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../hello-world/summary.html"><strong aria-hidden="true">2.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../props-proofs-indexing.html"><strong aria-hidden="true">3.</strong> 小休止: 命題、証明、そして索引</a></li><li class="chapter-item expanded "><a href="../type-classes.html"><strong aria-hidden="true">4.</strong> オーバーロードと型クラス</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../type-classes/pos.html"><strong aria-hidden="true">4.1.</strong> 正の数</a></li><li class="chapter-item expanded "><a href="../type-classes/polymorphism.html"><strong aria-hidden="true">4.2.</strong> 型クラスと多相性</a></li><li class="chapter-item expanded "><a href="../type-classes/out-params.html"><strong aria-hidden="true">4.3.</strong> インスタンス検索の制御</a></li><li class="chapter-item expanded "><a href="../type-classes/arrays-and-indexing.html"><strong aria-hidden="true">4.4.</strong> 配列とインデックス化</a></li><li class="chapter-item expanded "><a href="../type-classes/standard-classes.html"><strong aria-hidden="true">4.5.</strong> 標準クラス</a></li><li class="chapter-item expanded "><a href="../type-classes/coercion.html"><strong aria-hidden="true">4.6.</strong> 強制変換</a></li><li class="chapter-item expanded "><a href="../type-classes/conveniences.html"><strong aria-hidden="true">4.7.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../type-classes/summary.html"><strong aria-hidden="true">4.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../monads.html"><strong aria-hidden="true">5.</strong> モナド</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../monads/monad-type-class.html"><strong aria-hidden="true">5.1.</strong> モナド型クラス</a></li><li class="chapter-item expanded "><a href="../monads/arithmetic-in-monads.html"><strong aria-hidden="true">5.2.</strong> 例: モナドでの算術</a></li><li class="chapter-item expanded "><a href="../monads/do-notation-for-monads.html"><strong aria-hidden="true">5.3.</strong> モナド用do記法</a></li><li class="chapter-item expanded "><a href="../monads/io-monad.html"><strong aria-hidden="true">5.4.</strong> IOモナド</a></li><li class="chapter-item expanded "><a href="../monads/conveniences.html"><strong aria-hidden="true">5.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../monads/summary.html"><strong aria-hidden="true">5.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../functor-applicative-monad.html"><strong aria-hidden="true">6.</strong> 関手、アプリカティブ関手、そしてモナド</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../functor-applicative-monad/structure-and-inheritance.html"><strong aria-hidden="true">6.1.</strong> 構造と継承</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/applicative-functors.html"><strong aria-hidden="true">6.2.</strong> アプリカティブ関手</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/applicative-contract.html"><strong aria-hidden="true">6.3.</strong> アプリカティブの契約</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/alternative.html"><strong aria-hidden="true">6.4.</strong> 代替物</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/universes.html"><strong aria-hidden="true">6.5.</strong> 宇宙</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/complete-definitions.html"><strong aria-hidden="true">6.6.</strong> 完全な定義</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/summary.html"><strong aria-hidden="true">6.7.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../monad-transformers.html"><strong aria-hidden="true">7.</strong> モナドトランスフォーマ</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../monad-transformers/reader-io.html"><strong aria-hidden="true">7.1.</strong> IOとReaderの組み合わせ</a></li><li class="chapter-item expanded "><a href="../monad-transformers/transformers-kit.html"><strong aria-hidden="true">7.2.</strong> モナド構築キット</a></li><li class="chapter-item expanded "><a href="../monad-transformers/order-of-monad-transformers.html"><strong aria-hidden="true">7.3.</strong> モナドトランスフォーマの並び順</a></li><li class="chapter-item expanded "><a href="../monad-transformers/enhanced-do.html"><strong aria-hidden="true">7.4.</strong> doの機能強化</a></li><li class="chapter-item expanded "><a href="../monad-transformers/conveniences.html"><strong aria-hidden="true">7.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../monad-transformers/summary.html"><strong aria-hidden="true">7.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../dependent-types.html"><strong aria-hidden="true">8.</strong> 依存型を使用したプログラミング</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../dependent-types/indexed-families.html"><strong aria-hidden="true">8.1.</strong> インデックス付きファミリー</a></li><li class="chapter-item expanded "><a href="../dependent-types/universe-pattern.html"><strong aria-hidden="true">8.2.</strong> 宇宙デザインパターン</a></li><li class="chapter-item expanded "><a href="../dependent-types/typed-queries-examples.html"><strong aria-hidden="true">8.3.</strong> 実例: 型指定されたクエリ</a></li><li class="chapter-item expanded "><a href="../dependent-types/indices-parameters-universes.html"><strong aria-hidden="true">8.4.</strong> インデックス、パラメータ、そして宇宙レベル</a></li><li class="chapter-item expanded "><a href="../dependent-types/pitfalls-of-programming-with-dependent-types.html"><strong aria-hidden="true">8.5.</strong> 依存型を使ったプログラミングの落とし穴</a></li><li class="chapter-item expanded "><a href="../dependent-types/summary.html"><strong aria-hidden="true">8.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../tactics-induction-proofs.html"><strong aria-hidden="true">9.</strong> 小休止: 戦術、帰納、そして証明</a></li><li class="chapter-item expanded "><a href="../programs-proofs.html"><strong aria-hidden="true">10.</strong> プログラミング、証明、そしてパフォーマンス</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../programs-proofs/tail-recursion.html"><strong aria-hidden="true">10.1.</strong> 末尾再帰</a></li><li class="chapter-item expanded "><a href="../programs-proofs/tail-recursion-proofs.html"><strong aria-hidden="true">10.2.</strong> 同一性の証明</a></li><li class="chapter-item expanded "><a href="../programs-proofs/arrays-and-termination.html"><strong aria-hidden="true">10.3.</strong> 配列と終了性</a></li><li class="chapter-item expanded "><a href="../programs-proofs/inequalities.html"><strong aria-hidden="true">10.4.</strong> その他の不等式</a></li><li class="chapter-item expanded "><a href="../programs-proofs/fin.html"><strong aria-hidden="true">10.5.</strong> 安全な配列インデックス</a></li><li class="chapter-item expanded "><a href="../programs-proofs/insertion-sort.html"><strong aria-hidden="true">10.6.</strong> 挿入ソートと配列の変更</a></li><li class="chapter-item expanded "><a href="../programs-proofs/special-types.html"><strong aria-hidden="true">10.7.</strong> 特殊な型</a></li><li class="chapter-item expanded "><a href="../programs-proofs/summary.html"><strong aria-hidden="true">10.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../next-steps.html">次のステップ</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Functional Programming in Lean</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <pre><code class="language-markdown"># 構造体
+
+プログラムを書く際の最初のステップは、問題領域の概念を特定し、それらをコードで適切に表現することです。
+時には、領域の概念が他の、よりシンプルな概念の集まりである場合があります。
+その場合、これらのシンプルなコンポーネントを一つの&quot;パッケージ&quot;にまとめて、意味のある名前を付けることが便利です。
+Leanでは、C言語やRustの`struct`、C#の`record`に相当する _構造体_ を使ってこれを実現します。
+
+構造体を定義すると、Leanに他のどのタイプにも還元できない完全に新しいタイプが導入されます。
+これは便利です。なぜなら、同じデータを含んでいても異なる概念を表す複数の構造体が存在するかもしれないからです。
+例えば、ポイントはカルテシアン座標または極座標を使って表されるかもしれません。どちらも浮動小数点数のペアで表されます。
+別々の構造体を定義することで、APIの利用者が一方を他方と混同することを防ぐことができます。
+
+Leanの浮動小数点数の型は`Float`と呼ばれ、浮動小数点数は通常の表記法で記述されます。
+```lean
+#check 1.2
+</code></pre>
+<pre><code class="language-output info">1.2 : Float
+</code></pre>
+<pre><code class="language-lean">#check -454.2123215
+</code></pre>
+<pre><code class="language-output info">-454.2123215 : Float
+</code></pre>
+<pre><code class="language-lean">#check 0.0
+</code></pre>
+<pre><code class="language-output info">0.0 : Float
+</code></pre>
+<p>小数点を含む浮動小数点数を書くとき、Leanは型<code>Float</code>を推論します。小数点を含まない場合、型注釈が必要になるかもしれません。</p>
+<pre><code class="language-lean">#check 0
+</code></pre>
+<pre><code class="language-output info">0 : Nat
+</code></pre>
+<pre><code class="language-lean">#check (0 : Float)
+</code></pre>
+<pre><code class="language-output info">0 : Float
+</code></pre>
+<p>カルテシアンポイントは、<code>x</code>と<code>y</code>という名前の2つの<code>Float</code>フィールドを持つ構造体です。
+これは<code>structure</code>キーワードを使って宣言されます。</p>
+<pre><code class="language-lean">structure Point where
+  x : Float
+  y : Float
+deriving Repr
+</code></pre>
+<p>この宣言の後、<code>Point</code>は新しい構造体タイプとなります。
+最後の行は<code>deriving Repr</code>と記述されており、型<code>Point</code>の値を表示するためのコードの生成をLeanに依頼しています。
+このコードは、プログラマーによる評価結果のレンダリングに<code>#eval</code>によって使われます。これはPythonの<code>repr</code>関数に類似しています。
+また、コンパイラが生成した表示コードをオーバーライドすることも可能です。</p>
+<p>構造体タイプの値を作成する典型的な方法は、中括弧内にすべてのフィールドの値を指定することです。
+カルテシアン平面の原点は<code>x</code>と<code>y</code>が共にゼロのところです：</p>
+<pre><code class="language-lean">def origin : Point := { x := 0.0, y := 0.0 }
+</code></pre>
+<p>もし<code>Point</code>の定義で<code>deriving Repr</code>行が省略されたら、<code>#eval origin</code>を試みると、関数の引数を省略した場合に発生するエラーに似たエラーが発生します：</p>
+<pre><code class="language-output error">expression
+  origin
+has type
+  Point
+but instance
+  Lean.MetaEval Point
+failed to be synthesized, this instance instructs Lean on how to display the resulting value, recall that any type implementing the `Repr` class also implements the `Lean.MetaEval` class
+</code></pre>
+<p>そのメッセージは、評価機構が評価結果をユーザーに伝える方法を知らないことを意味しています。</p>
+<p>幸いにも、<code>deriving Repr</code>により、<code>#eval origin</code>の結果は<code>origin</code>の定義に非常によく似ています。</p>
+<pre><code class="language-output info">{ x := 0.000000, y := 0.000000 }
+</code></pre>
+<p>構造体はデータの集まりを&quot;束ねて&quot;、名前を付けて一つの単位として扱うために存在するので、構造体から個々のフィールドを抽出することも重要です。
+これはC言語、Python、Rustのようなドット記法を使用して行われます。</p>
+<pre><code class="language-lean">#eval origin.x
+</code></pre>
+<pre><code class="language-output info">0.000000
+</code></pre>
+<pre><code class="language-lean">#eval origin.y
+</code></pre>
+<pre><code class="language-output info">0.000000
+</code></pre>
+<p>これを使用して、構造体を引数として取る関数を定義することができます。
+たとえば、ポイントの加算は、基礎となる座標値を加えることによって行われます。
+<code>#eval addPoints { x := 1.5, y := 32 } { x := -8, y := 0.2 }</code>は</p>
+<pre><code class="language-output info">{ x := -6.500000, y := 32.200000 }
+</code></pre>
+<p>となるべきです。
+関数自体は、<code>p1</code>と<code>p2</code>と呼ばれる2つの<code>Points</code>を引数として取ります。
+結果として得られるポイントは、<code>p1</code>と<code>p2</code>の<code>x</code>と<code>y</code>フィールドに基づいています：</p>
+<pre><code class="language-lean">def addPoints (p1 : Point) (p2 : Point) : Point :=
+  { x := p1.x + p2.x, y := p1.y + p2.y }
+</code></pre>
+<p>同様に、2つのポイント間の距離は、それぞれの<code>x</code>と<code>y</code>成分の差の二乗の合計の平方根で表されます。これは以下のように記述されます：</p>
+<pre><code class="language-lean">def distance (p1 : Point) (p2 : Point) : Float :=
+  Float.sqrt (((p2.x - p1.x) ^ 2.0) + ((p2.y - p1.y) ^ 2.0))
+</code></pre>
+<p>たとえば、(1, 2)と(5, -1)の距離は5です：</p>
+<pre><code class="language-lean">#eval distance { x := 1.0, y := 2.0 } { x := 5.0, y := -1.0 }
+</code></pre>
+<pre><code class="language-output info">5.000000
+</code></pre>
+<p>複数の構造体は、同じ名前のフィールドを持つことがあります。
+たとえば、3次元ポイントのデータ型は<code>x</code>と<code>y</code>のフィールドを共通して持ち、同じフィールド名でインスタンス化されるかもしれません：</p>
+<pre><code class="language-lean">structure Point3D where
+  x : Float
+  y : Float
+  z : Float
+deriving Repr
+
+def origin3D : Point3D := { x := 0.0, y := 0.0, z := 0.0 }
+</code></pre>
+<p>つまり、中括弧構文を使用するためには構造体の期待されるタイプがわかっている必要があります。
+タイプが不明な場合、Leanは構造体をインスタンス化することができません。
+たとえば、</p>
+<pre><code class="language-lean">#check { x := 0.0, y := 0.0 }
+</code></pre>
+<p>は次のエラーにつながります</p>
+<pre><code class="language-output error">invalid {...} notation, expected type is not known
+</code></pre>
+<p>通常どおり、状況は型注釈を提供することで解決されます。</p>
+<pre><code class="language-lean">#check ({ x := 0.0, y := 0.0 } : Point)
+</code></pre>
+<pre><code class="language-output info">{ x := 0.0, y := 0.0 } : Point
+</code></pre>
+<p>プログラムをより簡潔にするために、Leanは中括弧の中で構造体の型注釈を許可しています。</p>
+<pre><code class="language-lean">#check { x := 0.0, y := 0.0 : Point}
+</code></pre>
+<pre><code class="language-output info">{ x := 0.0, y := 0.0 } : Point
+</code></pre>
+<h2 id="構造体の更新"><a class="header" href="#構造体の更新">構造体の更新</a></h2>
+<p><code>Point</code>の<code>x</code>フィールドを<code>0.0</code>に置き換える関数<code>zeroX</code>を想像してください。
+ほとんどのプログラミング言語コミュニティでは、この文章は<code>x</code>を指しているメモリ位置が新しい値に上書きされることを意味します。
+しかし、Leanには変更可能な状態がありません。
+関数型プログラミングコミュニティでは、この種の表現によってほとんど常に意味されることは、新しい<code>Point</code>がアロケートされて<code>x</code>フィールドが新しい値を指し、他のすべてのフィールドが入力からの元の値を指すことです。
+<code>zeroX</code>を文字通りに記述する一つの方法は、<code>x</code>に新しい値を記入し、<code>y</code>を手動で転送することです：</p>
+<pre><code class="language-lean">def zeroX (p : Point) : Point :=
+  { x := 0, y := p.y }
+</code></pre>
+<p>しかし、このスタイルのプログラミングには欠点があります。
+まず、構造体に新しいフィールドが追加された場合、どのフィールドを更新する場所でも更新する必要があり、メンテナンスが難しくなります。
+第二に、構造体が同じタイプの複数のフィールドを含んでいる場合、コピーアンドペーストのコーディングによってフィールドの内容が複製されたり切り替えられたりするリスクがあります。
+最後に、プログラムが長くて官僚的になります。</p>
+<p>Leanは構造体のいくつかのフィールドを置き換える一方で他をそのままにしておくための便利な構文を提供しています。
+これは構造体の初期化で<code>with</code>キーワードを使用することにより行われます。
+変更されないフィールドのソースは<code>with</code>の前に、新しいフィールドがその後に配置されます。
+例えば、<code>zeroX</code>は新しい<code>x</code>値だけで記述することができます：</p>
+<pre><code class="language-lean">def zeroX (p : Point) : Point :=
+  { p with x := 0 }
+</code></pre>
+<p>この構造体の更新構文は既存の値を変更しないことを忘れないでください。それは新しい値を作り出し、古い値といくつかのフィールドを共有します。
+例えば、ポイント<code>fourAndThree</code>があるとします：</p>
+<pre><code class="language-lean">def fourAndThree : Point :=
+  { x := 4.3, y := 3.4 }
+</code></pre>
+<p>それを評価してから、<code>zeroX</code>を使ってそれを更新してから、もう一度評価すると、元の値が返されます：</p>
+<pre><code class="language-lean">#eval fourAndThree
+</code></pre>
+<pre><code class="language-output info">{ x := 4.300000, y := 3.400000 }
+</code></pre>
+<pre><code class="language-lean">#eval zeroX fourAndThree
+</code></pre>
+<pre><code class="language-output info">{ x := 0.000000, y := 3.400000 }
+</code></pre>
+<pre><code class="language-lean">#eval fourAndThree
+</code></pre>
+<pre><code class="language-output info">{ x := 4.300000, y := 3.400000 }
+</code></pre>
+<p>構造体の更新が元の構造を変更しないという事実は、古いものから新しい値を計算する場合に推論を容易にします。
+古い構造体を参照するすべての参照は、提供された新しい値のすべてで同じフィールド値を示し続けます。</p>
+<h2 id="裏側での動作"><a class="header" href="#裏側での動作">裏側での動作</a></h2>
+<p>すべての構造体には <em>コンストラクタ</em> があります。
+ここで、「コンストラクタ」という用語は混乱の元になるかもしれません。
+JavaやPythonなどの言語でのコンストラクタとは異なり、Leanのコンストラクタはデータタイプが初期化される際に実行される任意のコードではありません。
+コンストラクタは単に新しくアロケートされたデータ構造に格納されるデータを集めるだけです。
+データを前処理したり無効な引数を拒否するカスタムコンストラクタを提供することはできません。
+これは本当に、二つの文脈で「コンストラクタ」という語が異なるが関連する意味を持つというケースです。</p>
+<p>デフォルトでは、<code>S</code>という名前の構造体のコンストラクタは<code>S.mk</code>という名前になります。
+ここで、<code>S</code>は名前空間の修飾子であり、<code>mk</code>はコンストラクタ自体の名前です。
+中括弧初期化構文の代わりに、コンストラクタは直接適用することができます。</p>
+<pre><code class="language-lean">#check Point.mk 1.5 2.8
+</code></pre>
+<p>しかし、これは一般的に良いLeanのスタイルとは考えられておらず、Leanは標準の構造体初期化構文を使用してフィードバックを返すことさえあります。</p>
+<pre><code class="language-output info">{ x := 1.5, y := 2.8 } : Point
+</code></pre>
+<p>コンストラクタには関数タイプがあるため、関数が期待されるどこでも使用することができます。
+例えば、<code>Point.mk</code>は2つの<code>Float</code>（それぞれ<code>x</code>と<code>y</code>に対応する）を受け取り、新しい<code>Point</code>を返します。</p>
+<pre><code class="language-lean">#check (Point.mk)
+</code></pre>
+<pre><code class="language-output info">Point.mk : Float → Float → Point
+</code></pre>
+<p>構造体のコンストラクタ名を上書きするには、冒頭に二つのコロンを使って書きます。
+たとえば、<code>Point.mk</code>の代わりに<code>Point.point</code>を使用するには、次のように書きます：</p>
+<pre><code class="language-lean">structure Point where
+  point ::
+  x : Float
+  y : Float
+deriving Repr
+</code></pre>
+<p>コンストラクタに加えて、構造体の各フィールドに対してアクセサ関数が定義されます。
+これらは構造体の名前空間の中でフィールドと同じ名前を持っています。
+<code>Point</code>については、アクセサ関数<code>Point.x</code>と<code>Point.y</code>が生成されます。</p>
+<pre><code class="language-lean">#check (Point.x)
+</code></pre>
+<pre><code class="language-output info">Point.x : Point → Float
+</code></pre>
+<pre><code class="language-lean">#check (Point.y)
+</code></pre>
+<pre><code class="language-output info">{{#example_out Examples/Intro.leanPointy}}
+</code></pre>
+<p>ここで、実際には、構造体の構築構文で使用される中括弧構文は、背後では構造体のコンストラクターを呼び出す形に変換されます。先の<code>addPoints</code>の定義における<code>p1.x</code>という構文も、<code>Point.x</code>アクセス関数を呼び出す形に変換されます。つまり、<code>#eval origin.x</code>と<code>#eval Point.x origin</code>の両方が同じ結果を生成します。</p>
+<pre><code class="language-output info">0.000000
+</code></pre>
+<p>アクセスドット記法は、単純な構造体のフィールド以外にも使えます。任意の引数を取る関数にも使えるのです。より一般的には、アクセス記法は<code>TARGET.f ARG1 ARG2 ...</code>の形を取ります。<code>TARGET</code>が<code>T</code>型の場合、名前が<code>T.f</code>の関数が呼び出されます。<code>TARGET</code>は<code>T</code>型の最も左の引数になりますが、これは必ずしも最初の引数とは限りません。そして、残りの引数<code>ARG1 ARG2 ...</code>は順に提供されます。例えば、<code>String.append</code>は、<code>String</code>が<code>append</code>フィールドを有する構造体ではなくても、ドット記法を用いて文字列から呼び出すことができます。</p>
+<pre><code class="language-lean">#eval &quot;one string&quot;.append &quot; and another&quot;
+</code></pre>
+<pre><code class="language-output info">&quot;one string and another&quot;
+</code></pre>
+<p>その例では、<code>TARGET</code>は<code>&quot;one string&quot;</code>を表し、<code>ARG1</code>は<code>&quot; and another&quot;</code>を表します。</p>
+<p>関数<code>Point.modifyBoth</code>（つまり<code>Point</code>名前空間で定義された<code>modifyBoth</code>）は<code>Point</code>の両方のフィールドに関数を適用します。</p>
+<pre><code class="language-lean">def Point.modifyBoth (f : Float → Float) (p : Point) : Point :=
+  { x := f p.x, y := f p.y }
+</code></pre>
+<p><code>Point</code>引数が関数引数の後に来ていても、ドット記法で使用することが可能です。</p>
+<pre><code class="language-lean">#eval fourAndThree.modifyBoth Float.floor
+</code></pre>
+<pre><code class="language-output info">{ x := 4.000000, y := 3.000000 }
+</code></pre>
+<p>このケースでは、<code>TARGET</code>は<code>fourAndThree</code>を表し、<code>ARG1</code>は<code>Float.floor</code>です。アクセスドット記法のターゲットは必ずしも最初の引数ではなく、型が一致する最初の引数として使われます。</p>
+<h2 id="練習問題"><a class="header" href="#練習問題">練習問題</a></h2>
+<ul>
+<li><code>Float</code>型の高さ、幅、奥行きを持つ直方体を表す<code>RectangularPrism</code>という名前の構造体を定義してください。</li>
+<li>直方体の体積を計算する<code>volume : RectangularPrism → Float</code>という名前の関数を定義してください。</li>
+<li>端点によって線分を表す<code>Segment</code>という名前の構造体を定義し、線分の長さを計算する<code>length : Segment → Float</code>という関数を定義してください。<code>Segment</code>には最大で二つのフィールドを持つべきです。</li>
+<li><code>RectangularPrism</code>の宣言によって導入される名前は何ですか？</li>
+<li>次の<code>Hamster</code>および<code>Book</code>の宣言によって導入される名前は何ですか？それぞれの型は何ですか？</li>
+</ul>
+<pre><code class="language-lean">structure Hamster where
+  name : String
+  fluffy : Bool
+</code></pre>
+<pre><code class="language-lean">structure Book where
+  makeBook ::
+  title : String
+  author : String
+  price : Float
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../getting-to-know/functions-and-definitions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../getting-to-know/datatypes-patterns-and-pattern.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../getting-to-know/functions-and-definitions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../getting-to-know/datatypes-patterns-and-pattern.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+    </body>
+</html>

@@ -1,0 +1,448 @@
+<!DOCTYPE HTML>
+<html lang="ja" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>doの機能強化 - Functional Programming in Lean</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../custom.css">
+        <link rel="stylesheet" href="../pygments.css">
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../title.html">Leanにおける関数型プログラミング</a></li><li class="chapter-item expanded affix "><a href="../introduction.html">イントロダクション</a></li><li class="chapter-item expanded affix "><a href="../acknowledgments.html">謝辞</a></li><li class="chapter-item expanded "><a href="../getting-to-know.html"><strong aria-hidden="true">1.</strong> Leanの基本を学ぶ</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../getting-to-know/evaluating.html"><strong aria-hidden="true">1.1.</strong> 式の評価</a></li><li class="chapter-item expanded "><a href="../getting-to-know/types.html"><strong aria-hidden="true">1.2.</strong> 型</a></li><li class="chapter-item expanded "><a href="../getting-to-know/functions-and-definitions.html"><strong aria-hidden="true">1.3.</strong> 関数と定義</a></li><li class="chapter-item expanded "><a href="../getting-to-know/structures.html"><strong aria-hidden="true">1.4.</strong> 構造体</a></li><li class="chapter-item expanded "><a href="../getting-to-know/datatypes-patterns-and-pattern.html"><strong aria-hidden="true">1.5.</strong> データタイプ、パターン、そして再帰</a></li><li class="chapter-item expanded "><a href="../getting-to-know/polymorphism.html"><strong aria-hidden="true">1.6.</strong> 多相性</a></li><li class="chapter-item expanded "><a href="../getting-to-know/conveniences.html"><strong aria-hidden="true">1.7.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../getting-to-know/summary.html"><strong aria-hidden="true">1.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../hello-world.html"><strong aria-hidden="true">2.</strong> Hello, World!</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../hello-world/running-a-program.html"><strong aria-hidden="true">2.1.</strong> プログラムの実行</a></li><li class="chapter-item expanded "><a href="../hello-world/step-by-step.html"><strong aria-hidden="true">2.2.</strong> ステップバイステップ</a></li><li class="chapter-item expanded "><a href="../hello-world/starting-a-project.html"><strong aria-hidden="true">2.3.</strong> プロジェクトの始め方</a></li><li class="chapter-item expanded "><a href="../hello-world/cat.html"><strong aria-hidden="true">2.4.</strong> 実例:cat</a></li><li class="chapter-item expanded "><a href="../hello-world/conveniences.html"><strong aria-hidden="true">2.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../hello-world/summary.html"><strong aria-hidden="true">2.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../props-proofs-indexing.html"><strong aria-hidden="true">3.</strong> 小休止: 命題、証明、そして索引</a></li><li class="chapter-item expanded "><a href="../type-classes.html"><strong aria-hidden="true">4.</strong> オーバーロードと型クラス</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../type-classes/pos.html"><strong aria-hidden="true">4.1.</strong> 正の数</a></li><li class="chapter-item expanded "><a href="../type-classes/polymorphism.html"><strong aria-hidden="true">4.2.</strong> 型クラスと多相性</a></li><li class="chapter-item expanded "><a href="../type-classes/out-params.html"><strong aria-hidden="true">4.3.</strong> インスタンス検索の制御</a></li><li class="chapter-item expanded "><a href="../type-classes/arrays-and-indexing.html"><strong aria-hidden="true">4.4.</strong> 配列とインデックス化</a></li><li class="chapter-item expanded "><a href="../type-classes/standard-classes.html"><strong aria-hidden="true">4.5.</strong> 標準クラス</a></li><li class="chapter-item expanded "><a href="../type-classes/coercion.html"><strong aria-hidden="true">4.6.</strong> 強制変換</a></li><li class="chapter-item expanded "><a href="../type-classes/conveniences.html"><strong aria-hidden="true">4.7.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../type-classes/summary.html"><strong aria-hidden="true">4.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../monads.html"><strong aria-hidden="true">5.</strong> モナド</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../monads/monad-type-class.html"><strong aria-hidden="true">5.1.</strong> モナド型クラス</a></li><li class="chapter-item expanded "><a href="../monads/arithmetic-in-monads.html"><strong aria-hidden="true">5.2.</strong> 例: モナドでの算術</a></li><li class="chapter-item expanded "><a href="../monads/do-notation-for-monads.html"><strong aria-hidden="true">5.3.</strong> モナド用do記法</a></li><li class="chapter-item expanded "><a href="../monads/io-monad.html"><strong aria-hidden="true">5.4.</strong> IOモナド</a></li><li class="chapter-item expanded "><a href="../monads/conveniences.html"><strong aria-hidden="true">5.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../monads/summary.html"><strong aria-hidden="true">5.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../functor-applicative-monad.html"><strong aria-hidden="true">6.</strong> 関手、アプリカティブ関手、そしてモナド</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../functor-applicative-monad/structure-and-inheritance.html"><strong aria-hidden="true">6.1.</strong> 構造と継承</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/applicative-functors.html"><strong aria-hidden="true">6.2.</strong> アプリカティブ関手</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/applicative-contract.html"><strong aria-hidden="true">6.3.</strong> アプリカティブの契約</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/alternative.html"><strong aria-hidden="true">6.4.</strong> 代替物</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/universes.html"><strong aria-hidden="true">6.5.</strong> 宇宙</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/complete-definitions.html"><strong aria-hidden="true">6.6.</strong> 完全な定義</a></li><li class="chapter-item expanded "><a href="../functor-applicative-monad/summary.html"><strong aria-hidden="true">6.7.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../monad-transformers.html"><strong aria-hidden="true">7.</strong> モナドトランスフォーマ</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../monad-transformers/reader-io.html"><strong aria-hidden="true">7.1.</strong> IOとReaderの組み合わせ</a></li><li class="chapter-item expanded "><a href="../monad-transformers/transformers-kit.html"><strong aria-hidden="true">7.2.</strong> モナド構築キット</a></li><li class="chapter-item expanded "><a href="../monad-transformers/order-of-monad-transformers.html"><strong aria-hidden="true">7.3.</strong> モナドトランスフォーマの並び順</a></li><li class="chapter-item expanded "><a href="../monad-transformers/enhanced-do.html" class="active"><strong aria-hidden="true">7.4.</strong> doの機能強化</a></li><li class="chapter-item expanded "><a href="../monad-transformers/conveniences.html"><strong aria-hidden="true">7.5.</strong> 追加の便利な機能</a></li><li class="chapter-item expanded "><a href="../monad-transformers/summary.html"><strong aria-hidden="true">7.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../dependent-types.html"><strong aria-hidden="true">8.</strong> 依存型を使用したプログラミング</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../dependent-types/indexed-families.html"><strong aria-hidden="true">8.1.</strong> インデックス付きファミリー</a></li><li class="chapter-item expanded "><a href="../dependent-types/universe-pattern.html"><strong aria-hidden="true">8.2.</strong> 宇宙デザインパターン</a></li><li class="chapter-item expanded "><a href="../dependent-types/typed-queries-examples.html"><strong aria-hidden="true">8.3.</strong> 実例: 型指定されたクエリ</a></li><li class="chapter-item expanded "><a href="../dependent-types/indices-parameters-universes.html"><strong aria-hidden="true">8.4.</strong> インデックス、パラメータ、そして宇宙レベル</a></li><li class="chapter-item expanded "><a href="../dependent-types/pitfalls-of-programming-with-dependent-types.html"><strong aria-hidden="true">8.5.</strong> 依存型を使ったプログラミングの落とし穴</a></li><li class="chapter-item expanded "><a href="../dependent-types/summary.html"><strong aria-hidden="true">8.6.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../tactics-induction-proofs.html"><strong aria-hidden="true">9.</strong> 小休止: 戦術、帰納、そして証明</a></li><li class="chapter-item expanded "><a href="../programs-proofs.html"><strong aria-hidden="true">10.</strong> プログラミング、証明、そしてパフォーマンス</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../programs-proofs/tail-recursion.html"><strong aria-hidden="true">10.1.</strong> 末尾再帰</a></li><li class="chapter-item expanded "><a href="../programs-proofs/tail-recursion-proofs.html"><strong aria-hidden="true">10.2.</strong> 同一性の証明</a></li><li class="chapter-item expanded "><a href="../programs-proofs/arrays-and-termination.html"><strong aria-hidden="true">10.3.</strong> 配列と終了性</a></li><li class="chapter-item expanded "><a href="../programs-proofs/inequalities.html"><strong aria-hidden="true">10.4.</strong> その他の不等式</a></li><li class="chapter-item expanded "><a href="../programs-proofs/fin.html"><strong aria-hidden="true">10.5.</strong> 安全な配列インデックス</a></li><li class="chapter-item expanded "><a href="../programs-proofs/insertion-sort.html"><strong aria-hidden="true">10.6.</strong> 挿入ソートと配列の変更</a></li><li class="chapter-item expanded "><a href="../programs-proofs/special-types.html"><strong aria-hidden="true">10.7.</strong> 特殊な型</a></li><li class="chapter-item expanded "><a href="../programs-proofs/summary.html"><strong aria-hidden="true">10.8.</strong> 要約</a></li></ol></li><li class="chapter-item expanded "><a href="../next-steps.html">次のステップ</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Functional Programming in Lean</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="doの機能強化"><a class="header" href="#doの機能強化">doの機能強化</a></h1>
+<p>The content you provided seems to have placeholders for code examples (<code>{{#example_decl ... }}</code>, <code>{{#example_in ... }}</code>, <code>{{#example_out ... }}</code>, etc.) that are intended to be substituted with actual Lean code when the Markdown file is processed by a documentation tool or system. As those placeholders would fetch code from a database or a file system when processed, they aren't direct content that I can translate.</p>
+<p>However, I can provide you with translation for the surrounding conceptual explanations and headings. Please note that any <code>{{...}}</code> placeholders will be left unchanged.</p>
+<hr />
+<h1 id="leanのdo表記におけるさらなる特徴"><a class="header" href="#leanのdo表記におけるさらなる特徴">Leanの<code>do</code>表記におけるさらなる特徴</a></h1>
+<p>Leanの<code>do</code>表記は、命令型プログラミング言語に似た構文で、モナドを使ったプログラミングを記述するための構文を提供します。
+単にモナドを有効活用するための便利な構文を提供するだけではなく、特定のモナドトランスフォーマを使うための構文も<code>do</code>記法は提供しています。</p>
+<h2 id="ifの単一の分岐"><a class="header" href="#ifの単一の分岐"><code>if</code>の単一の分岐</a></h2>
+<p>モナドの中で働く際、特定の条件が真のときだけに副作用を起こすという一般的なパターンがあります。
+たとえば、<code>countLetters</code>は母音または子音かどうかをチェックする処理が含まれており、どちらでもない文字は状態に影響しません。
+以下の<code>countLettersModify</code>は<code>else</code>ブロックが<code>pure ()</code>を評価し、これには副作用がありません：</p>
+<pre><code class="language-lean">def countLetters (str : String) : StateT LetterCounts (Except Err) Unit :=
+  let rec loop (chars : List Char) := do
+    match chars with
+    | [] =&gt; pure ()
+    | c :: cs =&gt;
+      if c.isAlpha then
+        if vowels.contains c then
+          modify fun st =&gt; {st with vowels := st.vowels + 1}
+        else if consonants.contains c then
+          modify fun st =&gt; {st with consonants := st.consonants + 1}
+        else -- modified or non-English letter
+          pure ()
+      else throw (.notALetter c)
+      loop cs
+  loop str.toList
+</code></pre>
+<p><code>do</code>ブロック内で式ではなくステートメントとしての<code>if</code>には、<code>else pure ()</code>を省略でき、Leanは自動的にこれを挿入します。
+以下の<code>countLettersNoElse</code>の定義も完全に同等です：</p>
+<pre><code class="language-lean">def countLetters (str : String) : StateT LetterCounts (Except Err) Unit :=
+  let rec loop (chars : List Char) := do
+    match chars with
+    | [] =&gt; pure ()
+    | c :: cs =&gt;
+      if c.isAlpha then
+        if vowels.contains c then
+          modify fun st =&gt; {st with vowels := st.vowels + 1}
+        else if consonants.contains c then
+          modify fun st =&gt; {st with consonants := st.consonants + 1}
+      else throw (.notALetter c)
+      loop cs
+  loop str.toList
+</code></pre>
+<p>状態モナドを使用して、モナディック条件を満たすリスト項目を数えるプログラムは以下のようになります：</p>
+<pre><code class="language-lean">def count [Monad m] [MonadState Nat m] (p : α → m Bool) : List α → m Unit
+  | [] =&gt; pure ()
+  | x :: xs =&gt; do
+    if ← p x then
+      modify (· + 1)
+    count p xs
+</code></pre>
+<p>同様に、<code>if not E1 then STMT...</code>のかわりに<code>unless E1 do STMT...</code>と書くことができます。
+条件を満たさないエントリーを数える<code>countNot</code>の逆の動作は、<code>if</code>の代わりに<code>unless</code>を使うことで実現できます：</p>
+<pre><code class="language-lean">def countNot [Monad m] [MonadState Nat m] (p : α → m Bool) : List α → m Unit
+  | [] =&gt; pure ()
+  | x :: xs =&gt; do
+    unless ← p x do
+      modify (· + 1)
+    countNot p xs
+</code></pre>
+<p>単一の分岐<code>if</code>と<code>unless</code>を理解するには、モナドトランスフォーマについて考える必要はありません。
+それらは単に欠けているブランチを<code>pure ()</code>で置き換えるだけです。
+しかし、このセクションに残されている拡張機能はLeanが<code>do</code>ブロックを自動的に書き換え、そこに書かれたモナドの上に局所トランスフォーマーを追加するようになっています。</p>
+<h2 id="早期リターン"><a class="header" href="#早期リターン">早期リターン</a></h2>
+<p>標準ライブラリには、ある条件を満たすリストの最初のエントリを返す<code>List.find?</code>という関数が含まれています。
+この<code>Option</code>モナドを活用しない単純な実装は、リカーシブ(再帰的)関数を使用し、望ましいエントリが見つかったときにループを停止するために<code>if</code>を使います：</p>
+<pre><code class="language-lean">def List.find? (p : α → Bool) : List α → Option α
+  | [] =&gt; none
+  | x :: xs =&gt;
+    if p x then
+      some x
+    else
+      find? p xs
+</code></pre>
+<p>命令型言語で、通常<code>return</code>キーワードは関数の実行を中断し、何らかの値を直ちに返すために使用されます。
+Leanでは、<code>do</code>表記の中で<code>return</code>を使うことができ、<code>return</code>で<code>do</code>ブロックの実行を止めることができ、<code>return</code>の引数がモナドから返される値となります。
+つまり、<code>List.find?</code>は以下のように書けたかもしれません：</p>
+<pre><code class="language-lean">def List.find? (p : α → Bool) : List α → Option α
+  | [] =&gt; failure
+  | x :: xs =&gt; do
+    if p x then return x
+    find? p xs
+</code></pre>
+<p>命令型言語の早期リターンは、現在のスタックフレームだけをアンワインドすることが可能な例外類似です。
+早期リターンと例外はどちらもコードブロックの実行を停止させ、周囲のコードを投げられた値で置き換えます。
+裏側では、Leanにおける早期リターンは<code>ExceptT</code>のバージョンを使用して実装されています。
+早期リターンを使う各<code>do</code>ブロックは、関数<code>tryCatch</code>の意味の例外ハンドラーでラップされます。
+早期リターンは例外として値を投げ、ハンドラは投げられた値をキャッチし、直ちに返します。
+つまり、<code>do</code>ブロックの元の戻り値型は、例外型としても使われます。</p>
+<p>より具体的にするために、ヘルパー関数<code>runCatch</code>は<code>ExceptT</code>の層をモナドトランスフォーマースタックの最上部から取り除きます。これは例外タイプと戻り値タイプが同じ場合に使用されます：</p>
+<pre><code class="language-lean">def runCatch [Monad m] (action : ExceptT α m α) : m α := do
+  match ← action with
+  | Except.ok x =&gt; pure x
+  | Except.error x =&gt; pure x
+</code></pre>
+<p>早期リターンを使う<code>List.find?</code>の<code>do</code>ブロックは、<code>runCatch</code>を使用してラップされ、早期リターンを<code>throw</code>に置き換えることで、早期リターンを使用しない<code>do</code>ブロックに変換されます：</p>
+<pre><code class="language-lean">def List.find? (p : α → Bool) : List α → Option α
+  | [] =&gt; failure
+  | x :: xs =&gt;
+    runCatch do
+      if p x then throw x else pure ()
+      monadLift (find? p xs)
+</code></pre>
+<p>早期リターンが有用な別のシナリオは、引数や入力が不正な場合にコマンドラインアプリケーションを早期終了させる場合です。
+多くのプログラムは、プログラムの本体に入る前に、引数や入力を検証するセクションから始まります。
+以下の挨拶プログラム<code>hello-name</code>のバージョンはコマンドライン引数が提供されていないことをチェックします：</p>
+<pre><code class="language-lean">def main (argv : List String) : IO UInt32 := do
+  let stdin ← IO.getStdin
+  let stdout ← IO.getStdout
+  let stderr ← IO.getStderr
+
+  unless argv == [] do
+    stderr.putStrLn s!&quot;Expected no arguments, but got {argv.length}&quot;
+    return 1
+
+  stdout.putStrLn &quot;How would you like to be addressed?&quot;
+  stdout.flush
+
+  let name := (← stdin.getLine).trim
+  if name == &quot;&quot; then
+    stderr.putStrLn s!&quot;No name provided&quot;
+    return 1
+
+  stdout.putStrLn s!&quot;Hello, {name}!&quot;
+
+  return 0
+</code></pre>
+<p>引数なしで実行し、名前<code>David</code>を入力すると、以前のバージョンと同じ結果が得られます。</p>
+<p>名前をコマンドライン引数として提供するとエラーが発生します：</p>
+<p>そして名前を提供しない場合は別のエラーが発生します：</p>
+<p>早期リターンを使用するプログラムは、このような制御フローのネストを避けます。早期リターンを使用しないバージョンで行われているようにです：</p>
+<pre><code class="language-lean">def main (argv : List String) : IO UInt32 := do
+  let stdin ← IO.getStdin
+  let stdout ← IO.getStdout
+  let stderr ← IO.getStderr
+
+  if argv != [] then
+    stderr.putStrLn s!&quot;Expected no arguments, but got {argv.length}&quot;
+    pure 1
+  else
+    stdout.putStrLn &quot;How would you like to be addressed?&quot;
+    stdout.flush
+
+    let name := (← stdin.getLine).trim
+    if name == &quot;&quot; then
+      stderr.putStrLn s!&quot;No name provided&quot;
+      pure 1
+    else
+      stdout.putStrLn s!&quot;Hello, {name}!&quot;
+      pure 0
+</code></pre>
+<p>Leanの早期リターンと命令型言語の早期リターンの重要な違いの一つは、Leanの早期リターンは現在の<code>do</code>ブロックにのみ影響を与えるということです。
+関数の完全な定義が同じ<code>do</code>ブロックの内にある場合は、この違いはそれほど重要ではありません。
+しかし、<code>do</code>が他の構造の下にある場合、その差異は明確になります。
+例として、以下の<code>greet</code>の定義を考えましょう：</p>
+<pre><code class="language-lean">def greet (name : String) : String :=
+  &quot;Hello, &quot; ++ Id.run do return name
+</code></pre>
+<p>この式<code>greet &quot;David&quot;</code>は<code>&quot;Hello, David&quot;</code>として評価されます。注意しましょう、これは<code>&quot;David&quot;</code>ではありません。</p>
+<h2 id="ループ"><a class="header" href="#ループ">ループ</a></h2>
+<p>すべての書き換え可能な状態を持つプログラムは、状態を引数として渡すプログラムに置き換えることができるのと同様に、すべてのループも再帰関数に置き換えることができます。
+一方で、<code>List.find?</code>は再帰関数として一番明確です。結局のところ、定義はリストの構造を反映しています：先頭がチェックを通過するならばそれを返し、そうでなければ尾部を検討します。エントリがなくなった場合、答えは<code>none</code>です。
+別の視点からすると、<code>List.find?</code>はループとしてもっとも明確です。このプログラムは満足のいくエントリが見つかるまで、順にエントリを調べます。ループがなにも返さずに終わる場合、答えは<code>none</code>です。</p>
+<h3 id="formを使用したループ"><a class="header" href="#formを使用したループ">ForMを使用したループ</a></h3>
+<p>Leanには、特定のモナドの中でコンテナ型をループするための型クラスが含まれています。
+これは<code>ForM</code>と呼ばれています：</p>
+<pre><code class="language-lean">class ForM (m : Type u → Type v) (γ : Type w₁) (α : outParam (Type w₂)) where
+  forM [Monad m] : γ → (α → m PUnit) → m PUnit
+</code></pre>
+<p>このクラスはとても一般的です。パラメータ<code>m</code>はいくつかのモナドであり求められる効果を持ち、<code>γ</code>はループされるコレクションで、<code>α</code>はコレクションからの要素の型です。
+通常<code>m</code>はどのモナドでも良いですが、例えば<code>IO</code>でのみループをサポートするデータ構造を持つこともできます。
+メソッド<code>forM</code>はコレクションと、コレクションの各要素に対してその効果のために実行されるモナドアクションをとり、アクションを実行します。</p>
+<p><code>List</code>のインスタンスも任意のモナドに対して<code>m</code>を許し、<code>γ</code>を<code>List α</code>に設定し、クラスの<code>α</code>はリストに見られる同じ<code>α</code>に設定します：</p>
+<pre><code class="language-lean">def List.forM [Monad m] : List α → (α → m PUnit) → m PUnit
+  | [], _ =&gt; pure ()
+  | x :: xs, action =&gt; do
+    action x
+    forM xs action
+
+instance : ForM m (List α) α where
+  forM := List.forM
+</code></pre>
+<p><code>doug</code>からの<code>doList</code>関数はリストに対する<code>forM</code>です。
+<code>forM</code>は<code>do</code>ブロックで使われることを意図しているため、<code>Applicative</code>よりも<code>Monad</code>が使われます。
+<code>forM</code>を使えば<code>countLetters</code>をかなり短くすることができます：</p>
+<pre><code class="language-lean">def countLetters (str : String) : StateT LetterCounts (Except Err) Unit :=
+  forM str.toList fun c =&gt; do
+    if c.isAlpha then
+      if vowels.contains c then
+        modify fun st =&gt; {st with vowels := st.vowels + 1}
+      else if consonants.contains c then
+        modify fun st =&gt; {st with consonants := st.consonants + 1}
+    else throw (.notALetter c)
+</code></pre>
+<p><code>Many</code>のインスタンスも非常に似ています：</p>
+<pre><code class="language-lean">def Many.forM [Monad m] : Many α → (α → m PUnit) → m PUnit
+  | Many.none, _ =&gt; pure ()
+  | Many.more first rest, action =&gt; do
+    action first
+    forM (rest ()) action
+
+instance : ForM m (Many α) α where
+  forM := Many.forM
+</code></pre>
+<p><code>γ</code>は何でもよいので、<code>ForM</code>は非多様なコレクションもサポートすることができます。
+特にシンプルなコレクションの一つは、反対バージョンの特定の数値よりも小さい自然数です：</p>
+<pre><code class="language-lean">structure AllLessThan where
+  num : Nat
+</code></pre>
+<p>その<code>forM</code>演算子は指定されたアクションをそれぞれの小さな<code>Nat</code>に適用します：</p>
+<pre><code class="language-lean">def AllLessThan.forM [Monad m] (coll : AllLessThan) (action : Nat → m Unit) : m Unit :=
+  let rec countdown : Nat → m Unit
+    | 0 =&gt; pure ()
+    | n + 1 =&gt; do
+      action n
+      countdown n
+  countdown coll.num
+
+instance : ForM m AllLessThan Nat where
+  forM := AllLessThan.forM
+</code></pre>
+<p>5より小さい数に<code>IO.println</code>を実行するのは<code>forM</code>を使って達成されます：</p>
+<pre><code class="language-lean">#eval forM { num := 5 : AllLessThan } IO.println
+</code></pre>
+<pre><code class="language-output info">4
+3
+2
+1
+0
+</code></pre>
+<p>特定のモナドにのみ動作する<code>ForM</code>インスタンスの例は、例えば標準入力などのIOストリームから読まれた行をループするものです：</p>
+<pre><code class="language-lean">structure LinesOf where
+  stream : IO.FS.Stream
+
+partial def LinesOf.forM (readFrom : LinesOf) (action : String → IO Unit) : IO Unit := do
+  let line ← readFrom.stream.getLine
+  if line == &quot;&quot; then return ()
+  action line
+  forM readFrom action
+
+instance : ForM IO LinesOf String where
+  forM := LinesOf.forM
+</code></pre>
+<p><code>forM</code>の定義は、ストリームが有限でない可能性があるため<code>partial</code>としてマークされています。
+この場合、<code>IO.FS.Stream.getLine</code>は<code>IO</code>モナドのみで動作するため、他のモナドではループすることができません。</p>
+<p>この例のプログラムでは、人を除いた行をフィルタリングするためにこのループ構造が使われています：</p>
+<pre><code class="language-lean">def main (argv : List String) : IO UInt32 := do
+  if argv != [] then
+    IO.eprintln &quot;Unexpected arguments&quot;
+    return 1
+
+  forM (LinesOf.mk (← IO.getStdin)) fun line =&gt; do
+    if line.any (·.isAlpha) then
+      IO.print line
+
+  return 0
+</code></pre>
+<p>ファイル<code>test-data</code>には以下の内容が含まれています：</p>
+<p>このプログラムを実行すると、<code>ForMIO.lean</code>に保存されると次の出力が得られます：</p>
+<h3 id="反復を停止する"><a class="header" href="#反復を停止する">反復を停止する</a></h3>
+<p><code>forM</code>で早めにループを止めるのは大変な場合があります。
+<code>AllLessThan</code>と<code>Nat</code>をループし、「3」に到達したら反復をやめるだけの関数を書く場合、途中でループを止められる手段が必要です。
+この目的を達成する1つの方法は、<code>OptionT</code>モナドトランスフォーマを<code>forM</code>と一緒に使うことです。
+最初のステップは、<code>OptionT.exec</code>を定義することであり、これは変換された計算に基づく戻り値と成功したかどうかの情報の両方を破棄します：</p>
+<pre><code class="language-lean">def OptionT.exec [Applicative m] (action : OptionT m α) : m Unit :=
+  action *&gt; pure ()
+</code></pre>
+<p>次に、<code>OptionT</code></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../monad-transformers/order-of-monad-transformers.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../monad-transformers/conveniences.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../monad-transformers/order-of-monad-transformers.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../monad-transformers/conveniences.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+    </body>
+</html>
