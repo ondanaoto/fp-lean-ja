@@ -86,6 +86,6 @@ jobs:
       if: ${{ startsWith(github.ref, 'refs/tags/release-') }}
       with:
         publish_dir: functional-programming-lean/book/html
-        publish_branch: gh-pages
+        publish_branch: master
         external_repository: leanprover/functional_programming_in_lean
         personal_token: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
