@@ -9,7 +9,7 @@
   - [型](./getting-to-know/types.md)
   - [関数と定義](./getting-to-know/functions-and-definitions.md)
   - [構造体](./getting-to-know/structures.md)
-  - [データタイプ、パターン、そして再帰](./getting-to-know/datatypes-patterns-and-pattern.md)
+  - [データタイプ、パターン、そして再帰](./getting-to-know/datatypes-and-patterns.md)
   - [多相性](./getting-to-know/polymorphism.md)
   - [追加の便利な機能](./getting-to-know/conveniences.md)
   - [要約](./getting-to-know/summary.md)
