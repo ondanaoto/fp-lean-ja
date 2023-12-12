@@ -1,4 +1,3 @@
-```markdown
 # 構造体
 
 プログラムを書く際の最初のステップは、問題領域の概念を特定し、それらをコードで適切に表現することです。
@@ -253,10 +252,10 @@ JavaやPythonなどの言語でのコンストラクタとは異なり、Leanの
 {{#example_in Examples/Intro.lean Pointy}}
 ```
 ```output info
-{{#example_out Examples/Intro.leanPointy}}
+{{#example_out Examples/Intro.lean Pointy}}
 ```
 
-ここで、実際には、構造体の構築構文で使用される中括弧構文は、背後では構造体のコンストラクターを呼び出す形に変換されます。先の`addPoints`の定義における`p1.x`という構文も、`Point.x`アクセス関数を呼び出す形に変換されます。つまり、`{{#example_in Examples/Intro.lean originx}}`と`{{#example_in Examples/Intro.lean originx1}}`の両方が同じ結果を生成します。
+ここで、実際には、構造体の構築構文で使用される中括弧構文は、背後では構造体のコンストラクタを呼び出す形に変換されます。先の`addPoints`の定義における`p1.x`という構文も、`Point.x`アクセス関数を呼び出す形に変換されます。つまり、`{{#example_in Examples/Intro.lean originx}}`と`{{#example_in Examples/Intro.lean originx1}}`の両方が同じ結果を生成します。
 ```output info
 {{#example_out Examples/Intro.lean originx1}}
 ```
